@@ -78,7 +78,7 @@ export const routes: Routes = [
       { path: 'livreList', component: LivreList },
       { path: 'ajouterLivre', component: LivreForm },
       { path: 'editerLivre/:id', component: LivreForm },
-      { path: ':id', component: LivreDetails },
+      { path: 'editer:id', component: LivreDetails },
       //{ path: '', component: GeneralSettings},
       //{ path: 'profil', component: UserProfile },
       // { path: 'securite', component: SecuritySettings }
@@ -92,7 +92,7 @@ export const routes: Routes = [
       { path: 'ajouterRecompense', component: RecompenseForm },
       { path: 'editerRecompense/:id', component: RecompenseForm },
       { path: 'Recompense/:id', component: RecompenseDetails },
-      { path: 'utilisateurList', component: UtilisateurList },
+      { path: 'utilisateurs', component: UtilisateurList },
       { path: 'ajouterUtilisateur', component: UtilisateurForm },
       { path: 'editerUtilisateur/:id', component: UtilisateurForm },
       { path: 'Utilisateur/:id', component: UtilisateurDetails }

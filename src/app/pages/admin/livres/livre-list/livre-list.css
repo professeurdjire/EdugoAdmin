@@ -1,0 +1,173 @@
+.livres-container {
+  flex: 1;
+  margin-left: 210px; /* espace sidebar */
+  margin-top: 70px;   /* espace navbar */
+  padding: 1rem;
+  min-height: calc(100vh - 60px);
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  background-color: var(--main-bg);
+  overflow-x: hidden;
+}
+
+/* Header */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.add-btn {
+  background-color: #7b4fff;
+  color: #fff;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+/* Statistiques */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 20px;
+  margin: 25px 0;
+}
+.stat-card {
+  background-color: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  display: flex;
+  align-items: center;
+  padding: 20px;
+  border-top: 5px solid #7b4fff;
+}
+.icon {
+  width: 45px;
+  height: 45px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  margin-right: 15px;
+  font-size: 1.4rem;
+}
+.info h2 {
+  margin: 0;
+}
+.info p {
+  color: #777;
+  margin: 0;
+}
+
+/* Filtres */
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 25px;
+}
+.filters input,
+.filters select {
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  min-width: 180px;
+}
+.filter-btn {
+  background-color: #7b4fff;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 18px;
+  cursor: pointer;
+}
+
+/* Livres */
+.books-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 20px;
+}
+.book-card {
+  position: relative;
+  background: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+.book-img {
+  background: linear-gradient(135deg, #2196f3, #00bcd4);
+  height: 150px;
+}
+.badge {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: #7b4fff;
+  color: #fff;
+  padding: 4px 8px;
+  border-radius: 8px;
+  font-size: 0.8rem;
+}
+.book-info {
+  padding: 15px;
+}
+.book-info h3 {
+  margin: 0;
+  font-size: 1.1rem;
+}
+.book-info p {
+  margin: 5px 0;
+  color: #666;
+}
+.matiere {
+  color: #7b4fff;
+  font-weight: 600;
+}
+.actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 10px;
+}
+.view-btn {
+  background-color: #ede7ff;
+  color: #7b4fff;
+  border: none;
+  border-radius: 8px;
+  padding: 6px 12px;
+  cursor: pointer;
+}
+.actions-icons fa-icon {
+  margin-left: 10px;
+  cursor: pointer;
+}
+
+/* Pagination */
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 30px;
+}
+.pagination button {
+  background: #7b4fff;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 6px 12px;
+  margin: 0 5px;
+  cursor: pointer;
+}
+.pagination span {
+  margin: 0 5px;
+  cursor: pointer;
+  padding: 6px 10px;
+  border-radius: 5px;
+}
+.pagination span.active {
+  background-color: #7b4fff;
+  color: #fff;
+}

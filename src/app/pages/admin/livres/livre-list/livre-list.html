@@ -1,1 +1,63 @@
-<p>livre-list works!</p>
+<div class="livres-container">
+  <div class="header">
+    <h1>Livres</h1>
+    <button class="add-btn">+ Ajouter un livre</button>
+  </div>
+
+  <!-- Statistiques -->
+  <div class="stats-grid">
+    <div class="stat-card" *ngFor="let stat of stats" [style.borderTopColor]="stat.color">
+      <div class="icon" [style.backgroundColor]="stat.bgColor">
+        <fa-icon [icon]="stat.icon"></fa-icon>
+      </div>
+      <div class="info">
+        <h2>{{ stat.value | number }}</h2>
+        <p>{{ stat.label }}</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filtres -->
+  <div class="filters">
+    <input type="text" placeholder="Nom, auteur, catégorie..." [(ngModel)]="searchTerm" />
+    <select [(ngModel)]="selectedNiveau">
+      <option value="">Tous les niveaux</option>
+      <option *ngFor="let n of niveaux">{{ n }}</option>
+    </select>
+    <select [(ngModel)]="selectedMatiere">
+      <option value="">Toutes les matières</option>
+      <option *ngFor="let m of matieres">{{ m }}</option>
+    </select>
+    <button class="filter-btn">Filtrer</button>
+  </div>
+
+  <!-- Grille de livres -->
+  <div class="books-grid">
+    <div class="book-card" *ngFor="let livre of livresFiltres">
+      <div class="book-img"></div>
+      <span class="badge">Nouveau</span>
+      <div class="book-info">
+        <h3>{{ livre.titre }}</h3>
+        <p>Par : <strong>{{ livre.auteur }}</strong></p>
+        <p>{{ livre.pages }} pages</p>
+        <p class="matiere">{{ livre.matiere }}</p>
+        <div class="actions">
+          <button class="view-btn"><fa-icon [icon]="faEye"></fa-icon> Voir</button>
+          <div class="actions-icons">
+            <fa-icon [icon]="faDownload"></fa-icon>
+            <fa-icon [icon]="faBookOpen"></fa-icon>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Pagination -->
+  <div class="pagination">
+    <button (click)="prevPage()" [disabled]="page === 1">Précédent</button>
+    <span *ngFor="let p of totalPagesArray"
+          (click)="goToPage(p)"
+          [class.active]="p === page">{{ p }}</span>
+    <button (click)="nextPage()" [disabled]="page === totalPages">Suivant</button>
+  </div>
+</div>
