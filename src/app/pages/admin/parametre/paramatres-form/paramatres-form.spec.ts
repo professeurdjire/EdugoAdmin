@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { Contenus } from './contenus';
+import { ParamatresForm } from './paramatres-form';
 
-describe('Contenus', () => {
-  let component: Contenus;
-  let fixture: ComponentFixture<Contenus>;
+describe('ParamatresForm', () => {
+  let component: ParamatresForm;
+  let fixture: ComponentFixture<ParamatresForm>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [Contenus]
+      imports: [ParamatresForm]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(Contenus);
+    fixture = TestBed.createComponent(ParamatresForm);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

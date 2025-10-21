@@ -1,0 +1,388 @@
+/* -------------------- Variables de base -------------------- */
+:root {
+  --primary-color: #7b4fff; /* Violet principal */
+  --main-bg: #f4f6fa;
+  --text-color: #333;
+  --secondary-text-color: #777;
+  --card-bg: #ffffff;
+  --shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+
+}
+
+/* -------------------- Conteneur principal -------------------- */
+.main-content {
+  flex: 1;
+  margin-left: 210px; /* espace sidebar */
+  margin-top: 70px;   /* espace navbar */
+  padding: 1rem;
+  min-height: calc(100vh - 60px);
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  background-color: var(--main-bg);
+  overflow-x: hidden;
+}
+
+/* -------------------- les Cartes de statistiques -------------------- */
+.alignementTexte {
+  display: flex;
+  flex-direction: column; /* disposition verticale */
+  justify-content: center; /* centre verticalement si nécessaire */
+  align-items: flex-start; /* aligne à gauche */
+  gap: 4px; /* espace entre la valeur et le label */
+}
+.stats-cards-container {
+  display: flex;
+  gap: 35px;
+  margin-bottom: 30px;
+}
+.stat-cards-deco{
+  background-color: #A885D8;
+  border-radius: 8px;
+  box-shadow: var(--shadow);
+  z-index: 1;
+  padding-left: 6px; /* espace intérieur pour décaler le contenu */
+  display: flex;
+}
+
+.stat-card {
+  background-color: white;
+  padding: 15px 20px;
+  border-radius: 8px;
+  box-shadow: 0 8px 16px rgba(0,0,0,0.3);
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-left: 3px;
+  width: 210px;
+  height: 150px;
+}
+
+.stat-card .icon-containerA {
+  width: 45px;
+  height: 45px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 1.3rem;
+  flex-shrink: 0;
+  background-color: #0000FF;
+}
+.stat-card .icon-containerB {
+  width: 45px;
+  height: 45px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 1.3rem;
+  flex-shrink: 0;
+  background-color: #28BD7F;
+}
+.stat-card .icon-containerC {
+  width: 45px;
+  height: 45px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 1.3rem;
+  flex-shrink: 0;
+  background-color: #FF7900;
+}
+.stat-card .icon-containerD {
+  width: 45px;
+  height: 45px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 1.3rem;
+  flex-shrink: 0;
+  background-color: #195A9D;
+}
+.stat-card .value {
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
+.stat-card .label {
+  font-size: 0.8rem;
+  color: var(--secondary-text-color);
+}
+
+/* -------------------- 2. Grille des sections principales -------------------- */
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  grid-template-rows: auto auto;
+  gap: 30px;
+}
+
+.grid-item {
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: var(--shadow);
+}
+
+.item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.grid-item h2 {
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+/* -------------------- 3. Graphique d'activité -------------------- */
+.activity-chart {
+  grid-column: 1 / 2;
+  grid-row: 1 / 2;
+  box-shadow: 0 8px 16px rgba(0,0,0,0.3);
+}
+
+.chart-options {
+  padding: 5px 10px;
+  border-radius: 5px;
+  border: 1px solid #ddd;
+  font-size: 0.85rem;
+  color: var(--secondary-text-color);
+}
+
+.chart-placeholder {
+  position: relative;
+  padding-top: 10px;
+  height: 320px;
+}
+
+.legend-chart {
+  font-size: 0.8rem;
+  display: flex;
+  gap: 15px;
+  margin-bottom: 5px;
+  padding-left: 50px;
+}
+
+.legend-chart .legend-item::before {
+  content: '';
+  display: inline-block;
+  width: 10px;
+  height: 2px;
+  margin-right: 5px;
+  vertical-align: middle;
+}
+
+.graph-area {
+  height: 80%;
+  border-left: 1px solid #ddd;
+  border-bottom: 1px solid #ddd;
+  position: relative;
+  margin-left: 45px;
+}
+
+.axis-labels {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+  margin-left: 45px;
+  font-size: 0.75rem;
+  color: var(--secondary-text-color);
+}
+
+/* -------------------- 4. Actions Rapides -------------------- */
+.quick-actions {
+  grid-column: 2 / 3;
+  grid-row: 1 / 2;
+  box-shadow: 0 8px 16px rgba(0,0,0,0.3);
+}
+
+.actions-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  margin-top: 40px;
+}
+
+.action-btn {
+  background-color: #f7f7f7;
+  border: 1px solid #e0e0e0;
+  padding: 15px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--text-color);
+  transition: background-color 0.2s, transform 0.1s;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.action-btn:hover {
+  background-color: #eee;
+  transform: translateY(-2px);
+}
+
+.action-btn .btn-icon {
+  font-size: 1.5rem;
+  color: var(--secondary-text-color);
+}
+
+/* -------------------- 5. Répartition de lecture -------------------- */
+.reading-distribution {
+  grid-column: 1 / 2;
+  grid-row: 2 / 3;
+  box-shadow: 0 8px 16px rgba(0,0,0,0.3);
+}
+
+.distribution-content {
+  display: flex;
+  gap: 70px;
+  align-items: center;
+  padding: 20px 0;
+  margin-top: 5%;
+  margin-left: 5%;
+}
+
+.pie-chart-placeholder {
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  background: conic-gradient(
+    #4a68f2 0% 12.5%,
+    #37c75b 12.5% 25%,
+    #ff914d 25% 37.5%,
+    #ff3e3e 37.5% 50%,
+    #ffdd00 50% 62.5%,
+    #9013fe 62.5% 75%,
+    #1b4965 75% 87.5%,
+    #777 87.5% 100%
+  );
+  flex-shrink: 0;
+  border: 5px solid white;
+  box-shadow: 0 0 0 1px #eee;
+}
+
+.legend {
+  list-style: none;
+  font-size: 0.9rem;
+  columns: 2;
+}
+
+.legend li {
+  padding-left: 18px;
+  position: relative;
+  margin-bottom: 8px;
+  white-space: nowrap;
+}
+
+.legend li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+/* Couleurs de la légende */
+.legend .maths::before { background-color: #4a68f2; }
+.legend .francais::before { background-color: #37c75b; }
+.legend .histoires::before { background-color: #ff914d; }
+.legend .geographie::before { background-color: #ff3e3e; }
+.legend .anglais::before { background-color: #ffdd00; }
+.legend .ecm::before { background-color: #9013fe; }
+.legend .physique::before { background-color: #1b4965; }
+.legend .chimie::before { background-color: #777; }
+
+/* -------------------- 6. Top Utilisateurs -------------------- */
+.top-users {
+  grid-column: 2 / 3;
+  grid-row: 2 / 3;
+  box-shadow: 0 8px 16px rgba(0,0,0,0.3);
+}
+
+.view-all {
+  color: var(--primary-color);
+  text-decoration: none;
+  font-size: 0.9rem;
+}
+
+.user-list {
+  list-style: none;
+}
+
+.user-item {
+  display: flex;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid #eee;
+}
+
+.user-item:last-child {
+  border-bottom: none;
+}
+
+.user-initials-small {
+  width: 30px;
+  height: 30px;
+  background-color: #008CFF;
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 12px;
+  margin-right: 15px;
+  flex-shrink: 0;
+}
+
+.user-details-small {
+  flex-grow: 1;
+  line-height: 1.2;
+}
+
+.user-details-small p {
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.user-details-small small {
+  color: var(--secondary-text-color);
+  font-size: 0.75rem;
+}
+
+.points {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--secondary-text-color);
+  flex-shrink: 0;
+}
+.trait{
+  height: 1px;
+  background-color: black;
+  width: 90vh;
+  margin: 2%;
+}
+.traitA{
+  height: 1px;
+  background-color: black;
+  width: 45vh;
+  margin: 2%;
+}
+

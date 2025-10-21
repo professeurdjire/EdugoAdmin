@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 
 @Component({
   selector: 'app-matieres-list',
+  standalone:true,
   imports: [],
   templateUrl: './matieres-list.html',
   styleUrl: './matieres-list.css'

@@ -1,1 +1,93 @@
-<p>utilisateur-list works!</p>
+
+<div class="users-page-container">
+  <h1 class="page-title">Utilisateurs</h1>
+  <!-- Filtres -->
+  <div class="filter">
+    <section class="filters-container">
+      <div class="filter-group">
+        <label>Recherche</label>
+        <input type="text" [(ngModel)]="searchTerm" placeholder="Nom, email..." />
+      </div>
+
+      <div class="filter-group">
+        <label>Niveau scolaire</label>
+        <select [(ngModel)]="selectedLevel">
+          <option>Tous les niveaux</option>
+          <option>2ème</option>
+          <option>3ème</option>
+          <option>4ème</option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label>Statut</label>
+        <select [(ngModel)]="selectedStatus">
+          <option>Tous les statuts</option>
+          <option>Actif</option>
+          <option>Inactif</option>
+        </select>
+      </div>
+
+      <div class="action-buttons">
+        <button class="filter-btn" (click)="applyFilters()">
+          <fa-icon [icon]="faFilter"></fa-icon>
+          Filtrer
+        </button>
+        <button class="reset-btn" (click)="resetFilters()">
+          <fa-icon [icon]="faRedoAlt"></fa-icon>
+          Réinitialiser
+        </button>
+      </div>
+    </section>
+  </div>
+  <div class="table-header-info">
+    <h2>Liste des utilisateurs ({{ filteredUsers.length }})</h2>
+  </div>
+
+  <!-- Tableau sans pagination -->
+  <section class="users-table-section no-scroll">
+    <div class="table-wrapper">
+      <table>
+        <thead>
+        <tr>
+          <th>Utilisateur</th>
+          <th>Niveau</th>
+          <th>Téléphone</th>
+          <th>Inscription</th>
+          <th>Points</th>
+          <th>Statut</th>
+          <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let user of filteredUsers">
+          <td class="user-details-cell">
+            <div class="user-initials" [ngClass]="user.color">{{ user.initials }}</div>
+            <div class="user-info-text">
+              <p class="name">{{ user.firstName }} {{ user.lastName }}</p>
+              <small class="email">{{ user.email }}</small>
+            </div>
+          </td>
+          <td><span class="level-badge">{{ user.level }}</span></td>
+          <td>{{ user.phone }}</td>
+          <td>{{ user.registrationDate }}</td>
+          <td>{{ user.points }}</td>
+          <td>
+              <span class="status-badge" [class.active-status]="user.status === 'Actif'">
+                {{ user.status }}
+              </span>
+          </td>
+          <td class="actions-cell">
+            <button class="action-icon-btn" (click)="viewUser(user)">
+              <fa-icon [icon]="faEye"></fa-icon>
+            </button>
+            <button class="action-icon-btn" (click)="editUser(user)">
+              <fa-icon [icon]="faPen"></fa-icon>
+            </button>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+</div>
