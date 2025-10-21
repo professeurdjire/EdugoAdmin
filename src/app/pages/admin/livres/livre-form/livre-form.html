@@ -1,1 +1,177 @@
-<p>livre-form works!</p>
+<body>
+<div class="dashboard-container">
+
+  <div class="main-area">
+
+
+    <main class="main-content">
+      <button class="back-button">
+        <img src="images/465_2393.svg" alt="Back">
+        Retour
+      </button>
+
+      <section class="filters-section">
+        <div class="filter-group">
+          <label for="search">Recherche</label>
+          <input type="text" id="search" placeholder="Nom, email, telephone...">
+        </div>
+        <div class="filter-group">
+          <label for="level">Niveau Scolaire</label>
+          <div class="select-wrapper">
+            <select id="level">
+              <option>Tous les niveaux</option>
+            </select>
+            <img src="images/430_1315.svg" alt="expand">
+          </div>
+        </div>
+        <div class="filter-group">
+          <label for="subject">Matière</label>
+          <div class="select-wrapper">
+            <select id="subject">
+              <option>Tous les statuts</option>
+            </select>
+            <img src="images/430_1317.svg" alt="expand">
+          </div>
+        </div>
+        <div class="filter-actions">
+          <button class="btn btn-filter">
+            <img src="images/430_1313.svg" alt="">Filtrer
+          </button>
+          <button class="btn btn-refresh">
+            <img src="images/430_1311.svg" alt="">actualiser
+          </button>
+        </div>
+      </section>
+
+      <section class="book-list-section">
+        <div class="book-list__header">
+          <h2>Listes des Livres (2,847)</h2>
+          <div class="select-wrapper sort-by">
+            <select>
+              <option>Trier par date d’inscription</option>
+            </select>
+            <img src="images/430_2232.svg" alt="expand">
+          </div>
+        </div>
+
+        <div class="book-list__grid book-list__grid--header">
+          <div>Livres</div>
+          <div>Niveau</div>
+          <div>Pages</div>
+          <div>Telechargements</div>
+          <div>Matières</div>
+          <div>Statut</div>
+          <div>Actions</div>
+        </div>
+
+        <div class="book-list__grid book-list__grid--row">
+          <div class="book-info">
+            <!--merged image-->
+            <div class="book-icon">
+              <img src="images/430_2244.svg" alt="">
+              <img src="images/448_1346.svg" alt="book icon">
+            </div>
+            <div>
+              <p class="book-title">Mathematiques 4 ème</p>
+              <p class="book-author">Par Dr. Issa Traoré</p>
+            </div>
+          </div>
+          <div><span class="badge badge-purple">4 ème</span></div>
+          <div>356 pages</div>
+          <div>1000</div>
+          <div class="subject">mathématiques</div>
+          <div><span class="badge badge-active">Actif</span></div>
+          <div class="action-buttons">
+            <button><img src="images/430_2274.svg" alt="View"></button>
+            <button><img src="images/430_2294.svg" alt="Delete"></button>
+          </div>
+        </div>
+
+        <!-- Repeated rows for demonstration -->
+        <div class="book-list__grid book-list__grid--row">
+          <div class="book-info">
+            <!--merged image-->
+            <div class="book-icon">
+              <img src="images/448_1348.svg" alt="">
+              <img src="images/448_1349.svg" alt="book icon">
+            </div>
+            <div>
+              <p class="book-title">Mathematiques 4 ème</p>
+              <p class="book-author">Par Dr. Issa Traoré</p>
+            </div>
+          </div>
+          <div><span class="badge badge-blue-dark">4 ème</span></div>
+          <div>356 pages</div>
+          <div>1000</div>
+          <div class="subject">mathématiques</div>
+          <div><span class="badge badge-active">Actif</span></div>
+          <div class="action-buttons">
+            <button><img src="images/430_2276.svg" alt="View"></button>
+            <button><img src="images/430_2296.svg" alt="Delete"></button>
+          </div>
+        </div>
+
+        <div class="book-list__grid book-list__grid--row">
+          <div class="book-info">
+            <!--merged image-->
+            <div class="book-icon">
+              <img src="images/448_1351.svg" alt="">
+              <img src="images/448_1352.svg" alt="book icon">
+            </div>
+            <div>
+              <p class="book-title">Mathematiques 4 ème</p>
+              <p class="book-author">Par Dr. Issa Traoré</p>
+            </div>
+          </div>
+          <div><span class="badge badge-blue-light">4 ème</span></div>
+          <div>356 pages</div>
+          <div>1000</div>
+          <div class="subject">mathématiques</div>
+          <div><span class="badge badge-active">Actif</span></div>
+          <div class="action-buttons">
+            <button><img src="images/430_2278.svg" alt="View"></button>
+            <button><img src="images/430_2298.svg" alt="Delete"></button>
+          </div>
+        </div>
+
+        <!-- Add more rows as needed -->
+        <div class="book-list__grid book-list__grid--row">
+          <div class="book-info">
+            <!--merged image-->
+            <div class="book-icon">
+              <img src="images/448_1354.svg" alt="">
+              <img src="images/448_1355.svg" alt="book icon">
+            </div>
+            <div>
+              <p class="book-title">Mathematiques 4 ème</p>
+              <p class="book-author">Par Dr. Issa Traoré</p>
+            </div>
+          </div>
+          <div><span class="badge badge-blue-light">4 ème</span></div>
+          <div>356 pages</div>
+          <div>1000</div>
+          <div class="subject">mathématiques</div>
+          <div><span class="badge badge-active">Actif</span></div>
+          <div class="action-buttons">
+            <button><img src="images/430_2280.svg" alt="View"></button>
+            <button><img src="images/430_2300.svg" alt="Delete"></button>
+          </div>
+        </div>
+
+        <div class="book-list__footer">
+          <p>Affichage de 1 à 10 sur 10 000 Livres</p>
+          <nav class="pagination">
+            <button class="pagination__arrow"><img src="images/430_2316.svg" alt="Previous"></button>
+            <button class="pagination__number active">1</button>
+            <button class="pagination__number">2</button>
+            <button class="pagination__number">3</button>
+            <button class="pagination__number">4</button>
+            <button class="pagination__number">5</button>
+            <button class="pagination__arrow"><img src="images/430_2314.svg" alt="Next"></button>
+          </nav>
+        </div>
+      </section>
+    </main>
+  </div>
+</div>
+</body>

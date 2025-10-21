@@ -14,7 +14,7 @@ import {Sidebar} from '../../../shared/components/layout/sidebar/sidebar';
 @Component({
   selector: 'app-dashboard',
   imports: [
-     CommonModule, FaIconComponent, Navebar, Sidebar
+     CommonModule, FaIconComponent
   ],
   templateUrl: './dashboard.html',
 

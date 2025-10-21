@@ -1,67 +1,50 @@
-<div class="login-container">
-  <!-- Section formulaire -->
-  <div class="form-section">
-    <!-- Logo -->
-    <div class="logo-container">
-      <!-- Remplacez "logo.png" par le chemin de votre image logo -->
-      <div class="logo-placeholder" style="text-align: center; margin-bottom: 15px;">
-        <div style="width: 120px; height: 80px; background: linear-gradient(135deg, #A885D8, #333333); border-radius: 10px; margin: 0 auto 10px; display: flex; align-items: center; justify-content: center; color: white; font-size: 24px;">
-          LOGO
-        </div>
-      </div>
-      <div class="logo-text">EDUGO</div>
-    </div>
-
-    <!-- Titres -->
-    <div class="header-text">
-      <h1 class="title">Connexion Administrateur</h1>
-      <p class="subtitle">Accéder à votre tableau de bord</p>
-    </div>
-
-    <!-- Formulaire -->
-    <form class="login-form">
-      <!-- Champ Email -->
-      <div class="form-group">
-        <label class="form-label">Adresse Email</label>
-        <div class="input-container">
-          <input type="email" class="form-input" placeholder="Entré Votre Email" required>
-          <div class="icon email-icon"></div>
-        </div>
-      </div>
-
-      <!-- Champ Mot de passe -->
-      <div class="form-group">
-        <label class="form-label">Mot De Passe</label>
-        <div class="input-container">
-          <input type="password" class="form-input" placeholder="Votre mot de passe" required>
-          <div class="icon password-icon"></div>
-        </div>
-      </div>
-
-      <!-- Options -->
-      <div class="form-options">
-        <label class="remember-me">
-          <div class="checkbox-container">
-            <input type="checkbox" class="checkbox">
-            <span class="checkmark"></span>
+<main class="login-page">
+  <div class="login-card">
+    <div class="login-form-section">
+      <header class="login-header">
+        <!--merged image-->
+        <div class="logo">
+          <div class="logo-graphic">
+            <img src="/images/771_2528.svg" alt="logo element" class="logo-svg-1">
+            <img src="/images/771_2521.svg" alt="logo element" class="logo-svg-3">
           </div>
-          Se souvenir de moi !
-        </label>
-        <a href="#" class="forgot-password">Mot de passe oublié?</a>
-      </div>
+          <span class="logo-text">EDUGO</span>
+        </div>
+        <h1 class="title">Connexion Administrateur</h1>
+        <p class="subtitle">Acceder à votre tableau de bord</p>
+      </header>
 
-      <!-- Bouton de connexion -->
-      <button type="submit" class="login-button">
-        Se connecter
-      </button>
-    </form>
-  </div>
+      <form class="login-form">
+        <div class="form-group">
+          <label for="email">Adresse Email</label>
+          <div class="input-wrapper">
+            <input type="email" id="email" placeholder="Entré Votre Email">
+            <img src="/images/520_1779.svg" alt="Email Icon" class="input-icon">
+          </div>
+        </div>
 
-  <!-- Section image -->
-  <div class="image-section">
-    <div class="image-placeholder">
-      <i>🎓</i>
-      <p>Plateforme Éducative EDUGO</p>
+        <div class="form-group">
+          <label for="password">Mot De Passe</label>
+          <div class="input-wrapper">
+            <input type="password" id="password" placeholder="Votre mot de passe">
+            <img src="/images/I520_1781_191_24.svg" alt="Password Icon" class="input-icon">
+          </div>
+        </div>
+
+        <div class="form-options">
+          <label class="remember-me">
+            <input type="checkbox" class="hidden-checkbox">
+            <img src="/images/520_1788.svg" alt="Checkbox" class="checkbox-icon">
+            <span>Se souvenir de moi !</span>
+          </label>
+          <a href="#" class="forgot-password">Mot de passe oublié?</a>
+        </div>
+
+        <button type="submit" class="submit-btn">Se connecter</button>
+      </form>
+    </div>
+    <div class="login-image-section">
+      <img src="/images/e74008dc4e128b8604394040ede5f9720e41dbb0.png" alt="Students reading books in a library">
     </div>
   </div>
-</div>
+</main>
