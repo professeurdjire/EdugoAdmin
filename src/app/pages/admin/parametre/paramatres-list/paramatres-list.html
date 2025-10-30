@@ -1,1 +1,70 @@
-<p>paramatres-list works!</p>
+<div class="parametres-management-content">
+
+  <h2 class="page-title">Parametres</h2>
+
+  <div class="settings-container">
+
+    <div class="logo-section">
+      <div class="logo-placeholder">EDUGO</div>
+      <p class="tagline">Configurer les parametres generaux de votre plateforme !!!</p>
+    </div>
+
+    <form class="settings-form">
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="nomPlateforme">Nom de la plateforme</label>
+          <input type="text" id="nomPlateforme" value="EDUGO Mali" class="form-control">
+          <small class="form-text-muted">Nom de la plateforme</small>
+        </div>
+
+        <div class="form-group">
+          <label for="uriPlateforme">Uri de la plateforme</label>
+          <input type="text" id="uriPlateforme" value="https://edugo.ml" class="form-control">
+          <small class="form-text-muted">L'adresse principale de votre site</small>
+        </div>
+
+        <div class="form-group">
+          <label for="emailContact">Email de contact</label>
+          <input type="email" id="emailContact" value="professeurhamidoudjire@gmail.com" class="form-control">
+          <small class="form-text-muted">Email principal pour les communications</small>
+        </div>
+
+        <div class="form-group">
+          <label for="telephoneSupport">Telephone de support</label>
+          <input type="tel" id="telephoneSupport" value="+223 74469970" class="form-control">
+          <small class="form-text-muted">Numero de support pour les utilisateurs</small>
+        </div>
+
+        <div class="form-group full-width">
+          <label for="descriptionPlateforme">Description de la plateforme</label>
+          <textarea id="descriptionPlateforme" rows="4" class="form-control">EDUGO - Bibliothèque digitale innovente pour les élèves du Mali, offrant un accès équitable à l'éducation grace à des ressources pedagogiques numériques de qualité.</textarea>
+          <small class="form-text-muted">Cette description sera utiliser pour le referencement</small>
+        </div>
+
+        <div class="form-group">
+          <label for="fuseauHoraire">Fuseau horaire</label>
+          <select id="fuseauHoraire" class="form-control">
+            <option>UTC + 1 (Afrique de l'Ouest)</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="langueDefaut">Langue par défaut</label>
+          <select id="langueDefaut" class="form-control">
+            <option>Français</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn-submit">
+          <span class="icon"></span> Enregistrer
+        </button>
+        <button type="button" class="btn-cancel">
+          <span class="icon">✕</span> Annuler
+        </button>
+      </div>
+    </form>
+
+  </div>
+</div>

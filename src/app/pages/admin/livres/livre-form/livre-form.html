@@ -1,1 +1,220 @@
-<p>livre-form works!</p>
+<div class="form-container">
+  <!-- Header -->
+  <div class="form-header">
+    <button class="back-btn" (click)="onRetour()">
+      <span class="back-icon">←</span>
+      <span>Retour</span>
+    </button>
+    <h1 class="form-title">Ajouter un livre</h1>
+  </div>
+
+  <!-- Description -->
+  <div class="form-description">
+    Remplissez les informations suivantes pour ajouter un livre dans la bibliothèque !
+  </div>
+
+  <!-- Formulaire -->
+  <div class="form-content">
+    <!-- Section 1: Informations de base -->
+    <div class="form-section">
+      <div class="section-title">
+        <div class="title-icon">ℹ️</div>
+        <h2>Information de bases</h2>
+      </div>
+
+      <div class="form-grid">
+        <!-- Ligne 1 -->
+        <div class="form-group">
+          <label class="form-label">Titre du Livre *</label>
+          <div class="input-container">
+            <input type="text" placeholder="Ex: Mathématiques 4 ème" class="form-input">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Auteur *</label>
+          <div class="input-container">
+            <input type="text" placeholder="Ex: Dr. Hamidou DJIRE" class="form-input">
+          </div>
+        </div>
+
+        <!-- Ligne 2 -->
+        <div class="form-group">
+          <label class="form-label">ISBN</label>
+          <div class="input-container">
+            <input type="text" placeholder="Ex: 978-2-1234-5680-3" class="form-input">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Editeur</label>
+          <div class="input-container">
+            <input type="text" placeholder="Ex: Edition EDUGO" class="form-input">
+          </div>
+        </div>
+
+        <!-- Description -->
+        <div class="form-group full-width">
+          <label class="form-label">Description</label>
+          <div class="textarea-container">
+            <textarea placeholder="Description detaillée du livre..." class="form-textarea"></textarea>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 2: Classification -->
+    <div class="form-section">
+      <div class="section-title">
+        <div class="title-icon">📚</div>
+        <h2>Classification</h2>
+      </div>
+
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label">Matière *</label>
+          <div class="select-container">
+            <select class="form-select">
+              <option value="">Selectionner une matière</option>
+              <option value="mathematiques">Mathématiques</option>
+              <option value="physique">Physique</option>
+              <option value="chimie">Chimie</option>
+            </select>
+            <span class="select-arrow">▼</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Niveau scolaire *</label>
+          <div class="select-container">
+            <select class="form-select">
+              <option value="">Selectionner un niveau scolaire</option>
+              <option value="4eme">4ème</option>
+              <option value="3eme">3ème</option>
+              <option value="2nde">2nde</option>
+            </select>
+            <span class="select-arrow">▼</span>
+          </div>
+        </div>
+
+        <div class="form-group full-width">
+          <label class="form-label">Langues</label>
+          <div class="select-container">
+            <select class="form-select">
+              <option value="francais">Francais</option>
+              <option value="anglais">Anglais</option>
+              <option value="espagnol">Espagnol</option>
+            </select>
+            <span class="select-arrow">▼</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 3: Fichiers du livre -->
+    <div class="form-section">
+      <div class="section-title">
+        <div class="title-icon">📁</div>
+        <h2>Fichiers du livre</h2>
+      </div>
+
+      <div class="form-grid">
+        <div class="form-group full-width">
+          <label class="form-label">Fichier principal (PDF/EPUB) *</label>
+          <div class="file-upload-area" (click)="fileInput.click()">
+            <input type="file" #fileInput class="file-input" accept=".pdf,.epub">
+            <div class="upload-content">
+              <div class="upload-icon">📥</div>
+              <div class="upload-text">
+                <div class="upload-main">Glissez deposez votre fichier ici ou cliquez pour parcourir</div>
+                <div class="upload-sub">Formats acceptés: PDF, EPUB * taille max: 50 MB</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 4: Image de couverture -->
+    <div class="form-section">
+      <div class="form-grid">
+        <div class="form-group full-width">
+          <label class="form-label">Image de couverture</label>
+          <div class="image-upload-area" (click)="imageInput.click()">
+            <input type="file" #imageInput class="file-input" accept=".jpg,.jpeg,.png,.webp">
+            <div class="upload-content">
+              <div class="upload-icon">🖼️</div>
+              <div class="upload-text">
+                <div class="upload-main">Glissez deposez l'image de couverture</div>
+                <div class="upload-sub">Formats: JPG, PNG, WebP . taille max: 10 MB</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 5: Options Avancées -->
+    <div class="form-section">
+      <div class="section-title">
+        <div class="title-icon">⚙️</div>
+        <h2>Options Avancées</h2>
+      </div>
+
+      <div class="form-grid">
+        <!-- Checkboxes -->
+        <div class="form-group full-width">
+          <div class="checkboxes-group">
+            <label class="checkbox-item">
+              <input type="checkbox" class="checkbox-input">
+              <span class="checkbox-custom"></span>
+              <span class="checkbox-label">Activez la lecture automatique</span>
+            </label>
+            <label class="checkbox-item">
+              <input type="checkbox" class="checkbox-input">
+              <span class="checkbox-custom"></span>
+              <span class="checkbox-label">Livre interactif avec exercices intégrés</span>
+            </label>
+            <label class="checkbox-item">
+              <input type="checkbox" class="checkbox-input">
+              <span class="checkbox-custom"></span>
+              <span class="checkbox-label">Autoriser le telechargement hors ligne</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Dernière ligne -->
+        <div class="form-group">
+          <label class="form-label">Mots-clés</label>
+          <div class="input-container">
+            <input type="text" placeholder="Francais" class="form-input">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Année de publication</label>
+          <div class="select-container">
+            <select class="form-select">
+              <option value="moyen">Moyen</option>
+              <option value="2024">2024</option>
+              <option value="2023">2023</option>
+            </select>
+            <span class="select-arrow">▼</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="form-actions">
+      <button class="btn btn-secondary" (click)="onAnnuler()">
+        <span class="btn-icon">🗑️</span>
+        <span>Annuler</span>
+      </button>
+      <button class="btn btn-primary" (click)="onSubmit()">
+        <span class="btn-icon">➕</span>
+        <span>Nouvel utilisateur</span>
+      </button>
+    </div>
+  </div>
+</div>

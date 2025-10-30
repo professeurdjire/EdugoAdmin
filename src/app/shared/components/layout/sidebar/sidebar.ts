@@ -17,3 +17,5 @@ export class Sidebar {
     this.isCollapsed = !this.isCollapsed;
   }
 }
+
+

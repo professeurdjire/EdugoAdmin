@@ -1,1 +1,144 @@
-<p>defi-details works!</p>
+<div class="defi-list-container">
+  <!-- En-tête -->
+  <div class="header">
+    <div class="retour-btn">
+      <span class="arrow-back">←</span>
+      <span>Retour</span>
+    </div>
+    <div class="page-title">Gesiton des Defis</div>
+  </div>
+
+  <!-- Contenu principal -->
+  <div class="main-content">
+    <!-- Section de recherche et filtres -->
+    <div class="search-filters">
+      <div class="search-section">
+        <div class="filter-title">Recherche</div>
+        <div class="filter-input">
+          <span>Nom, email, telephone...</span>
+        </div>
+      </div>
+
+      <div class="type-section">
+        <div class="filter-title">Types Défis</div>
+        <div class="filter-input">
+          <span>Tous les niveaux</span>
+          <span class="expand-icon">▼</span>
+        </div>
+      </div>
+
+      <div class="matiere-section">
+        <div class="filter-title">Matière</div>
+        <div class="filter-input">
+          <span>Tous les statuts</span>
+          <span class="expand-icon">▼</span>
+        </div>
+      </div>
+
+      <div class="filter-actions">
+        <div class="filter-btn">
+          <span class="filter-icon">⚡</span>
+          <span>Filtrer</span>
+        </div>
+        <div class="refresh-btn">
+          <span class="refresh-icon">↻</span>
+          <span>actualiser</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section titre et tri -->
+    <div class="title-section">
+      <div class="list-title">Listes des Défis</div>
+      <div class="sort-section">
+        <div class="sort-input">
+          <span>Trier par date d'inscription</span>
+          <span class="expand-icon">▼</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- En-tête du tableau -->
+    <div class="table-header">
+      <div class="header-item utilisateurs">Utilisateurs</div>
+      <div class="header-item niveau">Niveau</div>
+      <div class="header-item matieres">Matières</div>
+      <div class="header-item date">Date</div>
+      <div class="header-item difficultes">Difficultés</div>
+      <div class="header-item statut">Statut</div>
+      <div class="header-item actions">Actions</div>
+    </div>
+
+    <!-- Liste des défis -->
+    <div class="defis-list">
+      <!-- Ligne 1 -->
+      <div class="defi-item">
+        <div class="user-info">
+          <div class="user-avatar"></div>
+          <div class="user-details">
+            <div class="defi-name">Défis Mathematiques Express</div>
+            <div class="defi-description">Devenez incontournable en math!</div>
+          </div>
+        </div>
+        <div class="niveau-cell">
+          <div class="niveau-badge">4 ème</div>
+        </div>
+        <div class="matiere-cell">mathématiques</div>
+        <div class="date-cell">10/10/2025</div>
+        <div class="difficulte-cell">Moyenne</div>
+        <div class="statut-cell">
+          <div class="statut-badge">Actif</div>
+        </div>
+        <div class="actions-cell">
+          <div class="action-btn view-btn">👁️</div>
+          <div class="action-btn edit-btn">✏️</div>
+          <div class="action-btn delete-btn">🗑️</div>
+        </div>
+      </div>
+
+      <!-- Répéter pour les autres lignes (2 à 12) -->
+      <div class="defi-item" *ngFor="let item of [2,3,4,5,6,7,8,9,10,11,12]">
+        <div class="user-info">
+          <div class="user-avatar"></div>
+          <div class="user-details">
+            <div class="defi-name">Défis Mathematiques Express</div>
+            <div class="defi-description">Devenez incontournable en math!</div>
+          </div>
+        </div>
+        <div class="niveau-cell">
+          <div class="niveau-badge">4 ème</div>
+        </div>
+        <div class="matiere-cell">mathématiques</div>
+        <div class="date-cell">10/10/2025</div>
+        <div class="difficulte-cell">Moyenne</div>
+        <div class="statut-cell">
+          <div class="statut-badge">Actif</div>
+        </div>
+        <div class="actions-cell">
+          <div class="action-btn view-btn">👁️</div>
+          <div class="action-btn edit-btn">✏️</div>
+          <div class="action-btn delete-btn">🗑️</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Séparateurs -->
+    <div class="separators">
+      <div class="separator" *ngFor="let i of [1,2,3,4,5,6,7,8,9,10,11]"></div>
+    </div>
+
+    <!-- Pagination -->
+    <div class="pagination-section">
+      <div class="pagination-info">Affichage de 1 à 10 sur 10 000 Quiz</div>
+      <div class="pagination-controls">
+        <div class="page-arrow prev">‹</div>
+        <div class="page-number active">1</div>
+        <div class="page-number">2</div>
+        <div class="page-number">3</div>
+        <div class="page-number">4</div>
+        <div class="page-number">5</div>
+        <div class="page-arrow next">›</div>
+      </div>
+    </div>
+  </div>
+</div>

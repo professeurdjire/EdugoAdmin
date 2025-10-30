@@ -1,0 +1,230 @@
+<div class="content-management">
+  <div class="page-header">
+    <h1 class="page-title">Gestion des Contenus</h1>
+    <button class="btn btn-primary" (click)="openAddModal()">
+      <span>+ Ajouter</span>
+    </button>
+  </div>
+
+  <div class="content-tabs">
+    <div
+      class="tab"
+      [class.active]="currentTab === 'subjects'"
+      (click)="switchTab('subjects')">
+      Matières
+    </div>
+    <div
+      class="tab"
+      [class.active]="currentTab === 'levels'"
+      (click)="switchTab('levels')">
+      Niveaux
+    </div>
+    <div
+      class="tab"
+      [class.active]="currentTab === 'classes'"
+      (click)="switchTab('classes')">
+      Classes
+    </div>
+  </div>
+
+  <!-- Section Matières -->
+  <div class="tab-content" [class.active]="currentTab === 'subjects'">
+    <div class="content-section">
+      <div class="section-header">
+        <h2 class="section-title">Liste des Matières</h2>
+        <div class="search-bar">
+          <input type="text" class="search-input" placeholder="Rechercher une matière...">
+          <button class="btn btn-secondary">Filtrer</button>
+        </div>
+      </div>
+
+      <div class="content-grid">
+        <div *ngIf="subjects.length === 0" class="empty-state">
+          <div class="empty-state-icon">📚</div>
+          <div class="empty-state-text">Aucune matière n'a été ajoutée</div>
+          <button class="btn btn-primary" (click)="openAddModal()">Ajouter une matière</button>
+        </div>
+
+        <div class="content-card" *ngFor="let subject of subjects">
+          <div class="card-header">
+            <div>
+              <h3 class="card-title">{{ subject.name }}</h3>
+              <p class="card-subtitle">{{ subject.description }}</p>
+            </div>
+            <div class="card-actions">
+              <div class="action-btn edit-btn" (click)="openEditModal(subject.id)">✏️</div>
+              <div class="action-btn delete-btn" (click)="deleteItem(subject.id)">🗑️</div>
+            </div>
+          </div>
+          <div class="card-stats">
+            <div class="stat">
+              <span class="stat-value">{{ subject.quizCount }}</span>
+              <span class="stat-label">Quiz</span>
+            </div>
+            <div class="stat">
+              <span class="stat-value">{{ subject.studentsCount }}</span>
+              <span class="stat-label">Élèves</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Section Niveaux -->
+  <div class="tab-content" [class.active]="currentTab === 'levels'">
+    <div class="content-section">
+      <div class="section-header">
+        <h2 class="section-title">Liste des Niveaux</h2>
+        <div class="search-bar">
+          <input type="text" class="search-input" placeholder="Rechercher un niveau...">
+          <button class="btn btn-secondary">Filtrer</button>
+        </div>
+      </div>
+
+      <div class="content-grid">
+        <div *ngIf="levels.length === 0" class="empty-state">
+          <div class="empty-state-icon">🎓</div>
+          <div class="empty-state-text">Aucun niveau n'a été ajouté</div>
+          <button class="btn btn-primary" (click)="openAddModal()">Ajouter un niveau</button>
+        </div>
+
+        <div class="content-card" *ngFor="let level of levels">
+          <div class="card-header">
+            <div>
+              <h3 class="card-title">{{ level.name }}</h3>
+              <p class="card-subtitle">Cycle {{ level.cycle }}</p>
+            </div>
+            <div class="card-actions">
+              <div class="action-btn edit-btn" (click)="openEditModal(level.id)">✏️</div>
+              <div class="action-btn delete-btn" (click)="deleteItem(level.id)">🗑️</div>
+            </div>
+          </div>
+          <div class="card-stats">
+            <div class="stat">
+              <span class="stat-value">{{ level.classesCount }}</span>
+              <span class="stat-label">Classes</span>
+            </div>
+            <div class="stat">
+              <span class="stat-value">{{ level.studentsCount }}</span>
+              <span class="stat-label">Élèves</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Section Classes -->
+  <div class="tab-content" [class.active]="currentTab === 'classes'">
+    <div class="content-section">
+      <div class="section-header">
+        <h2 class="section-title">Liste des Classes</h2>
+        <div class="search-bar">
+          <input type="text" class="search-input" placeholder="Rechercher une classe...">
+          <button class="btn btn-secondary">Filtrer</button>
+        </div>
+      </div>
+
+      <div class="content-grid">
+        <div *ngIf="classes.length === 0" class="empty-state">
+          <div class="empty-state-icon">👨‍🏫</div>
+          <div class="empty-state-text">Aucune classe n'a été ajoutée</div>
+          <button class="btn btn-primary" (click)="openAddModal()">Ajouter une classe</button>
+        </div>
+
+        <div class="content-card" *ngFor="let classItem of classes">
+          <div class="card-header">
+            <div>
+              <h3 class="card-title">{{ classItem.name }}</h3>
+              <p class="card-subtitle">{{ classItem.teacher }} - {{ classItem.level }}</p>
+            </div>
+            <div class="card-actions">
+              <div class="action-btn edit-btn" (click)="openEditModal(classItem.id)">✏️</div>
+              <div class="action-btn delete-btn" (click)="deleteItem(classItem.id)">🗑️</div>
+            </div>
+          </div>
+          <div class="card-stats">
+            <div class="stat">
+              <span class="stat-value">{{ classItem.studentsCount }}</span>
+              <span class="stat-label">Élèves</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal d'ajout/modification -->
+<div class="modal" [class.active]="isModalOpen">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2 class="modal-title">{{ modalTitle }}</h2>
+      <span class="close-modal" (click)="closeModal()">&times;</span>
+    </div>
+
+    <form (ngSubmit)="saveContent()" #contentForm="ngForm">
+      <div class="form-group">
+        <label class="form-label" for="contentName">Nom</label>
+        <input
+          type="text"
+          class="form-input"
+          id="contentName"
+          [(ngModel)]="formData.name"
+          name="name"
+          required>
+      </div>
+
+      <div class="form-group" *ngIf="showSubjectFields">
+        <label class="form-label" for="subjectDescription">Description</label>
+        <textarea
+          class="form-input"
+          id="subjectDescription"
+          rows="3"
+          [(ngModel)]="formData.description"
+          name="description"></textarea>
+      </div>
+
+      <div class="form-group" *ngIf="showLevelFields">
+        <label class="form-label" for="levelCycle">Cycle</label>
+        <select
+          class="form-select"
+          id="levelCycle"
+          [(ngModel)]="formData.cycle"
+          name="cycle">
+          <option value="primaire">Primaire</option>
+          <option value="college">Collège</option>
+          <option value="lycee">Lycée</option>
+        </select>
+      </div>
+
+      <div class="form-group" *ngIf="showClassFields">
+        <label class="form-label" for="classLevel">Niveau</label>
+        <select
+          class="form-select"
+          id="classLevel"
+          [(ngModel)]="formData.level"
+          name="level">
+          <option value="6eme">6ème</option>
+          <option value="5eme">5ème</option>
+          <option value="4eme">4ème</option>
+          <option value="3eme">3ème</option>
+        </select>
+
+        <label class="form-label" for="classTeacher">Professeur principal</label>
+        <input
+          type="text"
+          class="form-input"
+          id="classTeacher"
+          [(ngModel)]="formData.teacher"
+          name="teacher">
+      </div>
+
+      <div class="form-actions">
+        <button type="button" class="btn btn-secondary" (click)="closeModal()">Annuler</button>
+        <button type="submit" class="btn btn-primary">Enregistrer</button>
+      </div>
+    </form>
+  </div>
+</div>

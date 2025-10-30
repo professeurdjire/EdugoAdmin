@@ -3,10 +3,11 @@ import {faBook, faBookOpen, faDownload, faEye} from '@fortawesome/free-solid-svg
 import {CommonModule} from '@angular/common';
 import {FormsModule} from '@angular/forms';
 import {FaIconComponent} from '@fortawesome/angular-fontawesome';
+import {RouterLink} from '@angular/router';
 
 @Component({
   selector: 'app-livre-list',
-  imports: [CommonModule, FormsModule, FaIconComponent],
+  imports: [CommonModule, FormsModule, FaIconComponent, RouterLink],
   standalone: true,
   templateUrl: './livre-list.html',
   styleUrl: './livre-list.css'

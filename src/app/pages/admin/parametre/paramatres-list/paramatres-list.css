@@ -1,0 +1,151 @@
+/* --- Couleurs et Styles de base --- */
+.parametres-management-content {
+  margin-left: 210px; /* espace sidebar */
+  margin-top: 70px;   /* espace navbar */
+  padding: 1rem;
+  min-height: calc(100vh - 60px);
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  background-color: var(--main-bg);
+  overflow-x: hidden;
+}
+
+.page-title {
+  font-size: 24px;
+  font-weight: 600;
+  color: #444;
+  margin-bottom: 20px;
+}
+
+.settings-container {
+  background-color: #ffffff;
+  padding: 40px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+}
+
+/* --- Section Logo et Slogan --- */
+.logo-section {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.logo-placeholder {
+  font-size: 40px;
+  font-weight: 700;
+  color: #9c27b0; /* Violet EDUGO */
+  letter-spacing: 2px;
+  margin-bottom: 10px;
+  /* Simule l'effet du logo */
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.tagline {
+  font-size: 16px;
+  color: #666;
+  font-weight: 500;
+  margin: 0;
+}
+
+/* --- Formulaire --- */
+.settings-form {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 30px 40px;
+  margin-bottom: 30px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group.full-width {
+  grid-column: 1 / -1; /* S'étend sur les deux colonnes */
+}
+
+.form-group label {
+  font-size: 15px;
+  font-weight: 600;
+  color: #444;
+  margin-bottom: 5px;
+}
+
+.form-control {
+  padding: 10px 12px;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  font-size: 14px;
+  color: #444;
+  background-color: #ffffff;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05);
+  transition: border-color 0.2s;
+}
+
+.form-control:focus {
+  border-color: #9c27b0; /* Violet au focus */
+  outline: none;
+}
+
+textarea.form-control {
+  resize: vertical;
+  min-height: 100px;
+  line-height: 1.5;
+}
+
+.form-text-muted {
+  font-size: 11px;
+  color: #999;
+  margin-top: 5px;
+}
+
+/* --- Actions de soumission --- */
+.form-actions {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin-top: 40px;
+}
+
+.btn-submit, .btn-cancel {
+  padding: 12px 30px;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s, box-shadow 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 200px;
+}
+
+.btn-submit {
+  background-color: #ac8fe5; /* Violet clair / Lilas */
+  color: white;
+  box-shadow: 0 4px 8px rgba(156, 39, 176, 0.2);
+}
+
+.btn-submit:hover {
+  background-color: #9c27b0; /* Violet plus foncé au survol */
+}
+
+.btn-cancel {
+  background-color: #e0e0e0; /* Gris clair */
+  color: #666;
+}
+
+.btn-cancel:hover {
+  background-color: #ccc;
+}
+
+.btn-cancel .icon {
+  margin-right: 8px;
+}

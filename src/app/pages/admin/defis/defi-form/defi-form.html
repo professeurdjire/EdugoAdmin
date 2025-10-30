@@ -1,1 +1,168 @@
-<p>defi-form works!</p>
+<div class="form-page-container">
+  <a routerLink="/admin/defis" class="back-button">
+    <span class="back-icon">←</span>
+    <span>Retour</span>
+  </a>
+
+  <header class="form-header">
+    <h1>Ajouter un défis</h1>
+    <p class="subtitle">Remplissez les informations suivantes pour ajouter un défis dans votre plateforme!</p>
+  </header>
+
+  <form class="challenge-form" [formGroup]="defiForm" (ngSubmit)="onSubmit()">
+    <!-- Section Informations de base -->
+    <fieldset id="basic-info" class="form-section">
+      <legend class="section-title">
+        <span class="legend-icon">ℹ️</span>
+        <span>Information de bases</span>
+      </legend>
+      <hr class="divider">
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="class-concerned">Classe concerné <span class="required-star">*</span></label>
+          <div class="input-wrapper">
+            <input type="text" id="class-concerned"
+                   formControlName="classeConcernee"
+                   placeholder="Ex: Mathématiques 4 ème"
+                   class="form-input">
+            <span class="input-icon dropdown-arrow-90">▼</span>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="challenge-title">Titre du défis <span class="required-star">*</span></label>
+          <input type="text" id="challenge-title"
+                 formControlName="titre"
+                 placeholder="Donnez un titre"
+                 class="form-input">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="description">Description</label>
+        <textarea id="description"
+                  formControlName="description"
+                  placeholder="Description detaillée du défis..."
+                  class="form-textarea"></textarea>
+      </div>
+
+      <div class="form-group">
+        <label for="challenge-type">Type de défis</label>
+        <div class="input-wrapper">
+          <input type="text" id="challenge-type"
+                 formControlName="typeDefis"
+                 placeholder="Sélectionnez le type de défi"
+                 class="form-input">
+          <span class="input-icon dropdown-arrow-90">▼</span>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="date-added">Date ajout <span class="required-star">*</span></label>
+        <div class="input-wrapper">
+          <input type="date" id="date-added"
+                 formControlName="dateAjout"
+                 class="form-input">
+          <div class="input-icon-group">
+            <span class="input-icon">📅</span>
+            <span class="input-icon dropdown-arrow-90">▼</span>
+          </div>
+        </div>
+      </div>
+    </fieldset>
+
+    <!-- Section Questions du défi -->
+    <fieldset id="questions" class="form-section" formArrayName="questions">
+      <div class="section-header">
+        <legend class="section-title">
+          <span class="legend-icon">❓</span>
+          <span>Questions du défis</span>
+        </legend>
+        <button type="button" class="btn-add-question-inline" (click)="ajouterQuestion()">
+          <span class="btn-icon">➕</span>
+          <span>Ajouter une question</span>
+        </button>
+      </div>
+      <hr class="divider">
+
+      <!-- Question 1 -->
+      <div class="question-group" *ngFor="let question of questions.controls; let i = index" [formGroupName]="i">
+        <div class="question-header" *ngIf="i > 0">
+          <h3>Question {{ i + 1 }}</h3>
+          <button type="button" class="btn-remove-question" (click)="supprimerQuestion(i)">
+            <span class="btn-icon">🗑️</span>
+            <span>Supprimer</span>
+          </button>
+        </div>
+
+        <div class="form-group half-width">
+          <label [for]="'question-type-' + i">Type de questions <span class="required-star">*</span></label>
+          <div class="input-wrapper">
+            <select [id]="'question-type-' + i"
+                    formControlName="typeQuestion"
+                    class="form-input">
+              <option value="">Ex: Question a multiples choix</option>
+              <option value="choix_multiple">Question à choix multiples</option>
+              <option value="vrai_faux">Vrai/Faux</option>
+              <option value="reponse_courte">Réponse courte</option>
+            </select>
+            <span class="input-icon dropdown-arrow-neg-90">▼</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label [for]="'question-' + i">Question {{ i + 1 }} <span class="required-star">*</span></label>
+          <input type="text" [id]="'question-' + i"
+                 formControlName="question"
+                 placeholder="Saisissez la question..."
+                 class="form-input">
+        </div>
+
+        <!-- Réponses -->
+        <div class="reponses-group">
+          <div class="form-group" *ngFor="let lettre of ['A', 'B', 'C', 'D']">
+            <label [for]="'answer-' + lettre.toLowerCase() + '-' + i" class="sr-only">Reponse {{ lettre }}</label>
+            <div class="input-wrapper">
+              <input type="text" [id]="'answer-' + lettre.toLowerCase() + '-' + i"
+                     [formControlName]="'reponse' + lettre"
+                     placeholder="Reponse {{ lettre }}"
+                     class="form-input">
+              <span class="input-icon dropdown-arrow-neg-90">▼</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label [for]="'correct-answer-' + i">Bonne reponse <span class="required-star">*</span></label>
+          <select [id]="'correct-answer-' + i"
+                  formControlName="bonneReponse"
+                  class="form-input">
+            <option value="">La bonne reponse!</option>
+            <option value="A">Réponse A</option>
+            <option value="B">Réponse B</option>
+            <option value="C">Réponse C</option>
+            <option value="D">Réponse D</option>
+          </select>
+        </div>
+
+        <hr class="divider" *ngIf="i < questions.controls.length - 1">
+      </div>
+    </fieldset>
+
+    <!-- Actions -->
+    <div class="form-actions">
+      <button type="button" class="btn btn-cancel" (click)="onAnnuler()">
+        <span class="btn-icon">🗑️</span>
+        <span>Annuler</span>
+      </button>
+      <button type="button" class="btn btn-add-question" (click)="ajouterQuestion()">
+        <span class="btn-icon">➕</span>
+        <span>Ajouter une question</span>
+      </button>
+      <button type="submit" class="btn btn-save" [disabled]="defiForm.invalid">
+        <span class="btn-icon">💾</span>
+        <span>Enregistrer le défis</span>
+      </button>
+    </div>
+  </form>
+</div>

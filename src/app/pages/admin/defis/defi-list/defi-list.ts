@@ -1,10 +1,12 @@
 import { Component } from '@angular/core';
+import {CommonModule} from '@angular/common';
 
 @Component({
   selector: 'app-defi-list',
-  imports: [],
+  standalone: true,
+  imports: [CommonModule],
   templateUrl: './defi-list.html',
-  styleUrl: './defi-list.css'
+  styleUrls: ['./defi-list.css'],
 })
 export class DefiList {
 

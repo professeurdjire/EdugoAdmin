@@ -1,1 +1,149 @@
-<p>challenge-form works!</p>
+<body>
+<section id="challenge-form">
+  <div class="container">
+    <header class="form-header">
+      <a href="#" class="back-button">
+        <img src="images/832_8591.svg" alt="Back icon">
+        <span>Retour</span>
+      </a>
+      <h1 class="main-title">Ajouter un challenge</h1>
+      <p class="subtitle">Remplissez les informations suivantes pour ajouter un challenge dans votre plateforme!</p>
+    </header>
+
+    <form class="challenge-form-body">
+      <fieldset class="form-section">
+        <legend class="section-title">
+          <img src="images/816_4202.svg" alt="Info icon">
+          <h2>Information de bases</h2>
+        </legend>
+        <hr class="divider">
+
+        <div class="form-group full-width">
+          <label for="type-challenge">Type Challenge <span class="required">*</span></label>
+          <div class="select-wrapper">
+            <span class="placeholder-text">Choisissez un type de challenge...</span>
+            <img src="images/829_6592.svg" alt="Dropdown arrow" class="select-arrow">
+          </div>
+        </div>
+
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="matiere">Matière concernée <span class="required">*</span></label>
+            <div class="select-wrapper">
+              <span class="placeholder-text">Ex: Mathématiques 4 ème</span>
+              <img src="images/816_4265.svg" alt="Dropdown arrow" class="select-arrow">
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="titre-challenge">Titre du challenge <span class="required">*</span></label>
+            <input type="text" id="titre-challenge" placeholder="Donnez un titre">
+          </div>
+        </div>
+
+        <div class="form-group full-width">
+          <label for="description">Description</label>
+          <textarea id="description" placeholder="Description detaillée du défis..." rows="2"></textarea>
+        </div>
+
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="date-debut">Date début <span class="required">*</span></label>
+            <div class="input-with-icon">
+              <input type="text" id="date-debut" placeholder="JJ/MM/AA">
+              <img src="images/816_4260.svg" alt="Calendar icon" class="input-icon">
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="date-fin">Date fin <span class="required">*</span></label>
+            <div class="input-with-icon">
+              <input type="text" id="date-fin" placeholder="JJ/MM/AA">
+              <img src="images/816_4309.svg" alt="Calendar icon" class="input-icon">
+            </div>
+          </div>
+        </div>
+
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="recompenses">Systeme de recompenses <span class="required">*</span></label>
+            <div class="select-wrapper">
+              <span class="placeholder-text">Selectionner le badge</span>
+              <img src="images/816_4332.svg" alt="Dropdown arrow" class="select-arrow">
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="personnes">Combien de personnes <span class="required">*</span></label>
+            <div class="select-wrapper">
+              <span class="placeholder-text">Le premier ou les trois premiers</span>
+              <img src="images/816_4377.svg" alt="Dropdown arrow" class="select-arrow">
+            </div>
+          </div>
+        </div>
+      </fieldset>
+
+      <fieldset class="form-section">
+        <legend class="section-title with-button">
+          <div class="title-content">
+            <img src="images/816_4206.svg" alt="Questions icon">
+            <h2>Questions de l”exercice</h2>
+          </div>
+          <!--merged image-->
+          <button type="button" class="btn-inline-add">
+            <img src="images/816_4280.svg" alt="Add icon">
+            <span>Ajouter une question</span>
+          </button>
+        </legend>
+        <hr class="divider">
+
+        <div class="form-group">
+          <label for="type-questions">Type de questions <span class="required">*</span></label>
+          <div class="select-wrapper">
+            <span class="placeholder-text">Ex: Question a multiples choix</span>
+            <img src="images/816_4223.svg" alt="Dropdown arrow" class="select-arrow rotated">
+          </div>
+        </div>
+
+        <div class="form-group full-width">
+          <label for="question-1">Question 1 <span class="required">*</span></label>
+          <input type="text" id="question-1" placeholder="Saisissez la question...">
+        </div>
+
+        <div class="form-group full-width">
+          <input type="text" placeholder="Reponse A">
+        </div>
+        <div class="form-group full-width">
+          <input type="text" placeholder="Reponse B">
+        </div>
+        <div class="form-group full-width">
+          <input type="text" placeholder="Reponse C">
+        </div>
+        <div class="form-group full-width">
+          <input type="text" placeholder="Reponse D">
+        </div>
+
+        <div class="form-group full-width">
+          <label for="bonne-reponse">Bonne reponse <span class="required">*</span></label>
+          <input type="text" id="bonne-reponse" placeholder="La bonne reponse!">
+        </div>
+      </fieldset>
+
+      <div class="form-actions">
+        <!--merged image-->
+        <button type="button" class="btn btn-cancel">
+          <img src="images/816_4275.svg" alt="Cancel icon">
+          <span>Annuler</span>
+        </button>
+        <!--merged image-->
+        <button type="button" class="btn btn-add-question">
+          <img src="images/816_4229.svg" alt="Add icon">
+          <span>Ajouter une question</span>
+        </button>
+        <!--merged image-->
+        <button type="submit" class="btn btn-submit">
+          <img src="images/816_4271.svg" alt="Save icon">
+          <span>Enregistrer le challenge</span>
+        </button>
+      </div>
+    </form>
+  </div>
+</section>
+</body>

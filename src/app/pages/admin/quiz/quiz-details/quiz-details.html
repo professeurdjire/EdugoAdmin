@@ -1,1 +1,104 @@
-<p>quiz-details works!</p>
+<div class="quiz-management-container">
+
+  <div class="header-section">
+    <button class="btn-retour">
+      <span class="icon">⮜</span> Retour
+    </button>
+  </div>
+
+  <div class="filters-actions-bar">
+    <div class="filters-group">
+      <div class="filter-dropdown">
+        <label>Recherche</label>
+        <input type="text" placeholder="Nom, email, telephone..." class="form-control">
+      </div>
+      <div class="filter-dropdown">
+        <label>Niveau Scolaire</label>
+        <select class="form-control">
+          <option>Tous les niveaux</option>
+        </select>
+      </div>
+      <div class="filter-dropdown">
+        <label>Statut</label>
+        <select class="form-control">
+          <option>Tous les statuts</option>
+        </select>
+      </div>
+    </div>
+    <div class="actions-group">
+      <div class="action-buttons-wrapper">
+        <button class="btn-action-icon"><span class="icon">⮟</span></button>
+        <button class="btn-action-icon"><span class="icon">⟳</span></button>
+      </div>
+      <a href="#" class="view-all-link">Tout voir</a>
+    </div>
+  </div>
+
+  <div class="quiz-list-section">
+    <h3 class="list-title">{{ pageTitle }}</h3>
+
+    <table class="quiz-table">
+      <thead>
+      <tr>
+        <th>Utilisateurs</th>
+        <th>Niveau</th>
+        <th>Matières</th>
+        <th>Tentatives</th>
+        <th>Points</th>
+        <th>Statut</th>
+        <th>Actions</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr *ngFor="let quiz of quizList">
+        <td class="user-cell">
+          <div class="quiz-details">
+            <span class="quiz-icon">📝</span>
+            <div class="text-details">
+              <span class="quiz-title">{{ quiz.titre }}</span>
+              <span class="quiz-user">{{ quiz.utilisateur }}</span>
+            </div>
+          </div>
+        </td>
+        <td>
+          <span class="badge badge-niveau">{{ quiz.niveau }}</span>
+        </td>
+        <td>{{ quiz.matieres }}</td>
+        <td>{{ quiz.tentatives }}</td>
+        <td class="points-cell">{{ quiz.points }}</td>
+        <td>
+          <span class="badge badge-actif">{{ quiz.statut }}</span>
+        </td>
+        <td class="actions-cell">
+          <button class="btn-action-icon btn-view">
+            <span class="icon">⮞</span>
+          </button>
+          <button class="btn-action-icon btn-edit">
+            <span class="icon">✏️</span>
+          </button>
+          <button class="btn-action-icon btn-delete">
+            <span class="icon">🗑️</span>
+          </button>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+
+    <div class="table-footer">
+      <span class="footer-info">Affichage de 1 à 10 sur 10 000 Utilisateurs</span>
+      <div class="pagination">
+        <button class="pagination-btn arrow-btn" disabled>
+          <span class="icon">❮</span>
+        </button>
+        <span class="page-number active">2</span>
+        <span class="page-number">3</span>
+        <span class="page-number">4</span>
+        <span class="page-number">5</span>
+        <span class="page-number dots">...</span>
+        <button class="pagination-btn arrow-btn">
+          <span class="icon">❯</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

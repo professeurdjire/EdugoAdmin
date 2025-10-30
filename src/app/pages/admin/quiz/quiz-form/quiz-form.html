@@ -1,1 +1,137 @@
-<p>quiz-form works!</p>
+
+<div class="form-main-container">
+  <!-- Votre formulaire ici -->
+  <div class="ajout-quiz-container">
+    <!-- Header -->
+    <div class="header">
+      <div class="retour-btn">
+        <span class="arrow-back">←</span>
+        <span>Retour</span>
+      </div>
+      <div class="page-title">Ajouter un livre</div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+      <div class="description">
+        Remplissez les informations suivantes pour ajouter un livre dans la bibliothèque !
+      </div>
+
+      <!-- Section 1: Informations de base -->
+      <div class="section">
+        <div class="section-header">
+          <div class="section-icon">ℹ️</div>
+          <h3>Information de bases</h3>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Livre associé *</label>
+            <div class="input-field">
+              <span class="placeholder">Ex: Mathématiques 4 ème</span>
+              <span class="dropdown-icon">▼</span>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Titre du quiz *</label>
+            <div class="input-field">
+              <span class="placeholder">Donnez un titre</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group full-width">
+          <label class="form-label">Description</label>
+          <div class="textarea-field">
+            <span class="placeholder">Description detaillée du quiz...</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 2: Questions du quiz -->
+      <div class="section">
+        <div class="section-header">
+          <div class="section-icon">📚</div>
+          <h3>Questions du quiz</h3>
+        </div>
+
+        <div class="question-header">
+          <div class="question-number">Questions 1</div>
+          <button class="btn-add-question">
+            <span class="btn-icon">➕</span>
+            <span>Ajouter une question</span>
+          </button>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Type de question *</label>
+          <div class="select-field">
+            <span class="placeholder">Ex: Question a multiples choix</span>
+            <span class="dropdown-icon">▼</span>
+          </div>
+        </div>
+
+        <!-- Question Input -->
+        <div class="form-group full-width">
+          <div class="input-field">
+            <span class="placeholder">Saisissez la question...</span>
+          </div>
+        </div>
+
+        <!-- Réponses -->
+        <div class="reponses-section">
+          <div class="reponse-item">
+            <div class="reponse-label">A</div>
+            <div class="input-field">
+              <span class="placeholder">Reponse A</span>
+            </div>
+          </div>
+          <div class="reponse-item">
+            <div class="reponse-label">B</div>
+            <div class="input-field">
+              <span class="placeholder">Reponse B</span>
+            </div>
+          </div>
+          <div class="reponse-item">
+            <div class="reponse-label">C</div>
+            <div class="input-field">
+              <span class="placeholder">Reponse C</span>
+            </div>
+          </div>
+          <div class="reponse-item">
+            <div class="reponse-label">D</div>
+            <div class="input-field">
+              <span class="placeholder">Reponse D</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bonne réponse -->
+        <div class="form-group full-width">
+          <label class="form-label">Bonne reponse *</label>
+          <div class="select-field">
+            <span class="placeholder">La bonne reponse!</span>
+            <span class="dropdown-icon">▼</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div class="actions-section">
+        <button class="btn btn-cancel">
+          <span class="btn-icon">🗑️</span>
+          <span>Annuler</span>
+        </button>
+        <button class="btn btn-add-question-large">
+          <span class="btn-icon">➕</span>
+          <span>Ajouter une question</span>
+        </button>
+        <button class="btn btn-submit">
+          <span class="btn-icon">💾</span>
+          <span>Enregistrer le quiz</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
