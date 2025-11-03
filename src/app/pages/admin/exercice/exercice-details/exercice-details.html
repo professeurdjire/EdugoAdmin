@@ -1,111 +1,87 @@
-<div class="exercices-list-container">
-
-  <div class="filters-actions-section">
-    <button class="btn-retour-filtre">
-      <span class="icon">⮜</span> Retour
-    </button>
-
-    <div class="filters-bar-content">
-      <div class="filter-group">
-        <label>Recherche</label>
-        <input type="text" placeholder="Nom, email, telephone..." class="form-control">
-      </div>
-      <div class="filter-group">
-        <label>Niveau Scolaire</label>
-        <select class="form-control">
-          <option>Tous les niveaux</option>
-        </select>
-      </div>
-      <div class="filter-group">
-        <label>Statut</label>
-        <select class="form-control">
-          <option>Tous les statuts</option>
-        </select>
-      </div>
-
-      <div class="filter-buttons">
-        <button class="btn-filter-icon">
-          <span class="icon">⏚</span> Filtrer
-        </button>
-        <button class="btn-actualiser-icon">
-          <span class="icon">⟳</span> actualiser
-        </button>
-      </div>
-    </div>
+<div class="users-page-container">
+  <div class="page-header">
+    <h1 class="page-title">Exercices</h1>
+    <a routerLink="/admin/ajouterexercice" class="add-btn">Ajouter un exercice</a>
   </div>
 
-  <div class="exercices-list-section">
-    <div class="list-header">
-      <h3 class="list-title">Listes des Exercices (2,847)</h3>
-      <select class="sort-dropdown">
-        <option>Trier par date d'inscription</option>
+  <section class="filters-container">
+    <div class="filter-group">
+      <label>Recherche</label>
+      <input placeholder="Rechercher un exercice" />
+    </div>
+    <div class="filter-group">
+      <label>Niveau</label>
+      <select>
+        <option>Tous les niveaux</option>
       </select>
     </div>
+    <div class="filter-group">
+      <label>Matière</label>
+      <select>
+        <option>Toutes les matières</option>
+      </select>
+    </div>
+    <div class="action-buttons">
+      <button class="filter-btn">Filtrer</button>
+      <button class="export-btn">Exporter</button>
+    </div>
+  </section>
 
-    <table class="exercices-table">
-      <thead>
-      <tr>
-        <th>Utilisateurs</th>
-        <th>Classe</th>
-        <th>Matières</th>
-        <th>Date</th>
-        <th>Difficultés</th>
-        <th>Actions</th>
-      </tr>
-      </thead>
-      <tbody>
-      <tr *ngFor="let i of [1,2,3,4,5,6,7,8,9,10,11,12]">
-        <td class="user-cell">
-          <div class="exercice-details">
-            <span class="exercice-icon">📝</span>
-            <div class="text-details">
-              <span class="exercice-title">Exercices {{ i % 5 === 0 ? 5 : i % 3 === 0 ? 3 : 1 }}</span>
-              <span class="exercice-description">
-                  {{ i % 2 === 0 ? 'Géométrie des triangles' : 'Calcul Mental' }}
-                </span>
-            </div>
-          </div>
-        </td>
-        <td>
-          <span class="badge badge-classe">{{ i % 3 + 4 }} ème</span>
-        </td>
-        <td>Mathématiques</td>
-        <td>10/10/2025</td>
-        <td>
-            <span class="badge badge-difficulte diff-{{ i % 3 }}">
+  <div class="table-header-info">
+    <h2>Liste des Exercices</h2>
+  </div>
+
+  <section class="users-table-section">
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>Titre</th>
+            <th>Niveau</th>
+            <th>Matière</th>
+            <th>Date</th>
+            <th>Difficulté</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of exercices; let i = index">
+            <td class="user-details-cell">
+              <div class="exercice-details">
+                <div class="exercice-icon">E</div>
+                <div class="text-details">
+                  <p class="exercice-title">{{ item.titre }}</p>
+                  <small class="exercice-description">{{ item.matiere }}</small>
+                </div>
+              </div>
+            </td>
+            <td>{{ item.niveau }}</td>
+            <td>{{ item.matiere }}</td>
+            <td>{{ item.date }}</td>
+            <td>
+              <span class="badge badge-difficulte diff-{{ i % 3 }}">
                 {{ i % 3 === 0 ? 'Facile' : i % 3 === 1 ? 'Moyenne' : 'Difficile' }}
-            </span>
-        </td>
-        <td class="actions-cell">
-          <button class="btn-action-icon btn-view">
-            <span class="icon">⮞</span>
-          </button>
-          <button class="btn-action-icon btn-edit">
-            <span class="icon">✏️</span>
-          </button>
-          <button class="btn-action-icon btn-delete">
-            <span class="icon">🗑️</span>
-          </button>
-        </td>
-      </tr>
-      </tbody>
-    </table>
+              </span>
+            </td>
+            <td class="actions-cell">
+              <button class="btn-action-icon btn-view"><span class="icon">⮞</span></button>
+              <button class="btn-action-icon btn-edit"><span class="icon">✏️</span></button>
+              <button class="btn-action-icon btn-delete"><span class="icon">🗑️</span></button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
 
-    <div class="table-footer">
-      <span class="footer-info">Affichage de 1 à 10 sur 10 000 Quiz</span>
-      <div class="pagination">
-        <button class="pagination-btn arrow-btn" disabled>
-          <span class="icon">❮</span>
-        </button>
-        <span class="page-number active">1</span>
-        <span class="page-number">2</span>
-        <span class="page-number">3</span>
-        <span class="page-number">4</span>
-        <span class="page-number">5</span>
-        <button class="pagination-btn arrow-btn">
-          <span class="icon">❯</span>
-        </button>
+      <div class="book-list__footer">
+        <p>Affichage de 1 à 10 sur {{ exercices?.length || 1230 }} Exercices</p>
+        <nav class="pagination">
+          <button class="pagination__arrow"><img src="/images/430_2316.svg" alt="Previous"></button>
+          <button class="pagination__number active">1</button>
+          <button class="pagination__number">2</button>
+          <button class="pagination__number">3</button>
+          <button class="pagination__arrow"><img src="/images/430_2314.svg" alt="Next"></button>
+        </nav>
       </div>
     </div>
-  </div>
+  </section>
 </div>

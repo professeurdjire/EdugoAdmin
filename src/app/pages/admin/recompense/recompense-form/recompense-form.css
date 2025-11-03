@@ -14,8 +14,7 @@
 /* CONTAINER PRINCIPAL UNIFIÉ POUR TOUS LES FORMULAIRES */
 .form-main-container {
   flex: 1;
-  margin-left: 210px;
-  margin-top: 70px;
+  /* layout offsets moved to global .main-content */
   padding: 1rem;
   min-height: calc(100vh - 70px);
   display: flex;
@@ -42,8 +41,9 @@
 .form-container,
 .main-content {
   flex: 1;
-  margin-left: 210px;
-  margin-top: 70px;
+  /* layout offsets moved to global .main-content */
+  /* per-page offsets removed */
+  /* per-page offsets removed; global .main-content controls spacing */
   padding: 1rem;
   min-height: calc(100vh - 70px);
   display: flex;

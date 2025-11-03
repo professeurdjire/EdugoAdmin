@@ -1,0 +1,205 @@
+/* Recompense Details - Consolidated CSS (cleaned)
+   - Uses dashboard-like stat-card visuals
+   - Rewards grid reduced so 3 cards fit per row proportionally
+*/
+:host {
+  --primary-color: #a885d8;
+  --secondary-color: #195a9d;
+  --success-color: #28bd7f;
+  --text-dark: #000000;
+  --text-light: #ffffff;
+  --text-muted: #808080;
+  --text-link: #0000ff;
+  --bg-white: #ffffff;
+  --border-light: #d0d5dd;
+  --shadow-sm: 0 4px 8px rgba(0,0,0,0.06);
+  --shadow-md: 0 8px 24px rgba(0,0,0,0.08);
+  display: block;
+}
+
+/* Page container */
+.page-container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 18px;
+}
+
+/* Header */
+.header-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 28px;
+}
+
+.page-title {
+  font-family: 'Roboto', sans-serif;
+  font-size: 34px;
+  font-weight: 400;
+  margin: 0;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-weight: 600;
+  font-size: 14px;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+
+.btn-primary {
+  background-color: var(--primary-color);
+  color: var(--text-light);
+}
+
+.btn-primary:hover { transform: translateY(-2px); }
+
+.btn-icon { width: 20px; height: 20px; }
+
+/* Stats cards - dashboard visual system, compact */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  align-items: stretch;
+}
+
+.stat-card {
+  background: var(--bg-white);
+  border-left: 8px solid var(--primary-color);
+  border-radius: 10px;
+  box-shadow: var(--shadow-sm);
+  height: 96px;
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+  gap: 12px;
+  min-width: 0;
+}
+
+.stat-card .stat-icon-wrapper {
+  width: 54px;
+  height: 54px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 1.1rem;
+  flex-shrink: 0;
+}
+
+.stat-card .stat-icon-wrapper.green { background: rgba(40,189,127,0.95); }
+.stat-card .stat-icon-wrapper.blue { background: var(--secondary-color); }
+
+.stat-info {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 2px;
+  flex: 1;
+}
+
+.stat-info .stat-value {
+  font-size: 20px;
+  font-weight: 600;
+  margin: 0;
+  color: var(--text-dark);
+}
+
+.stat-info .stat-label {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+/* Section: Rewards system */
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 12px;
+  margin-bottom: 18px;
+  border-bottom: 1px solid rgba(0,0,0,0.06);
+}
+
+.section-title { font-size: 22px; font-weight: 500; margin: 0; }
+.section-link { font-size: 14px; color: var(--text-link); }
+
+.system-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+.system-card { border-radius: 10px; padding: 18px; text-align: center; background: var(--bg-white); box-shadow: var(--shadow-sm); }
+
+/* Filters */
+#filters { padding-top: 28px; padding-bottom: 18px; }
+.filter-container { background: var(--bg-white); border-radius: 10px; box-shadow: var(--shadow-sm); padding: 14px; display:flex; flex-wrap:wrap; gap:12px; align-items:flex-end; }
+.filter-group { flex: 1; min-width: 180px; }
+.filter-label { font-size: 13px; color: var(--text-muted); display:block; margin-bottom:6px; }
+.filter-input input { width:100%; height:36px; padding:8px 10px; border-radius:8px; border:1px solid #e6e6e6; }
+
+.filter-actions { display:flex; gap:8px; align-items:center; margin-left:auto; }
+
+/* Rewards grid - 3 columns, compact cards */
+#rewards-grid { padding-top: 24px; padding-bottom: 20px; }
+.rewards-grid-container {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(220px, 1fr));
+  gap: 18px;
+  align-items: start;
+}
+
+.reward-card {
+  background: var(--bg-white);
+  border-radius: 12px;
+  box-shadow: var(--shadow-md);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.14s ease, box-shadow 0.14s ease;
+}
+.reward-card:hover { transform: translateY(-6px); box-shadow: 0 18px 48px rgba(0,0,0,0.12); }
+
+.card-image-wrapper { position: relative; }
+.card-img { width:100%; height:140px; object-fit:cover; display:block; }
+
+.new-badge { position:absolute; top:8px; right:10px; background: rgba(255,255,255,0.95); padding:6px 10px; border-radius:8px; font-weight:700; font-size:12px; }
+
+.card-content { padding:12px 14px 14px; display:flex; flex-direction:column; gap:8px; }
+.card-title { font-size:16px; font-weight:700; margin:0; }
+.card-desc { font-size:13px; color:var(--text-muted); margin:0; }
+
+.card-footer { margin-top:auto; display:flex; justify-content:space-between; align-items:center; gap:10px; }
+.info-label { font-size:12px; color:var(--text-muted); }
+.holders-count { font-size:16px; font-weight:700; }
+.card-actions { display:flex; gap:6px; }
+
+.btn-view { background:var(--primary-color); color:var(--text-light); border-radius:8px; padding:8px 12px; font-weight:700; border:none; cursor:pointer; }
+.btn-icon-action { width:36px; height:34px; border-radius:8px; border:1px solid #e6e6e6; display:inline-flex; align-items:center; justify-content:center; background:#fff; cursor:pointer; }
+
+/* Pagination */
+#pagination { padding-top: 20px; padding-bottom: 20px; }
+.pagination-container { display:flex; justify-content:space-between; align-items:center; gap:12px; }
+.page-item { display:inline-flex; align-items:center; justify-content:center; width:36px; height:36px; border-radius:8px; background:transparent; color:#667085; text-decoration:none; }
+.page-item.active { background: rgba(127,86,217,0.12); color: var(--primary-color); }
+
+/* Responsive adjustments */
+@media (max-width: 1100px) {
+  .rewards-grid-container { grid-template-columns: repeat(2, 1fr); }
+  .stats-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 680px) {
+  .rewards-grid-container { grid-template-columns: 1fr; }
+  .stats-grid { grid-template-columns: 1fr; }
+  .header-top { flex-direction: column; gap:12px; align-items: flex-start; }
+  .page-container { padding: 12px; }
+}

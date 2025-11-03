@@ -1,16 +1,25 @@
 <div class="form-main-container">
   <div class="ajout-quiz-container">
     <!-- Header -->
+<<<<<<< HEAD
     <div class="header">
       <button class="retour-btn" (click)="onRetour()">
         <span class="arrow-back">←</span>
         <span>Retour</span>
       </button>
       <div class="page-title">Créer un Quiz</div>
+=======
+    <div class="form-header">
+      <h1 class="page-title">Ajouter un quiz</h1>
+      <a routerLink="/admin/quizList" class="back-btn">
+        <span class="arrow-back">←</span>
+        <span>Retour</span>
+      </a>
+>>>>>>> 75509ae2bd5b938f745cbb99bb4ff67d3b55ba64
     </div>
 
-    <!-- Main Content -->
-    <div class="main-content">
+  <!-- Main Content -->
+  <div class="form-body">
       <div class="description">
         Créez un quiz interactif avec différents types de questions pour évaluer vos apprenants !
       </div>
@@ -301,6 +310,7 @@
       </div>
 
       <!-- Actions -->
+<<<<<<< HEAD
       <div class="actions-section">
         <button class="btn btn-cancel" (click)="onAnnuler()">
           <span class="btn-icon">🗑️</span>
@@ -312,6 +322,12 @@
           <span class="btn-icon">💾</span>
           <span>Enregistrer le quiz</span>
         </button>
+=======
+      <div class="form-actions">
+        <button class="btn btn-secondary btn-action">Annuler</button>
+        <button class="btn btn-secondary btn-action">Ajouter une question</button>
+        <button class="btn btn-primary btn-action">Enregistrer le quiz</button>
+>>>>>>> 75509ae2bd5b938f745cbb99bb4ff67d3b55ba64
       </div>
     </div>
   </div>

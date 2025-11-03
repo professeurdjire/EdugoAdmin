@@ -7,9 +7,10 @@
   flex-direction: column;
   justify-content: space-between;
   padding: 1rem;
-  top: 61px;
+  top: 60px;
   left: 0;
   max-height: calc(100vh - 61px);
+  height: calc(100vh - 61px);
   overflow: auto;
   z-index: 1000;
 
@@ -72,13 +73,13 @@
   padding: 6px 12px;
   border-radius: 8px;
   text-decoration: none;
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 600;
   transition: all 0.3s ease;
 }
 
 .logout-btn i {
-  font-size: 14px;
+  font-size: 15px;
 }
 
 .logout-btn:hover {
@@ -100,7 +101,7 @@
   }
 
   .logout-btn {
-    font-size: 14px;
+    font-size: 15px;
     padding: 10px 15px;
   }
 }

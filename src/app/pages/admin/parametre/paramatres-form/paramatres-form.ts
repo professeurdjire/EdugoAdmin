@@ -1,11 +1,12 @@
 import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-paramatres-form',
   standalone: true,
-  imports: [],
+  imports: [CommonModule],
   templateUrl: './paramatres-form.html',
-  styleUrl: './paramatres-form.css'
+  styleUrls: ['./paramatres-form.css']
 })
 export class ParamatresForm {
 

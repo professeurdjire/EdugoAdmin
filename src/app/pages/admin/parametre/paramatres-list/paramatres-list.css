@@ -1,7 +1,6 @@
 /* --- Couleurs et Styles de base --- */
 .parametres-management-content {
-  margin-left: 210px; /* espace sidebar */
-  margin-top: 70px;   /* espace navbar */
+  /* layout offsets moved to global .main-content */
   padding: 1rem;
   min-height: calc(100vh - 60px);
   display: flex;

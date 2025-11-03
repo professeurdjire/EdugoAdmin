@@ -27,8 +27,8 @@
 .main-content,
 .challenges-management-content {
   flex: 1;
-  margin-left: 210px;
-  margin-top: 60px;
+  /* layout offsets moved to global .main-content */
+ 
   padding: 1rem;
   min-height: calc(100vh - 60px);
   display: flex;
@@ -110,7 +110,7 @@
   border-radius: 0;
   box-shadow: none;
 
-  margin-left: 210px;
+  /* per-page margin removed; global .main-content controls spacing */
   margin-top: 60px;
   /* Pas de marges ici - c'est le conteneur parent qui les gère */
 }
@@ -268,6 +268,21 @@
   color: #000000;
   margin: 0;
   line-height: 1.2;
+}
+
+/* Keep the title on one line and push right-side controls to the far right */
+.title-section .list-title,
+.title-section .page-title {
+  flex: 1 1 auto;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.title-section .sort-section,
+.title-section .sort-input,
+.title-section .add-btn {
+  margin-left: auto;
+  align-self: center;
 }
 
 .sort-section {

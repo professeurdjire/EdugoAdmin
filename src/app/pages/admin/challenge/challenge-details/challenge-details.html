@@ -1,173 +1,93 @@
-<div class="challenge-list-container">
-  <!-- Header -->
-  <div class="header">
-    <div class="retour-btn">
-      <span class="arrow-back">←</span>
-      <span>Retour</span>
-    </div>
-    <div class="page-title">Gesiton des challenges</div>
+<div class="users-page-container">
+  <div class="page-header">
+    <h1 class="page-title">Challenges</h1>
+    <!-- optional add button if needed -->
+    <a routerLink="/admin/ajouterchallenge" class="add-btn">Ajouter un challenge</a>
   </div>
 
-  <!-- Main Content -->
-  <div class="main-content">
-    <!-- Search and Filters -->
-    <div class="search-filters">
-      <div class="search-section">
-        <div class="filter-title">Recherche</div>
-        <div class="filter-input">
-          <span>Nom, email, telephone...</span>
-        </div>
+  <!-- Filters (adapted) -->
+  <div class="filter">
+    <section class="filters-container">
+      <div class="filter-group">
+        <label>Recherche</label>
+        <input type="text" placeholder="Nom, description..." />
       </div>
-
-      <div class="niveau-section">
-        <div class="filter-title">Niveau Scolaire</div>
-        <div class="filter-input">
-          <span>Tous les niveaux</span>
-          <span class="expand-icon">▼</span>
-        </div>
+      <div class="filter-group">
+        <label>Niveau scolaire</label>
+        <select>
+          <option>Tous les niveaux</option>
+          <option>4 ème</option>
+          <option>3 ème</option>
+        </select>
       </div>
-
-      <div class="statut-section">
-        <div class="filter-title">Statut</div>
-        <div class="filter-input">
-          <span>Tous les statuts</span>
-          <span class="expand-icon">▼</span>
-        </div>
+      <div class="filter-group">
+        <label>Statut</label>
+        <select>
+          <option>Tous les statuts</option>
+          <option>Encours</option>
+          <option>Terminé</option>
+        </select>
       </div>
-
-      <div class="filter-actions">
-        <div class="filter-btn">
-          <span class="filter-icon">⚡</span>
-          <span>Filtrer</span>
-        </div>
-        <div class="refresh-btn">
-          <span class="refresh-icon">↻</span>
-          <span>actualiser</span>
-        </div>
+      <div class="action-buttons">
+        <button class="filter-btn">Filtrer</button>
+        <button class="reset-btn">Réinitialiser</button>
       </div>
-
-      <div class="tout-voir">
-        <span>Tout voir</span>
-      </div>
-    </div>
-
-    <!-- Title Section -->
-    <div class="title-section">
-      <div class="list-title">Listes des Challenges (2,847)</div>
-      <div class="sort-section">
-        <div class="sort-input">
-          <span>Trier par date d'inscription</span>
-          <span class="expand-icon">▼</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- Table Header -->
-    <div class="table-header">
-      <div class="header-item utilisateurs">Utilisateurs</div>
-      <div class="header-item type">Type</div>
-      <div class="header-item matieres">Matières</div>
-      <div class="header-item date">Date</div>
-      <div class="header-item difficultes">Difficultés</div>
-      <div class="header-item statut">Statut</div>
-      <div class="header-item actions">Actions</div>
-    </div>
-
-    <!-- Challenges List -->
-    <div class="challenges-list">
-      <!-- Ligne 1 -->
-      <div class="challenge-item">
-        <div class="user-info">
-          <div class="user-avatar"></div>
-          <div class="user-details">
-            <div class="challenge-name">Défis Mathematiques Express</div>
-            <div class="challenge-description">Devenez incontournable en math!</div>
-          </div>
-        </div>
-        <div class="type-cell">
-          <div class="type-badge">4 ème</div>
-        </div>
-        <div class="matiere-cell">mathématiques</div>
-        <div class="date-cell">10/10/2025</div>
-        <div class="difficulte-cell">Moyenne</div>
-        <div class="statut-cell">
-          <div class="statut-badge encours">Encours</div>
-        </div>
-        <div class="actions-cell">
-          <div class="action-btn view-btn">👁️</div>
-          <div class="action-btn edit-btn">✏️</div>
-          <div class="action-btn delete-btn">🗑️</div>
-        </div>
-      </div>
-
-      <!-- Ligne 2 -->
-      <div class="challenge-item">
-        <div class="user-info">
-          <div class="user-avatar"></div>
-          <div class="user-details">
-            <div class="challenge-name">Défis Mathematiques Express</div>
-            <div class="challenge-description">Devenez incontournable en math!</div>
-          </div>
-        </div>
-        <div class="type-cell">
-          <div class="type-badge">4 ème</div>
-        </div>
-        <div class="matiere-cell">mathématiques</div>
-        <div class="date-cell">10/10/2025</div>
-        <div class="difficulte-cell">Moyenne</div>
-        <div class="statut-cell">
-          <div class="statut-badge termine">Terminé</div>
-        </div>
-        <div class="actions-cell">
-          <div class="action-btn view-btn">👁️</div>
-          <div class="action-btn edit-btn">✏️</div>
-          <div class="action-btn delete-btn">🗑️</div>
-        </div>
-      </div>
-
-      <!-- Lignes 3-12 -->
-      <div class="challenge-item" *ngFor="let item of [3,4,5,6,7,8,9,10,11,12]">
-        <div class="user-info">
-          <div class="user-avatar"></div>
-          <div class="user-details">
-            <div class="challenge-name">Défis Mathematiques Express</div>
-            <div class="challenge-description">Devenez incontournable en math!</div>
-          </div>
-        </div>
-        <div class="type-cell">
-          <div class="type-badge">4 ème</div>
-        </div>
-        <div class="matiere-cell">mathématiques</div>
-        <div class="date-cell">10/10/2025</div>
-        <div class="difficulte-cell">Moyenne</div>
-        <div class="statut-cell">
-          <div class="statut-badge pas-debute">Pas debuté</div>
-        </div>
-        <div class="actions-cell">
-          <div class="action-btn view-btn">👁️</div>
-          <div class="action-btn edit-btn">✏️</div>
-          <div class="action-btn delete-btn">🗑️</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Separators -->
-    <div class="separators">
-      <div class="separator" *ngFor="let i of [1,2,3,4,5,6,7,8,9,10,11]"></div>
-    </div>
-
-    <!-- Pagination -->
-    <div class="pagination-section">
-      <div class="pagination-info">Affichage de 1 à 10 sur 10 000 Quiz</div>
-      <div class="pagination-controls">
-        <div class="page-arrow prev">‹</div>
-        <div class="page-number active">1</div>
-        <div class="page-number">2</div>
-        <div class="page-number">3</div>
-        <div class="page-number">4</div>
-        <div class="page-number">5</div>
-        <div class="page-arrow next">›</div>
-      </div>
-    </div>
+    </section>
   </div>
+
+  <div class="table-header-info">
+    <h2>Liste des Challenges (2,847)</h2>
+  </div>
+
+  <section class="users-table-section">
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>Utilisateurs</th>
+            <th>Type</th>
+            <th>Matières</th>
+            <th>Date</th>
+            <th>Difficultés</th>
+            <th>Statut</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of [1,2,3,4,5,6,7,8,9,10]">
+            <td class="user-details-cell">
+              <div class="user-avatar"></div>
+              <div class="user-info-text">
+                <p class="name">Défis Mathematiques Express</p>
+                <small class="email">Devenez incontournable en math!</small>
+              </div>
+            </td>
+            <td><span class="level-badge">4 ème</span></td>
+            <td>Mathématiques</td>
+            <td>10/10/2025</td>
+            <td><span class="badge">Moyenne</span></td>
+            <td><span class="status-badge encours">Encours</span></td>
+            <td class="actions-cell">
+              <button class="action-icon-btn">👁️</button>
+              <button class="action-icon-btn">✏️</button>
+              <button class="action-icon-btn">🗑️</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="book-list__footer">
+        <p>Affichage de 1 à 10 sur 2,847 Challenges</p>
+        <nav class="pagination">
+          <button class="pagination__arrow"><img src="/images/430_2316.svg" alt="Previous"></button>
+          <button class="pagination__number active">1</button>
+          <button class="pagination__number">2</button>
+          <button class="pagination__number">3</button>
+          <button class="pagination__number">4</button>
+          <button class="pagination__number">5</button>
+          <button class="pagination__arrow"><img src="/images/430_2314.svg" alt="Next"></button>
+        </nav>
+      </div>
+    </div>
+  </section>
 </div>

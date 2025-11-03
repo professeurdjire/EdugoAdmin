@@ -26,8 +26,8 @@
 .main-content,
 .challenges-management-content {
   flex: 1;
-  margin-left: 210px;
-  margin-top: 60px;
+  /* layout offsets moved to global .main-content */
+  /* layout offsets moved to global .main-content */
   padding: 1rem;
   min-height: calc(100vh - 60px);
   display: flex;
@@ -250,6 +250,21 @@
   color: #000000;
   margin: 0 0 1rem 0;
   line-height: 1.2;
+}
+
+/* Ensure title and right-side controls align on a single header row when present */
+.quiz-list-section > .list-title {
+  display: block;
+  flex: 1 1 auto; /* if wrapped in a flex container elsewhere this will let it grow */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.quiz-list-section .add-btn,
+.quiz-list-section .sort-section,
+.quiz-list-section .actions-group {
+  margin-left: auto;
+  align-self: center;
 }
 
 /* --- Tableau des Quiz --- */

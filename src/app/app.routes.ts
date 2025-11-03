@@ -94,7 +94,7 @@ export const routes: Routes = [
       { path: 'recompenseList', component: RecompenseList },
       { path: 'ajouterrecompense', component: RecompenseForm },
       { path: 'editerRecompense/:id', component: RecompenseForm },
-      { path: 'Recompense/:id', component: RecompenseDetails },
+      { path: 'recompensedetails', component: RecompenseDetails },
       { path: 'utilisateurs', component: UtilisateurList },
       { path: 'ajouterUtilisateur', component: UtilisateurForm },
       { path: 'editerUtilisateur/:id', component: UtilisateurForm },

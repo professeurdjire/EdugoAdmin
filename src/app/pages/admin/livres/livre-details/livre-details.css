@@ -43,6 +43,28 @@ ul {
   margin: 0;
 }
 
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between; /* met le bouton à droite */
+  margin-bottom: 20px;
+}
+
+/* Ensure title and action button stay on one line
+   Title expands, button is pushed to the right. */
+.page-header .page-title {
+  margin: 0;
+  flex: 1 1 auto; /* take available space */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.page-header .add-btn {
+  margin-left: auto; /* force button to the far right */
+  align-self: center;
+}
+
 button {
   cursor: pointer;
   border: none;
@@ -60,8 +82,7 @@ button {
 .main-content,
 .challenges-management-content {
   flex: 1;
-  margin-left: 210px;
-  margin-top: 60px;
+  /* layout offsets moved to global .main-content */
   padding: 1rem;
   min-height: calc(100vh - 60px);
   display: flex;

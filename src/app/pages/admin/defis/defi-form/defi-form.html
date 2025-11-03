@@ -1,15 +1,16 @@
-<div class="form-page-container">
-  <a routerLink="/admin/defis" class="back-button">
-    <span class="back-icon">←</span>
-    <span>Retour</span>
-  </a>
+<div class="form-container">
+  <div class="form-header">
+    <h1 class="form-title">Ajouter un défi</h1>
+    <a routerLink="/admin/defiList" class="back-btn">
+      <span class="back-icon">←</span>
+      <span>Retour</span>
+    </a>
+  </div>
 
-  <header class="form-header">
-    <h1>Ajouter un défis</h1>
-    <p class="subtitle">Remplissez les informations suivantes pour ajouter un défis dans votre plateforme!</p>
-  </header>
+  <div class="form-description">Remplissez les informations suivantes pour ajouter un défi dans la plateforme.</div>
 
-  <form class="challenge-form" [formGroup]="defiForm" (ngSubmit)="onSubmit()">
+  <div class="form-content">
+    <form class="challenge-form" [formGroup]="defiForm" (ngSubmit)="onSubmit()">
     <!-- Section Informations de base -->
     <fieldset id="basic-info" class="form-section">
       <legend class="section-title">
@@ -151,18 +152,9 @@
 
     <!-- Actions -->
     <div class="form-actions">
-      <button type="button" class="btn btn-cancel" (click)="onAnnuler()">
-        <span class="btn-icon">🗑️</span>
-        <span>Annuler</span>
-      </button>
-      <button type="button" class="btn btn-add-question" (click)="ajouterQuestion()">
-        <span class="btn-icon">➕</span>
-        <span>Ajouter une question</span>
-      </button>
-      <button type="submit" class="btn btn-save" [disabled]="defiForm.invalid">
-        <span class="btn-icon">💾</span>
-        <span>Enregistrer le défis</span>
-      </button>
+      <button type="button" class="btn btn-secondary btn-action" (click)="onAnnuler()">Annuler</button>
+      <button type="button" class="btn btn-secondary btn-action" (click)="ajouterQuestion()">Ajouter une question</button>
+      <button type="submit" class="btn btn-primary btn-action" [disabled]="defiForm.invalid">Enregistrer le défi</button>
     </div>
   </form>
 </div>

@@ -1,7 +1,7 @@
 .form-container {
   flex: 1;
-  margin-left: 210px;
-  margin-top: 70px;
+  /* layout offsets moved to global .main-content */
+  /* layout offsets moved to global .main-content */
   padding: 1.5rem;
   min-height: calc(100vh - 70px);
   display: flex;
@@ -15,9 +15,9 @@
 .form-header {
   display: flex;
   align-items: center;
-  gap: 2rem;
+  gap: 1rem;
   background: #FFFFFF;
-  padding: 1.5rem 2rem;
+  padding: 1rem 1.5rem;
   border-radius: 12px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 }
@@ -46,13 +46,12 @@
   font-size: 1.1rem;
 }
 
+
 .form-title {
-  font-size: 2.5rem;
+   font-size: 1.5rem;
   font-weight: 600;
   color: #000000;
   margin: 0;
-  text-align: center;
-  flex: 1;
 }
 
 /* Description */

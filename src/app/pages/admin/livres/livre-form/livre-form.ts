@@ -1,13 +1,17 @@
 import { Component, ViewChild, ElementRef } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-livre-form',
   standalone:true,
-  imports: [],
+  imports: [CommonModule, RouterLink],
   templateUrl: './livre-form.html',
-  styleUrl: './livre-form.css'
+  styleUrls: ['./livre-form.css']
 })
 export class LivreForm {
+  constructor(private router: Router) {}
   @ViewChild('fileInput') fileInput!: ElementRef;
   @ViewChild('imageInput') imageInput!: ElementRef;
 
@@ -30,8 +34,8 @@ export class LivreForm {
   };
 
   onRetour() {
-    console.log('Retour vers la page précédente');
-    // this.router.navigate(['/admin/livres']);
+    // Navigate back to the livres list
+    this.router.navigate(['/admin/livreList']);
   }
 
   onAnnuler() {
@@ -59,6 +63,8 @@ export class LivreForm {
   onSubmit() {
     console.log('Soumission du formulaire:', this.livre);
     // Logique de sauvegarde ici
+    // After successful save, go back to the livres list
+    this.router.navigate(['/admin/livreList']);
   }
 
   onFileSelected(event: any, type: 'file' | 'image') {

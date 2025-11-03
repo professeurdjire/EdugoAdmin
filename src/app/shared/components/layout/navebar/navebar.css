@@ -89,7 +89,7 @@
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background: rgba(0, 140, 255, 0.4);
+  background: #A885D8;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -145,7 +145,7 @@
   position: absolute;
   top: -5px;
   right: -5px;
-  background-color: red;
+  background-color: #A885D8;
   border-radius: 50%;
   width: 8px;
   height: 8px;

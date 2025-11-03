@@ -1,6 +1,6 @@
 .challenge-list-container {
   flex: 1;
-  margin-left: 210px; /* espace sidebar */
+  /* layout offsets moved to global .main-content */
   margin-top: 70px;   /* espace navbar */
   padding: 1rem;
   min-height: calc(100vh - 60px);
@@ -37,25 +37,26 @@
   font-weight: 600;
   font-size: 14px;
   cursor: pointer;
-  text-decoration: none;
-  transition: background-color 0.3s;
-}
-
-.retour-btn:hover {
-  background: #9770c9;
-}
-
-.page-title {
-  font-size: 2rem;
-  color: #000000;
-  font-weight: 400;
-  margin: 0;
-}
-
+  color: #808080;
+  cursor: pointer;
 /* Main Content */
+
+/* Localized header alignment: title grows and right-side controls snap to the right */
+.title-section .list-title {
+  flex: 1 1 auto;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.title-section .sort-section,
+.title-section .sort-input,
+.title-section .add-btn {
+  margin-left: auto;
+  align-self: center;
+}
 .main-content {
   flex: 1;
-  margin-left: 210px; /* espace sidebar */
+  /* per-page offsets removed; global .main-content controls spacing */
   margin-top: 70px;   /* espace navbar */
   padding: 1rem;
   min-height: calc(100vh - 60px);
@@ -185,6 +186,20 @@
   padding: 0 1rem;
   font-weight: 600;
   font-size: 0.875rem;
+
+/* Localized header alignment: title grows and right-side controls snap to the right */
+.title-section .list-title {
+  flex: 1 1 auto;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.title-section .sort-section,
+.title-section .sort-input,
+.title-section .add-btn {
+  margin-left: auto;
+  align-self: center;
+}
   color: #808080;
   cursor: pointer;
 }
@@ -534,4 +549,5 @@
   .header-item.statut {
     display: none;
   }
+}
 }

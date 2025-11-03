@@ -1,11 +1,12 @@
 import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-paramatres-list',
   standalone: true,
-  imports: [],
+  imports: [CommonModule],
   templateUrl: './paramatres-list.html',
-  styleUrl: './paramatres-list.css'
+  styleUrls: ['./paramatres-list.css']
 })
 export class ParamatresList {
 
