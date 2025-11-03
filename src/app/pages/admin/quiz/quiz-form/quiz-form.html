@@ -1,42 +1,69 @@
-
 <div class="form-main-container">
-  <!-- Votre formulaire ici -->
   <div class="ajout-quiz-container">
     <!-- Header -->
     <div class="header">
-      <div class="retour-btn">
+      <button class="retour-btn" (click)="onRetour()">
         <span class="arrow-back">←</span>
         <span>Retour</span>
-      </div>
-      <div class="page-title">Ajouter un livre</div>
+      </button>
+      <div class="page-title">Créer un Quiz</div>
     </div>
 
     <!-- Main Content -->
     <div class="main-content">
       <div class="description">
-        Remplissez les informations suivantes pour ajouter un livre dans la bibliothèque !
+        Créez un quiz interactif avec différents types de questions pour évaluer vos apprenants !
       </div>
 
       <!-- Section 1: Informations de base -->
       <div class="section">
         <div class="section-header">
           <div class="section-icon">ℹ️</div>
-          <h3>Information de bases</h3>
+          <h3>Informations de base</h3>
         </div>
 
         <div class="form-row">
           <div class="form-group">
             <label class="form-label">Livre associé *</label>
             <div class="input-field">
-              <span class="placeholder">Ex: Mathématiques 4 ème</span>
-              <span class="dropdown-icon">▼</span>
+              <input type="text" 
+                     [(ngModel)]="quiz.livreAssocie" 
+                     placeholder="Ex: Mathématiques 4ème"
+                     class="form-input">
             </div>
           </div>
 
           <div class="form-group">
             <label class="form-label">Titre du quiz *</label>
             <div class="input-field">
-              <span class="placeholder">Donnez un titre</span>
+              <input type="text" 
+                     [(ngModel)]="quiz.titre" 
+                     placeholder="Donnez un titre"
+                     class="form-input">
+            </div>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Durée (minutes)</label>
+            <div class="input-field">
+              <input type="number" 
+                     [(ngModel)]="quiz.duree" 
+                     min="1" 
+                     max="180"
+                     class="form-input">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Difficulté</label>
+            <div class="select-field">
+              <select [(ngModel)]="quiz.difficulte" class="form-select">
+                <option *ngFor="let niveau of niveauxDifficulte" [value]="niveau.value">
+                  {{ niveau.label }}
+                </option>
+              </select>
             </div>
           </div>
         </div>
@@ -44,90 +71,244 @@
         <div class="form-group full-width">
           <label class="form-label">Description</label>
           <div class="textarea-field">
-            <span class="placeholder">Description detaillée du quiz...</span>
+            <textarea [(ngModel)]="quiz.description" 
+                     placeholder="Description détaillée du quiz..."
+                     class="form-textarea"></textarea>
           </div>
         </div>
       </div>
 
       <!-- Section 2: Questions du quiz -->
-      <div class="section">
+      <div class="section" *ngFor="let question of quiz.questions; let i = index">
         <div class="section-header">
           <div class="section-icon">📚</div>
-          <h3>Questions du quiz</h3>
+          <h3>Question {{ question.numero }}</h3>
+          <div class="question-actions">
+            <button class="btn-action" (click)="dupliquerQuestion(i)" title="Dupliquer">
+              <span class="btn-icon">📋</span>
+            </button>
+            <button class="btn-action" (click)="deplacerQuestion(i, 'up')" 
+                    [disabled]="i === 0" title="Déplacer vers le haut">
+              <span class="btn-icon">⬆️</span>
+            </button>
+            <button class="btn-action" (click)="deplacerQuestion(i, 'down')" 
+                    [disabled]="i === quiz.questions.length - 1" title="Déplacer vers le bas">
+              <span class="btn-icon">⬇️</span>
+            </button>
+            <button class="btn-action btn-danger" (click)="supprimerQuestion(i)" 
+                    [disabled]="quiz.questions.length === 1" title="Supprimer">
+              <span class="btn-icon">🗑️</span>
+            </button>
+          </div>
         </div>
 
-        <div class="question-header">
-          <div class="question-number">Questions 1</div>
-          <button class="btn-add-question">
-            <span class="btn-icon">➕</span>
-            <span>Ajouter une question</span>
-          </button>
-        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Type de question *</label>
+            <div class="select-field">
+              <select [(ngModel)]="question.type" 
+                      (change)="onTypeQuestionChange(i)"
+                      class="form-select">
+                <option *ngFor="let type of typesQuestions" [value]="type.value">
+                  {{ type.icon }} {{ type.label }}
+                </option>
+              </select>
+            </div>
+            <div class="type-description">
+              {{ getDescriptionType(question.type) }}
+            </div>
+          </div>
 
-        <div class="form-group">
-          <label class="form-label">Type de question *</label>
-          <div class="select-field">
-            <span class="placeholder">Ex: Question a multiples choix</span>
-            <span class="dropdown-icon">▼</span>
+          <div class="form-group">
+            <label class="form-label">Points</label>
+            <div class="input-field">
+              <input type="number" 
+                     [(ngModel)]="question.points" 
+                     min="1" 
+                     max="10"
+                     class="form-input">
+            </div>
           </div>
         </div>
 
         <!-- Question Input -->
         <div class="form-group full-width">
+          <label class="form-label">Question *</label>
           <div class="input-field">
-            <span class="placeholder">Saisissez la question...</span>
+            <input type="text" 
+                   [(ngModel)]="question.question" 
+                   placeholder="Saisissez la question..."
+                   class="form-input">
           </div>
         </div>
 
-        <!-- Réponses -->
-        <div class="reponses-section">
-          <div class="reponse-item">
-            <div class="reponse-label">A</div>
-            <div class="input-field">
-              <span class="placeholder">Reponse A</span>
+        <!-- Contenu dynamique selon le type de question -->
+        <div class="question-content">
+          
+          <!-- Questions à choix multiples / Multi-réponses -->
+          <div *ngIf="question.type === 'choix_multiple' || question.type === 'multi_reponse' || question.type === 'case_a_cocher' || question.type === 'ordre'">
+            <div class="reponses-header">
+              <label class="form-label">Réponses</label>
+              <button class="btn-add-reponse" (click)="ajouterReponse(i)" 
+                      [disabled]="question.reponses.length >= 6">
+                <span class="btn-icon">➕</span>
+                Ajouter une réponse
+              </button>
+            </div>
+            
+            <div class="reponses-section">
+              <div class="reponse-item" *ngFor="let reponse of question.reponses; let j = index">
+                <div class="reponse-label">{{ reponse.lettre }}</div>
+                <div class="input-field reponse-input">
+                  <input type="text" 
+                         [(ngModel)]="reponse.texte" 
+                         [placeholder]="'Réponse ' + reponse.lettre"
+                         class="form-input">
+                </div>
+                <button class="btn-checkbox" 
+                        [class.correct]="reponse.correcte"
+                        (click)="onReponseCorrecteChange(i, j, question.type)">
+                  <span class="btn-icon">
+                    {{ question.type === 'multi_reponse' || question.type === 'case_a_cocher' ? '☑️' : '🔘' }}
+                  </span>
+                </button>
+                <button class="btn-action btn-danger" 
+                        (click)="supprimerReponse(i, j)"
+                        [disabled]="question.reponses.length <= 2">
+                  <span class="btn-icon">🗑️</span>
+                </button>
+              </div>
             </div>
           </div>
-          <div class="reponse-item">
-            <div class="reponse-label">B</div>
-            <div class="input-field">
-              <span class="placeholder">Reponse B</span>
+
+          <!-- Question Vrai/Faux -->
+          <div *ngIf="question.type === 'vrai_faux'" class="vrai-faux-section">
+            <div class="reponses-section">
+              <div class="reponse-item" *ngFor="let reponse of question.reponses; let j = index">
+                <div class="reponse-label">{{ reponse.lettre }}</div>
+                <div class="reponse-text">{{ reponse.texte }}</div>
+                <button class="btn-checkbox" 
+                        [class.correct]="reponse.correcte"
+                        (click)="onReponseCorrecteChange(i, j, question.type)">
+                  <span class="btn-icon">🔘</span>
+                </button>
+              </div>
             </div>
           </div>
-          <div class="reponse-item">
-            <div class="reponse-label">C</div>
+
+          <!-- Réponse courte -->
+          <div *ngIf="question.type === 'reponse_courte'" class="reponse-courte-section">
+            <label class="form-label">Réponse attendue *</label>
             <div class="input-field">
-              <span class="placeholder">Reponse C</span>
+              <input type="text" 
+                     [(ngModel)]="question.bonneReponse" 
+                     placeholder="Saisissez la réponse correcte..."
+                     class="form-input">
             </div>
           </div>
-          <div class="reponse-item">
-            <div class="reponse-label">D</div>
-            <div class="input-field">
-              <span class="placeholder">Reponse D</span>
+
+          <!-- Réponse longue -->
+          <div *ngIf="question.type === 'reponse_longue'" class="reponse-longue-section">
+            <label class="form-label">Réponse attendue *</label>
+            <div class="textarea-field">
+              <textarea [(ngModel)]="question.bonneReponse" 
+                       placeholder="Saisissez la réponse correcte..."
+                       class="form-textarea"></textarea>
             </div>
           </div>
+
+          <!-- Appariement -->
+          <div *ngIf="question.type === 'appariement'" class="appariement-section">
+            <div class="appariement-header">
+              <label class="form-label">Paires d'appariement</label>
+              <button class="btn-add-reponse" (click)="ajouterPaireAppariement(i)">
+                <span class="btn-icon">➕</span>
+                Ajouter une paire
+              </button>
+            </div>
+            
+            <div class="appariement-grid">
+              <div class="appariement-header-row">
+                <div class="appariement-col">Élément de gauche</div>
+                <div class="appariement-col">Élément de droite</div>
+                <div class="appariement-actions">Actions</div>
+              </div>
+              
+              <div class="appariement-row" *ngFor="let paire of question.pairesAppariement; let j = index">
+                <div class="appariement-col">
+                  <div class="input-field">
+                    <input type="text" 
+                           [(ngModel)]="paire.elementGauche" 
+                           placeholder="Élément à associer..."
+                           class="form-input">
+                  </div>
+                </div>
+                <div class="appariement-col">
+                  <div class="input-field">
+                    <input type="text" 
+                           [(ngModel)]="paire.elementDroit" 
+                           placeholder="Élément correspondant..."
+                           class="form-input">
+                  </div>
+                </div>
+                <div class="appariement-actions">
+                  <button class="btn-action btn-danger" 
+                          (click)="supprimerPaireAppariement(i, j)"
+                          [disabled]="question.pairesAppariement!.length <= 2">
+                    <span class="btn-icon">🗑️</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
         </div>
 
-        <!-- Bonne réponse -->
-        <div class="form-group full-width">
-          <label class="form-label">Bonne reponse *</label>
-          <div class="select-field">
-            <span class="placeholder">La bonne reponse!</span>
-            <span class="dropdown-icon">▼</span>
-          </div>
+        <!-- Indicateur de bonne réponse -->
+        <div *ngIf="question.type !== 'reponse_courte' && question.type !== 'reponse_longue' && question.type !== 'appariement'" 
+             class="bonne-reponse-indicator">
+          <span class="indicator-label">Bonne(s) réponse(s) sélectionnée(s) :</span>
+          <span class="indicator-value">
+            {{ question.bonneReponse || 'Aucune' }}
+          </span>
+        </div>
+      </div>
+
+      <!-- Bouton pour ajouter une nouvelle question -->
+      <div class="add-question-section">
+        <button class="btn btn-add-question-large" (click)="ajouterQuestion()">
+          <span class="btn-icon">➕</span>
+          <span>Ajouter une nouvelle question</span>
+        </button>
+      </div>
+
+      <!-- Résumé du quiz -->
+      <div class="quiz-summary">
+        <div class="summary-item">
+          <span class="summary-label">Nombre de questions :</span>
+          <span class="summary-value">{{ quiz.questions.length }}</span>
+        </div>
+        <div class="summary-item">
+          <span class="summary-label">Points totaux :</span>
+            <span class="summary-value">
+              {{ totalPoints() }}
+            </span>
+        </div>
+        <div class="summary-item">
+          <span class="summary-label">Durée totale :</span>
+          <span class="summary-value">{{ quiz.duree }} minutes</span>
         </div>
       </div>
 
       <!-- Actions -->
       <div class="actions-section">
-        <button class="btn btn-cancel">
+        <button class="btn btn-cancel" (click)="onAnnuler()">
           <span class="btn-icon">🗑️</span>
           <span>Annuler</span>
         </button>
-        <button class="btn btn-add-question-large">
-          <span class="btn-icon">➕</span>
-          <span>Ajouter une question</span>
-        </button>
-        <button class="btn btn-submit">
+        <button class="btn btn-submit" 
+                (click)="onEnregistrerQuiz()"
+                [disabled]="!estFormulaireValide()">
           <span class="btn-icon">💾</span>
           <span>Enregistrer le quiz</span>
         </button>
