@@ -1,13 +1,14 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-quiz-form',
   standalone: true,
-  imports: [],
+  imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './quiz-form.html',
-  styleUrl: './quiz-form.css'
+  styleUrls: ['./quiz-form.css']
 })
 export class QuizForm {
   // Données du formulaire

@@ -1,15 +1,16 @@
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import {FormBuilder, FormGroup, FormArray, Validators, ReactiveFormsModule} from '@angular/forms';
+import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-exercice-form',
   standalone: true,
   imports: [
-    ReactiveFormsModule
+    CommonModule, ReactiveFormsModule
   ],
   templateUrl: './exercice-form.html',
-  styleUrl: './exercice-form.css'
+  styleUrls: ['./exercice-form.css']
 })
 export class ExerciceForm implements OnInit {
   @ViewChild('fileInput') fileInput!: ElementRef;
@@ -128,7 +129,7 @@ export class ExerciceForm implements OnInit {
   onAnnuler(): void {
     if (confirm('Voulez-vous vraiment annuler ? Toutes les modifications seront perdues.')) {
       this.exerciceForm.reset();
-      this.router.navigate(['/admin/exercices']);
+      this.router.navigate(['/admin/exerciceList']);
     }
   }
 
@@ -161,7 +162,7 @@ export class ExerciceForm implements OnInit {
     // Simulation de succès
     setTimeout(() => {
       alert('Exercice enregistré avec succès !');
-      this.router.navigate(['/admin/exercices']);
+      this.router.navigate(['/admin/exerciceList']);
     }, 1000);
   }
 

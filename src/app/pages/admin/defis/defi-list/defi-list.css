@@ -15,8 +15,8 @@
 .form-main-container,
 .defis-management-content {
   flex: 1;
-  margin-left: 210px;
-  margin-top: 70px;
+  /* layout offsets moved to global .main-content */
+  /* layout offsets moved to global .main-content */
   padding: 1rem;
   min-height: calc(100vh - 70px);
   display: flex;
@@ -46,7 +46,9 @@
 }
 
 .header-actions {
-  /* Le bouton Nouveau défis est positionné en haut à droite avec la couleur violette */
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .btn-new-defis,

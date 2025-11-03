@@ -1,11 +1,12 @@
 import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-recompense-form',
   standalone: true,
-  imports: [],
+  imports: [CommonModule],
   templateUrl: './recompense-form.html',
-  styleUrl: './recompense-form.css'
+  styleUrls: ['./recompense-form.css']
 })
 export class RecompenseForm {
 

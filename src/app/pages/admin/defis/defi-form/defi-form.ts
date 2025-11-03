@@ -1,12 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import {FormBuilder, FormGroup, FormArray, Validators, ReactiveFormsModule} from '@angular/forms';
+import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-defi-form',
   standalone:true,
   imports: [
-    ReactiveFormsModule
+    CommonModule, ReactiveFormsModule
   ],
   templateUrl: './defi-form.html',
   styleUrls: ['./defi-form.css'],
@@ -85,7 +86,7 @@ export class DefiForm implements OnInit {
   onAnnuler(): void {
     if (confirm('Voulez-vous vraiment annuler ? Toutes les modifications seront perdues.')) {
       this.defiForm.reset();
-      this.router.navigate(['/admin/defis']);
+      this.router.navigate(['/admin/defiList']);
     }
   }
 
@@ -118,7 +119,7 @@ export class DefiForm implements OnInit {
     // Simulation de succès
     setTimeout(() => {
       alert('Défi enregistré avec succès !');
-      this.router.navigate(['/admin/defis']);
+      this.router.navigate(['/admin/defiList']);
     }, 1000);
   }
 

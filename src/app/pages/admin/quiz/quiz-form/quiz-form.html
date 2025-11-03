@@ -3,16 +3,16 @@
   <!-- Votre formulaire ici -->
   <div class="ajout-quiz-container">
     <!-- Header -->
-    <div class="header">
-      <div class="retour-btn">
+    <div class="form-header">
+      <h1 class="page-title">Ajouter un quiz</h1>
+      <a routerLink="/admin/quizList" class="back-btn">
         <span class="arrow-back">←</span>
         <span>Retour</span>
-      </div>
-      <div class="page-title">Ajouter un livre</div>
+      </a>
     </div>
 
-    <!-- Main Content -->
-    <div class="main-content">
+  <!-- Main Content -->
+  <div class="form-body">
       <div class="description">
         Remplissez les informations suivantes pour ajouter un livre dans la bibliothèque !
       </div>
@@ -118,19 +118,10 @@
       </div>
 
       <!-- Actions -->
-      <div class="actions-section">
-        <button class="btn btn-cancel">
-          <span class="btn-icon">🗑️</span>
-          <span>Annuler</span>
-        </button>
-        <button class="btn btn-add-question-large">
-          <span class="btn-icon">➕</span>
-          <span>Ajouter une question</span>
-        </button>
-        <button class="btn btn-submit">
-          <span class="btn-icon">💾</span>
-          <span>Enregistrer le quiz</span>
-        </button>
+      <div class="form-actions">
+        <button class="btn btn-secondary btn-action">Annuler</button>
+        <button class="btn btn-secondary btn-action">Ajouter une question</button>
+        <button class="btn btn-primary btn-action">Enregistrer le quiz</button>
       </div>
     </div>
   </div>

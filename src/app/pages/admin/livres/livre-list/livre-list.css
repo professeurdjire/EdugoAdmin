@@ -1,6 +1,6 @@
 .livres-container {
   flex: 1;
-  margin-left: 210px; /* espace sidebar */
+  /* layout offsets moved to global .main-content */
   margin-top: 70px;   /* espace navbar */
   padding: 1rem;
   min-height: calc(100vh - 60px);

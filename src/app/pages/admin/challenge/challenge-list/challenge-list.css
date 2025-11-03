@@ -22,7 +22,7 @@
 .form-main-container,
 .challenges-management-content {
   flex: 1;
-  margin-left: 210px;
+  /* layout offsets moved to global .main-content */
   margin-top: 70px;
   padding: 1rem;
   min-height: calc(100vh - 70px);

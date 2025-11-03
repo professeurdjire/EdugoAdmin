@@ -1,12 +1,10 @@
 <div class="form-page-container">
-  <a routerLink="/admin/exercices" class="back-button">
-    <span class="back-icon">←</span>
-    <span>Retour</span>
-  </a>
-
   <header class="form-header">
     <h1>Ajouter un exercice</h1>
-    <p class="subtitle">Remplissez les informations suivantes pour ajouter un exercice dans votre plateforme!</p>
+    <a routerLink="/admin/exerciceList" class="back-btn">
+      <span class="back-icon">←</span>
+      <span>Retour</span>
+    </a>
   </header>
 
   <form class="exercice-form" [formGroup]="exerciceForm" (ngSubmit)="onSubmit()">
@@ -183,18 +181,9 @@
 
     <!-- Actions -->
     <div class="form-actions">
-      <button type="button" class="btn btn-cancel" (click)="onAnnuler()">
-        <span class="btn-icon">🗑️</span>
-        <span>Annuler</span>
-      </button>
-      <button type="button" class="btn btn-add-question" (click)="ajouterQuestion()">
-        <span class="btn-icon">➕</span>
-        <span>Ajouter une question</span>
-      </button>
-      <button type="submit" class="btn btn-save" [disabled]="exerciceForm.invalid">
-        <span class="btn-icon">💾</span>
-        <span>Enregistrer l'exercice</span>
-      </button>
+      <button type="button" class="btn btn-secondary btn-action" (click)="onAnnuler()">Annuler</button>
+      <button type="button" class="btn btn-secondary btn-action" (click)="ajouterQuestion()">Ajouter une question</button>
+      <button type="submit" class="btn btn-primary btn-action" [disabled]="exerciceForm.invalid">Enregistrer l'exercice</button>
     </div>
   </form>
 </div>
