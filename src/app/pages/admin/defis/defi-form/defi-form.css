@@ -15,13 +15,13 @@
 .form-page-container,
 .form-container {
   flex: 1;
-  /* layout offsets moved to global .main-content */
-  padding: 1rem;
-  min-height: calc(100vh - 70px);
+  /* compact layout */
+  padding: 0.5rem;
+  min-height: auto;
   display: flex;
   flex-direction: column;
-  gap: 2rem;
-  background-color: #ECF0F1;
+  gap: 0.5rem;
+  background-color: transparent;
   overflow-x: hidden;
 }
 
@@ -45,18 +45,18 @@
 .back-btn {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  padding: 0.75rem 1.5rem;
-  background-color: #a885d8;
+  gap: 6px;
+  padding: 6px 10px;
+  background-color: transparent; /* remove heavy background */
   border: none;
-  border-radius: 8px;
+  border-radius: 4px;
   text-decoration: none;
-  color: #ffffff;
+  color: #333;
   font-weight: 600;
-  font-size: 0.9rem;
+  font-size: 12px;
   cursor: pointer;
-  transition: all 0.3s ease;
-  margin-bottom: 55px;
+  transition: all 0.12s ease;
+  margin-bottom: 8px;
 }
 
 .back-button:hover,
@@ -76,41 +76,41 @@
 .form-header {
   display: flex;
   align-items: center;
-  gap: 2rem;
-  background: #ffffff;
-  padding: 1.5rem 2rem;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-  text-align: center;
-  margin-bottom: 48px;
+  gap: 0.5rem;
+  background: transparent; /* remove header card */
+  padding: 6px 0;
+  border-radius: 0;
+  box-shadow: none;
+  text-align: left;
+  margin-bottom: 8px;
   position: relative;
 }
 
 .form-header h1,
 .form-title,
 .main-title {
-  font-size: 2.5rem;
-  font-weight: 600;
-  color: #000000;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #111;
   margin: 0;
-  text-align: center;
+  text-align: left;
   flex: 1;
-  line-height: 75px;
-  margin-bottom: 48px;
+  line-height: 1.2;
+  margin-bottom: 4px;
 }
 
 .form-header .subtitle,
 .form-description {
-  text-align: center;
-  font-size: 1.4rem;
-  color: #000000;
-  background: #ffffff;
-  padding: 1.5rem;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  text-align: left;
+  font-size: 0.95rem;
+  color: #333;
+  background: transparent;
+  padding: 0;
+  border-radius: 0;
+  box-shadow: none;
   font-weight: 400;
   margin: 0;
-  line-height: 28.125px;
+  line-height: 1.2;
 }
 
 /* Contenu du formulaire */
@@ -124,37 +124,37 @@
 
 /* Sections */
 .form-section {
-  background: #ffffff;
-  padding: 2rem;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  background: #ffffff; /* restore section card look */
+  padding: 12px;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.06);
   border: none;
-  margin: 0 0 40px 0;
+  margin: 0 0 8px 0;
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 8px;
 }
 
 .section-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
+  margin-bottom: 8px;
 }
 
 .section-title {
   display: flex;
   align-items: center;
-  gap: 1rem;
-  margin-bottom: 2rem;
-  padding-bottom: 1rem;
-  border-bottom: 1px solid rgba(128, 128, 128, 0.5);
-  font-size: 24px;
-  font-weight: 400;
-  line-height: 28.125px;
+  gap: 0.5rem;
+  margin-bottom: 4px;
+  padding-bottom: 0;
+  border-bottom: none;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.2;
   padding: 0;
-  margin: 0 0 16px 0;
-  color: #000000;
+  margin: 0;
+  color: #111;
 }
 
 .section-title.with-button {
@@ -189,20 +189,20 @@
 .divider {
   border: none;
   height: 1px;
-  background-color: rgba(128, 128, 128, 0.5);
-  margin: 27px 0;
+  background-color: rgba(128, 128, 128, 0.25);
+  margin: 10px 0;
 }
 
 /* Grille et disposition */
 .form-row {
   display: flex;
-  gap: 116px;
+  gap: 12px;
 }
 
 .form-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 1.5rem;
+  gap: 10px;
   align-items: start;
 }
 
@@ -210,8 +210,8 @@
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  margin-bottom: 40px;
+  gap: 6px;
+  margin-bottom: 8px;
 }
 
 .form-group.full-width {
@@ -220,22 +220,22 @@
 }
 
 .form-group.half-width {
-  width: calc(50% - 58px);
+  width: calc(50% - 20px);
 }
 
 .question-group {
-  margin-bottom: 40px;
+  margin-bottom: 8px;
 }
 
 .question-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
+  margin-bottom: 8px;
 }
 
 .question-header h3 {
-  font-size: 20px;
+  font-size: 14px;
   font-weight: 600;
   color: #000000;
   margin: 0;
@@ -271,12 +271,12 @@
 .form-group label,
 label {
   display: block;
-  font-size: 1.1rem;
+  font-size: 0.95rem;
   font-weight: 600;
   color: #000000;
-  margin-bottom: 0.75rem;
+  margin-bottom: 0.35rem;
   text-align: left;
-  line-height: 23.4375px;
+  line-height: 1.2;
 }
 
 /* Inputs et Selects */
@@ -298,17 +298,17 @@ textarea,
 .select-wrapper .placeholder-text,
 .form-input select {
   width: 100%;
-  padding: 1rem 1.25rem;
-  border: 1px solid #d9d9d9;
-  border-radius: 8px;
-  background: rgba(255, 255, 255, 0.2);
-  font-size: 1rem;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #eee;
+  border-radius: 6px;
+  background: transparent;
+  font-size: 0.95rem;
   font-weight: 500;
   color: #000000;
-  transition: all 0.3s ease;
+  transition: all 0.12s ease;
   box-sizing: border-box;
   font-family: 'Roboto', sans-serif;
-  line-height: 28.125px;
+  line-height: 1.2;
 }
 
 .input-with-icon,
@@ -316,15 +316,15 @@ textarea,
   padding: 0;
   display: flex;
   align-items: center;
-  border: 1px solid #d9d9d9;
-  border-radius: 8px;
-  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid #eee;
+  border-radius: 6px;
+  background: transparent;
 }
 
 .input-with-icon input,
 .input-wrapper input {
   border: none;
-  padding: 1rem 1.25rem;
+  padding: 0.5rem 0.75rem;
   width: 100%;
   background: transparent;
 }
@@ -332,14 +332,14 @@ textarea,
 .input-icon,
 .input-with-icon .input-icon {
   position: absolute;
-  right: 1.25rem;
+  right: 0.75rem;
   top: 50%;
   transform: translateY(-50%);
-  width: 24px;
-  height: 24px;
+  width: 20px;
+  height: 20px;
   color: #000000;
   pointer-events: none;
-  font-size: 20px;
+  font-size: 16px;
 }
 
 .input-icon-group {
@@ -386,18 +386,18 @@ textarea:focus,
 .form-input,
 .form-select,
 .form-input select {
-  height: 3.5rem;
+  height: 2.4rem;
 }
 
 .form-textarea,
 textarea {
-  height: 8rem;
+  height: 6rem;
   resize: vertical;
-  min-height: 8rem;
+  min-height: 6rem;
 }
 
 .form-textarea {
-  min-height: 165px;
+  min-height: 100px;
 }
 
 /* Select personnalisé */
@@ -437,13 +437,13 @@ textarea {
 /* Zones d'upload */
 .file-upload-area,
 .image-upload-area {
-  border: 2px dashed #d9d9d9;
-  border-radius: 12px;
-  padding: 3rem 2rem;
+  border: 1px dashed #e6e6e6;
+  border-radius: 8px;
+  padding: 1rem 0.75rem;
   text-align: center;
   cursor: pointer;
-  transition: all 0.3s ease;
-  background: rgba(255, 255, 255, 0.2);
+  transition: all 0.12s ease;
+  background: transparent;
 }
 
 .file-upload-area:hover,
@@ -538,18 +538,18 @@ textarea {
 /* Boutons inline */
 .btn-inline-add,
 .btn-add-question-inline {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 8px;
-  padding: 12px 20px;
+  gap: 6px;
+  padding: 6px 10px;
   background-color: #a885d8;
   border: none;
   border-radius: 5px;
   color: #ffffff;
-  font-size: 18px;
+  font-size: 13px;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.12s ease;
 }
 
 .btn-inline-add:hover,
@@ -566,9 +566,9 @@ textarea {
 /* Actions */
 .form-actions {
   display: flex;
-  justify-content: center;
-  gap: 2rem;
-  margin-top: 1rem;
+  justify-content: flex-start;
+  gap: 8px;
+  margin-top: 6px;
 }
 
 .form-actions.space-between {
@@ -580,20 +580,20 @@ textarea {
 
 .btn,
 .form-actions .btn {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 0.75rem;
-  padding: 1.25rem 2.5rem;
+  gap: 0.5rem;
+  padding: 8px 12px;
   border: none;
-  border-radius: 10px;
-  font-size: 1.1rem;
+  border-radius: 8px;
+  font-size: 13px;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.3s ease;
-  min-width: 220px;
-  width: 300px;
-  height: 65px;
+  transition: all 0.12s ease;
+  min-width: 100px;
+  width: auto;
+  height: 36px;
   text-align: center;
 }
 

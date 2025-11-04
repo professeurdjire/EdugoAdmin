@@ -261,9 +261,20 @@ button {
   font-size: 0.7rem;
 }
 
+.add-btn{
+  background-color: #a885d8;
+  color: #fff;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+
+
+
 /* Boutons compacts */
 .btn,
-.add-btn,
 .filter-btn,
 .reset-btn,
 .back-btn {

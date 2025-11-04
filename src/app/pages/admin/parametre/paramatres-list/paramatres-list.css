@@ -1,63 +1,61 @@
-/* --- Couleurs et Styles de base --- */
+/* --- Couleurs et Styles de base (compact) --- */
 .parametres-management-content {
-  /* layout offsets moved to global .main-content */
-  padding: 1rem;
-  min-height: calc(100vh - 60px);
+  /* compact layout for settings */
+  padding: 0.5rem;
+  min-height: auto;
   display: flex;
   flex-direction: column;
-  gap: 2rem;
-  background-color: var(--main-bg);
+  gap: 0.5rem;
+  background-color: transparent; /* remove heavy background */
   overflow-x: hidden;
 }
 
 .page-title {
-  font-size: 24px;
+  font-size: 16px;
   font-weight: 600;
-  color: #444;
-  margin-bottom: 20px;
+  color: #333;
+  margin: 6px 0 8px 0;
 }
 
 .settings-container {
-  background-color: #ffffff;
-  padding: 40px;
+  background-color: #ffffff; /* restore card background */
+  padding: 14px 12px; /* compact but visible */
   border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.04);
 }
 
 /* --- Section Logo et Slogan --- */
-.logo-section {
-  text-align: center;
-  margin-bottom: 40px;
+.form-actions {
+  display: flex;
+  justify-content: flex-start;
+  gap: 8px;
+  margin-top: 12px;
 }
-
-.logo-placeholder {
-  font-size: 40px;
-  font-weight: 700;
-  color: #9c27b0; /* Violet EDUGO */
-  letter-spacing: 2px;
-  margin-bottom: 10px;
-  /* Simule l'effet du logo */
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-}
-
-.tagline {
-  font-size: 16px;
-  color: #666;
+.btn-submit, .btn-cancel {
+  padding: 8px 14px;
+  border: none;
+  border-radius: 6px;
+  font-size: 13px;
   font-weight: 500;
-  margin: 0;
+  cursor: pointer;
+  transition: background-color 0.12s, box-shadow 0.12s;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: auto;
 }
 
 /* --- Formulaire --- */
 .settings-form {
-  max-width: 1000px;
-  margin: 0 auto;
+  max-width: 100%;
+  margin: 0;
 }
 
 .form-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 30px 40px;
-  margin-bottom: 30px;
+  gap: 8px 12px;
+  margin-bottom: 8px;
 }
 
 .form-group {
@@ -70,21 +68,21 @@
 }
 
 .form-group label {
-  font-size: 15px;
+  font-size: 12px;
   font-weight: 600;
   color: #444;
-  margin-bottom: 5px;
+  margin-bottom: 4px;
 }
 
 .form-control {
-  padding: 10px 12px;
-  border: 1px solid #e0e0e0;
-  border-radius: 4px;
-  font-size: 14px;
+  padding: 6px 8px;
+  border: 1px solid transparent; /* remove prominent borders */
+  border-radius: 3px;
+  font-size: 13px;
   color: #444;
-  background-color: #ffffff;
-  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05);
-  transition: border-color 0.2s;
+  background-color: transparent; /* no heavy bg */
+  box-shadow: none;
+  transition: border-color 0.12s;
 }
 
 .form-control:focus {
@@ -94,14 +92,14 @@
 
 textarea.form-control {
   resize: vertical;
-  min-height: 100px;
-  line-height: 1.5;
+  min-height: 80px;
+  line-height: 1.3;
 }
 
 .form-text-muted {
-  font-size: 11px;
+  font-size: 10px;
   color: #999;
-  margin-top: 5px;
+  margin-top: 4px;
 }
 
 /* --- Actions de soumission --- */

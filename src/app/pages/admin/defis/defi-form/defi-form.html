@@ -119,31 +119,56 @@
                  class="form-input">
         </div>
 
-        <!-- Réponses -->
-        <div class="reponses-group">
-          <div class="form-group" *ngFor="let lettre of ['A', 'B', 'C', 'D']">
-            <label [for]="'answer-' + lettre.toLowerCase() + '-' + i" class="sr-only">Reponse {{ lettre }}</label>
-            <div class="input-wrapper">
-              <input type="text" [id]="'answer-' + lettre.toLowerCase() + '-' + i"
-                     [formControlName]="'reponse' + lettre"
-                     placeholder="Reponse {{ lettre }}"
-                     class="form-input">
-              <span class="input-icon dropdown-arrow-neg-90">▼</span>
+        <!-- Réponses dynamiques -->
+        <div class="reponses-group" formArrayName="reponses">
+          <div class="reponse-item" *ngFor="let rep of getReponses(i).controls; let j = index" [formGroupName]="j">
+            <div class="reponse-label">{{ rep.get('lettre')?.value }}</div>
+            <div class="input-field reponse-input">
+              <input type="text" formControlName="texte" placeholder="Réponse {{ rep.get('lettre')?.value }}" class="form-input">
             </div>
+            <button type="button" class="btn-checkbox" [class.correct]="rep.get('correcte')?.value" (click)="onReponseCorrecteChange(i, j, question.get('typeQuestion')?.value)">
+              <span class="btn-icon">{{ question.get('typeQuestion')?.value === 'multi_reponse' ? '☑️' : '🔘' }}</span>
+            </button>
+            <button type="button" class="btn-action btn-danger" (click)="supprimerReponse(i, j)" [disabled]="getReponses(i).length <= 2">
+              <span class="btn-icon">🗑️</span>
+            </button>
+          </div>
+
+          <div class="reponses-actions">
+            <button type="button" class="btn-inline-add" (click)="ajouterReponse(i)" [disabled]="getReponses(i).length >= 6">Ajouter une réponse</button>
           </div>
         </div>
 
-        <div class="form-group">
-          <label [for]="'correct-answer-' + i">Bonne reponse <span class="required-star">*</span></label>
-          <select [id]="'correct-answer-' + i"
-                  formControlName="bonneReponse"
-                  class="form-input">
-            <option value="">La bonne reponse!</option>
-            <option value="A">Réponse A</option>
-            <option value="B">Réponse B</option>
-            <option value="C">Réponse C</option>
-            <option value="D">Réponse D</option>
-          </select>
+        <!-- Paires d'appariement (si applicable) -->
+        <div *ngIf="question.get('typeQuestion')?.value === 'appariement'" class="appariement-section">
+            <div class="appariement-grid" formArrayName="pairesAppariement">
+            <div class="appariement-row" *ngFor="let paire of getPaires(i).controls; let j = index" [formGroupName]="j">
+              <div class="appariement-col">
+                <input type="text" formControlName="elementGauche" placeholder="Élément gauche" class="form-input">
+              </div>
+              <div class="appariement-col">
+                <input type="text" formControlName="elementDroit" placeholder="Élément droit" class="form-input">
+              </div>
+              <div class="appariement-actions">
+                <button type="button" class="btn-action btn-danger" (click)="supprimerPaireAppariement(i, j)" [disabled]="getPaires(i).length <= 2">🗑️</button>
+              </div>
+            </div>
+            <button type="button" class="btn-inline-add" (click)="ajouterPaireAppariement(i)">Ajouter une paire</button>
+          </div>
+        </div>
+
+        <!-- Points / bonne réponse (summary for single-choice style) -->
+        <div class="form-row small-gap">
+          <div class="form-group">
+            <label>Points</label>
+            <input type="number" formControlName="points" min="1" max="10" class="form-input">
+          </div>
+          <div class="form-group">
+            <label>Bonne(s) réponse(s)</label>
+            <div class="summary-answers">
+              <span *ngFor="let rep of getReponses(i).controls">{{ rep.get('lettre')?.value }}{{ rep.get('correcte')?.value ? ' ✓' : '' }}</span>
+            </div>
+          </div>
         </div>
 
         <hr class="divider" *ngIf="i < questions.controls.length - 1">

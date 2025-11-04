@@ -52,8 +52,14 @@
               <p class="card-subtitle">{{ subject.description }}</p>
             </div>
             <div class="card-actions">
-              <div class="action-btn edit-btn" (click)="openEditModal(subject.id)">✏️</div>
-              <div class="action-btn delete-btn" (click)="deleteItem(subject.id)">🗑️</div>
+              <div class="action-btn edit-btn" (click)="openEditModal(subject.id)"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M2 11.5002V14.0002H4.5L11.8733 6.62683L9.37333 4.12683L2 11.5002ZM13.8067 4.6935C13.8685 4.63182 13.9175 4.55856 13.951 4.47791C13.9844 4.39727 14.0016 4.31081 14.0016 4.2235C14.0016 4.13619 13.9844 4.04973 13.951 3.96908C13.9175 3.88843 13.8685 3.81517 13.8067 3.7535L12.2467 2.1935C12.185 2.1317 12.1117 2.08266 12.0311 2.04921C11.9504 2.01576 11.864 1.99854 11.7767 1.99854C11.6894 1.99854 11.6029 2.01576 11.5223 2.04921C11.4416 2.08266 11.3683 2.1317 11.3067 2.1935L10.0867 3.4135L12.5867 5.9135L13.8067 4.6935Z" fill="#808080"/>
+</svg>
+</div>
+              <div class="action-btn delete-btn" (click)="deleteItem(subject.id)"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M4.00065 12.6667C4.00065 13.4 4.60065 14 5.33398 14H10.6673C11.4007 14 12.0007 13.4 12.0007 12.6667V4.66667H4.00065V12.6667ZM12.6673 2.66667H10.334L9.66732 2H6.33398L5.66732 2.66667H3.33398V4H12.6673V2.66667Z" fill="#808080"/>
+</svg>
+</div>
             </div>
           </div>
           <div class="card-stats">
@@ -96,8 +102,13 @@
               <p class="card-subtitle">Cycle {{ level.cycle }}</p>
             </div>
             <div class="card-actions">
-              <div class="action-btn edit-btn" (click)="openEditModal(level.id)">✏️</div>
-              <div class="action-btn delete-btn" (click)="deleteItem(level.id)">🗑️</div>
+              <div class="action-btn edit-btn" (click)="openEditModal(level.id)"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M2 11.5002V14.0002H4.5L11.8733 6.62683L9.37333 4.12683L2 11.5002ZM13.8067 4.6935C13.8685 4.63182 13.9175 4.55856 13.951 4.47791C13.9844 4.39727 14.0016 4.31081 14.0016 4.2235C14.0016 4.13619 13.9844 4.04973 13.951 3.96908C13.9175 3.88843 13.8685 3.81517 13.8067 3.7535L12.2467 2.1935C12.185 2.1317 12.1117 2.08266 12.0311 2.04921C11.9504 2.01576 11.864 1.99854 11.7767 1.99854C11.6894 1.99854 11.6029 2.01576 11.5223 2.04921C11.4416 2.08266 11.3683 2.1317 11.3067 2.1935L10.0867 3.4135L12.5867 5.9135L13.8067 4.6935Z" fill="#808080"/>
+</svg>
+</div>
+              <div class="action-btn delete-btn" (click)="deleteItem(level.id)"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M4.00065 12.6667C4.00065 13.4 4.60065 14 5.33398 14H10.6673C11.4007 14 12.0007 13.4 12.0007 12.6667V4.66667H4.00065V12.6667ZM12.6673 2.66667H10.334L9.66732 2H6.33398L5.66732 2.66667H3.33398V4H12.6673V2.66667Z" fill="#808080"/>
+</svg></div>
             </div>
           </div>
           <div class="card-stats">
@@ -140,8 +151,13 @@
               <p class="card-subtitle">{{ classItem.teacher }} - {{ classItem.level }}</p>
             </div>
             <div class="card-actions">
-              <div class="action-btn edit-btn" (click)="openEditModal(classItem.id)">✏️</div>
-              <div class="action-btn delete-btn" (click)="deleteItem(classItem.id)">🗑️</div>
+              <div class="action-btn edit-btn" (click)="openEditModal(classItem.id)"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M2 11.5002V14.0002H4.5L11.8733 6.62683L9.37333 4.12683L2 11.5002ZM13.8067 4.6935C13.8685 4.63182 13.9175 4.55856 13.951 4.47791C13.9844 4.39727 14.0016 4.31081 14.0016 4.2235C14.0016 4.13619 13.9844 4.04973 13.951 3.96908C13.9175 3.88843 13.8685 3.81517 13.8067 3.7535L12.2467 2.1935C12.185 2.1317 12.1117 2.08266 12.0311 2.04921C11.9504 2.01576 11.864 1.99854 11.7767 1.99854C11.6894 1.99854 11.6029 2.01576 11.5223 2.04921C11.4416 2.08266 11.3683 2.1317 11.3067 2.1935L10.0867 3.4135L12.5867 5.9135L13.8067 4.6935Z" fill="#808080"/>
+</svg>
+</div>
+              <div class="action-btn delete-btn" (click)="deleteItem(classItem.id)"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M4.00065 12.6667C4.00065 13.4 4.60065 14 5.33398 14H10.6673C11.4007 14 12.0007 13.4 12.0007 12.6667V4.66667H4.00065V12.6667ZM12.6673 2.66667H10.334L9.66732 2H6.33398L5.66732 2.66667H3.33398V4H12.6673V2.66667Z" fill="#808080"/>
+</svg></div>
             </div>
           </div>
           <div class="card-stats">

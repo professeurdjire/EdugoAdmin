@@ -260,7 +260,18 @@
   overflow: hidden;
   text-overflow: ellipsis;
 }
-.quiz-list-section .add-btn,
+
+.add-btn{
+  background-color: #a885d8;
+  color: #fff;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+
+.quiz-list-section,
 .quiz-list-section .sort-section,
 .quiz-list-section .actions-group {
   margin-left: auto;

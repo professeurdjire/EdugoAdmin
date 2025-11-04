@@ -1,1 +1,31 @@
-<p>niveaux-list works!</p>
+<div class="page-header">
+	<h2>Niveaux</h2>
+	<div class="actions">
+		<button class="btn btn-primary" (click)="goToAdd()">Ajouter</button>
+		<button class="btn" (click)="load()">Actualiser</button>
+	</div>
+</div>
+
+<div *ngIf="loading">Chargement...</div>
+
+<table class="table" *ngIf="!loading && niveaux.length">
+	<thead>
+		<tr>
+			<th>ID</th>
+			<th>Nom</th>
+			<th>Actions</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr *ngFor="let n of niveaux">
+			<td>{{ n.id }}</td>
+			<td>{{ n.nom }}</td>
+			<td>
+				<button class="btn" (click)="edit(n)">Éditer</button>
+				<button class="btn btn-danger" (click)="delete(n)">Supprimer</button>
+			</td>
+		</tr>
+	</tbody>
+</table>
+
+<div *ngIf="!loading && !niveaux.length">Aucun niveau trouvé.</div>
