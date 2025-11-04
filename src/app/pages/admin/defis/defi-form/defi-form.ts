@@ -1,19 +1,33 @@
 import { Component, OnInit } from '@angular/core';
-import {FormBuilder, FormGroup, FormArray, Validators, ReactiveFormsModule} from '@angular/forms';
+import {FormBuilder, FormGroup, FormArray, Validators, FormControl, ReactiveFormsModule} from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-defi-form',
   standalone:true,
-  imports: [
-    CommonModule, ReactiveFormsModule
-  ],
+  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './defi-form.html',
   styleUrls: ['./defi-form.css'],
 })
 export class DefiForm implements OnInit {
   defiForm: FormGroup;
+
+  typesQuestions = [
+    { value: 'choix_multiple', label: 'Choix multiple', icon: '📝' },
+    { value: 'multi_reponse', label: 'Multi-réponse', icon: '✅' },
+    { value: 'vrai_faux', label: 'Vrai / Faux', icon: '✔️' },
+    { value: 'reponse_courte', label: 'Réponse courte', icon: '✍️' },
+    { value: 'reponse_longue', label: 'Réponse longue', icon: '🧾' },
+    { value: 'appariement', label: 'Appariement', icon: '🔗' },
+    { value: 'ordre', label: 'Ordre', icon: '🔢' }
+  ];
+
+  niveauxDifficulte = [
+    { value: 'facile', label: 'Facile' },
+    { value: 'moyen', label: 'Moyen' },
+    { value: 'difficile', label: 'Difficile' }
+  ];
 
   constructor(
     private fb: FormBuilder,
@@ -40,33 +54,110 @@ export class DefiForm implements OnInit {
       dateAjout: ['', [Validators.required]],
 
       // Questions (FormArray)
-      questions: this.fb.array([this.createQuestion()])
+      questions: this.fb.array([this.createQuestionGroup(1)])
     });
   }
 
-  // Création d'une question
-  createQuestion(): FormGroup {
+  // Create a question group with dynamic reponses array
+  createQuestionGroup(numero: number) {
     return this.fb.group({
-      typeQuestion: ['', [Validators.required]],
+      numero: [numero],
+      typeQuestion: ['choix_multiple', [Validators.required]],
       question: ['', [Validators.required, Validators.minLength(5)]],
-      reponseA: [''],
-      reponseB: [''],
-      reponseC: [''],
-      reponseD: [''],
-      bonneReponse: ['', [Validators.required]]
+      points: [1],
+      reponses: this.fb.array(this.defaultReponses()),
+      pairesAppariement: this.fb.array([]),
+      bonneReponse: ['']
     });
+  }
+
+  defaultReponses() {
+    // default 4 answers A-D
+    const letters = ['A','B','C','D'];
+    return letters.map(l => this.fb.group({ lettre: [l], texte: [''], correcte: [false] }));
   }
 
   // Ajouter une nouvelle question
   ajouterQuestion(): void {
-    this.questions.push(this.createQuestion());
+    const nouveauNumero = this.questions.length + 1;
+    this.questions.push(this.createQuestionGroup(nouveauNumero));
+  }
+
+  // Dupliquer
+  dupliquerQuestion(index: number) {
+    const q = this.questions.at(index).value;
+    const copie = JSON.parse(JSON.stringify(q));
+    copie.numero = this.questions.length + 1;
+    this.questions.insert(index + 1, this.fb.group(copie));
+    this.renumeroterQuestions();
+  }
+
+  // Déplacer
+  deplacerQuestion(index: number, direction: 'up' | 'down') {
+    const target = direction === 'up' ? index - 1 : index + 1;
+    if (target < 0 || target >= this.questions.length) return;
+    const from = this.questions.at(index);
+    const to = this.questions.at(target);
+    const temp = from.value;
+    from.setValue(to.value);
+    to.setValue(temp);
+    this.renumeroterQuestions();
+  }
+
+  renumeroterQuestions() {
+    this.questions.controls.forEach((c, i) => c.get('numero')?.setValue(i + 1));
   }
 
   // Supprimer une question
   supprimerQuestion(index: number): void {
     if (this.questions.length > 1) {
       this.questions.removeAt(index);
+      this.renumeroterQuestions();
     }
+  }
+
+  // Réponses management
+  getReponses(questionIndex: number): FormArray {
+    return this.questions.at(questionIndex).get('reponses') as FormArray;
+  }
+
+  getPaires(questionIndex: number): FormArray {
+    return this.questions.at(questionIndex).get('pairesAppariement') as FormArray;
+  }
+
+  ajouterReponse(questionIndex: number) {
+    const reponses = this.getReponses(questionIndex);
+    const lettre = String.fromCharCode(65 + reponses.length);
+    reponses.push(this.fb.group({ lettre: [lettre], texte: [''], correcte: [false] }));
+  }
+
+  supprimerReponse(questionIndex: number, reponseIndex: number) {
+    const reponses = this.getReponses(questionIndex);
+    if (reponses.length <= 2) return;
+    reponses.removeAt(reponseIndex);
+  }
+
+  onReponseCorrecteChange(questionIndex: number, reponseIndex: number, type: string) {
+    const reponses = this.getReponses(questionIndex);
+    if (type === 'multi_reponse' || type === 'case_a_cocher') {
+      const ctrl = reponses.at(reponseIndex);
+      ctrl.get('correcte')?.setValue(!ctrl.get('correcte')?.value);
+    } else {
+      // single choice: only one true
+      reponses.controls.forEach((r, i) => r.get('correcte')?.setValue(i === reponseIndex));
+    }
+  }
+
+  // Appariement
+  ajouterPaireAppariement(questionIndex: number) {
+    const paires = this.questions.at(questionIndex).get('pairesAppariement') as FormArray;
+    paires.push(this.fb.group({ elementGauche: [''], elementDroit: [''] }));
+  }
+
+  supprimerPaireAppariement(questionIndex: number, paireIndex: number) {
+    const paires = this.questions.at(questionIndex).get('pairesAppariement') as FormArray;
+    if (paires.length <= 2) return;
+    paires.removeAt(paireIndex);
   }
 
   // Soumission du formulaire
@@ -74,8 +165,6 @@ export class DefiForm implements OnInit {
     if (this.defiForm.valid) {
       const formData = this.defiForm.value;
       console.log('Défi à enregistrer:', formData);
-
-      // Simulation d'enregistrement
       this.enregistrerDefi(formData);
     } else {
       this.marquerChampsCommeTouches();
@@ -103,6 +192,10 @@ export class DefiForm implements OnInit {
         control.controls.forEach((questionControl: FormGroup) => {
           Object.keys(questionControl.controls).forEach(subKey => {
             questionControl.get(subKey)?.markAsTouched();
+            const nested = questionControl.get(subKey);
+            if (nested instanceof FormArray) {
+              nested.controls.forEach((c: any) => c.markAsTouched && c.markAsTouched());
+            }
           });
         });
       } else {
@@ -123,39 +216,12 @@ export class DefiForm implements OnInit {
     }, 1000);
   }
 
-  // Méthodes utilitaires pour le template
-  estChampInvalide(nomChamp: string): boolean {
-    const control = this.defiForm.get(nomChamp);
-    return !!control && control.invalid && control.touched;
+  // Helpers
+  totalPoints(): number {
+    return this.questions.controls.reduce((acc, q: any) => acc + (q.get('points')?.value || 0), 0);
   }
 
-  estQuestionInvalide(index: number, nomChamp: string): boolean {
-    const question = this.questions.at(index) as FormGroup;
-    const control = question.get(nomChamp);
-    return !!control && control.invalid && control.touched;
-  }
-
-  // Getters pour les messages d'erreur
-  getErrorMessage(nomChamp: string): string {
-    const control = this.defiForm.get(nomChamp);
-    if (control?.errors?.['required']) {
-      return 'Ce champ est obligatoire';
-    }
-    if (control?.errors?.['minlength']) {
-      return `Minimum ${control.errors?.['minlength'].requiredLength} caractères`;
-    }
-    return '';
-  }
-
-  getQuestionErrorMessage(index: number, nomChamp: string): string {
-    const question = this.questions.at(index) as FormGroup;
-    const control = question.get(nomChamp);
-    if (control?.errors?.['required']) {
-      return 'Ce champ est obligatoire';
-    }
-    if (control?.errors?.['minlength']) {
-      return `Minimum ${control.errors?.['minlength'].requiredLength} caractères`;
-    }
-    return '';
+  estFormulaireValide(): boolean {
+    return this.defiForm.valid;
   }
 }

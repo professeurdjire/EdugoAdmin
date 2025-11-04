@@ -4,6 +4,7 @@
   justify-content: center;
   align-items: center;
   min-height: 100vh;
+  min-height: 100dvh; /* Support des nouvelles unités viewport */
   padding: 20px;
   background: #ECF0F1;
 }
@@ -11,9 +12,9 @@
 .login-card {
   display: flex;
   max-width: 1100px;
-  width: 85%;
-  height: 90vh;
-  max-height: 600px;
+  width: min(85%, 400px); /* Adaptation mobile-first */
+  height: auto; /* Hauteur automatique pour mobile */
+  min-height: 500px;
   background-color: #ffffff;
   border-radius: 35px;
   box-shadow: 4px 5px 15px rgba(0, 0, 0, 0.2);
@@ -21,8 +22,8 @@
 }
 
 .login-form-section {
-  flex: 1 1 51%;
-  padding: 30px 45px;
+  flex: 1 1 100%; /* Prend toute la largeur sur mobile */
+  padding: clamp(20px, 5vw, 45px); /* Padding responsive */
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -30,20 +31,20 @@
 
 .login-header {
   text-align: center;
-  margin-bottom: 25px;
+  margin-bottom: clamp(20px, 4vw, 25px);
 }
 
 .logo {
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-bottom: 15px;
+  margin-bottom: clamp(10px, 3vw, 15px);
 }
 
 .logo-graphic {
   position: relative;
-  width: 60px;
-  height: 50px;
+  width: clamp(50px, 8vw, 60px);
+  height: clamp(40px, 7vw, 50px);
   margin-bottom: 5px;
 }
 
@@ -52,14 +53,17 @@
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
+  max-width: 100%;
+  height: auto;
 }
-.logo-svg-1 { width: 70px; height: 62px; }
-.logo-svg-2 { width: 85px; height: 57px; }
-.logo-svg-3 { width: 40px; height: 40px; }
+
+.logo-svg-1 { width: clamp(60px, 10vw, 70px); height: clamp(52px, 9vw, 62px); }
+.logo-svg-2 { width: clamp(70px, 12vw, 85px); height: clamp(47px, 8vw, 57px); }
+.logo-svg-3 { width: clamp(35px, 6vw, 40px); height: clamp(35px, 6vw, 40px); }
 
 .logo-text {
   font-family: 'Roboto', sans-serif;
-  font-size: 32px;
+  font-size: clamp(24px, 5vw, 32px);
   font-weight: 500;
   line-height: 1;
   background: linear-gradient(90deg, #a885d8 25.96%, #333333 80.29%);
@@ -71,15 +75,15 @@
 }
 
 .title {
-  font-size: 24px;
+  font-size: clamp(18px, 4vw, 24px);
   font-weight: 700;
   line-height: 1.2;
-  margin: 0 0 5px 0;
+  margin: 0 0 clamp(3px, 1vw, 5px) 0;
   color: #000000;
 }
 
 .subtitle {
-  font-size: 14px;
+  font-size: clamp(12px, 2.5vw, 14px);
   font-weight: 600;
   line-height: 1.2;
   color: rgba(0, 0, 0, 0.6);
@@ -89,7 +93,7 @@
 .login-form {
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: clamp(12px, 3vw, 18px);
 }
 
 .form-group {
@@ -98,9 +102,9 @@
 }
 
 .form-group label {
-  font-size: 13px;
+  font-size: clamp(12px, 2.5vw, 13px);
   font-weight: 600;
-  margin-bottom: 6px;
+  margin-bottom: clamp(4px, 1vw, 6px);
   color: #000000;
 }
 
@@ -110,11 +114,11 @@
 
 .input-wrapper input {
   width: 100%;
-  height: 46px;
-  padding: 0 40px 0 15px;
+  height: clamp(42px, 8vw, 46px);
+  padding: 0 clamp(35px, 8vw, 40px) 0 clamp(12px, 3vw, 15px);
   border-radius: 8px;
   border: 1.5px solid #d0d0d0;
-  font-size: 13px;
+  font-size: clamp(12px, 2.5vw, 13px);
   font-family: 'Roboto', sans-serif;
   font-weight: 400;
   color: #333;
@@ -129,33 +133,36 @@
 
 .input-wrapper input::placeholder {
   color: #909090;
-  font-size: 12px;
+  font-size: clamp(11px, 2vw, 12px);
 }
 
 .input-icon {
   position: absolute;
-  right: 15px;
+  right: clamp(12px, 3vw, 15px);
   top: 50%;
   transform: translateY(-50%);
-  width: 16px;
-  height: 16px;
+  width: clamp(14px, 3vw, 16px);
+  height: clamp(14px, 3vw, 16px);
 }
 
 .form-options {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-top: 8px;
-  font-size: 12px;
+  margin-top: clamp(6px, 2vw, 8px);
+  font-size: clamp(11px, 2vw, 12px);
+  flex-wrap: wrap;
+  gap: 10px;
 }
 
 .remember-me {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: clamp(4px, 1vw, 6px);
   cursor: pointer;
   font-weight: 500;
   color: #000000;
+  flex-shrink: 0;
 }
 
 .hidden-checkbox {
@@ -163,20 +170,21 @@
 }
 
 .checkbox-icon {
-  width: 16px;
-  height: 16px;
+  width: clamp(14px, 3vw, 16px);
+  height: clamp(14px, 3vw, 16px);
   border: 2px solid #a885d8;
   border-radius: 3px;
   display: flex;
   align-items: center;
   justify-content: center;
   transition: all 0.2s ease;
+  flex-shrink: 0;
 }
 
 .checkbox-icon::after {
   content: '✓';
   color: white;
-  font-size: 10px;
+  font-size: clamp(8px, 2vw, 10px);
   opacity: 0;
   transition: opacity 0.2s ease;
 }
@@ -194,6 +202,7 @@
   text-decoration: none;
   font-weight: 500;
   transition: all 0.2s ease;
+  flex-shrink: 0;
 }
 
 .forgot-password:hover {
@@ -202,16 +211,16 @@
 }
 
 .submit-btn {
-  height: 46px;
+  height: clamp(42px, 8vw, 46px);
   background-color: #a885d8;
   color: #ffffff;
   border: none;
   border-radius: 8px;
-  font-size: 14px;
+  font-size: clamp(13px, 2.5vw, 14px);
   font-weight: 500;
   cursor: pointer;
   transition: all 0.3s ease;
-  margin-top: 15px;
+  margin-top: clamp(12px, 3vw, 15px);
   box-shadow: 0 3px 8px rgba(168, 133, 216, 0.3);
 }
 
@@ -227,187 +236,214 @@
 }
 
 .login-image-section {
-  flex: 1 1 49%;
-  display: flex;
+  display: none; /* Caché par défaut sur mobile */
 }
 
-.login-image-section img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
+/* ===== VERSIONS TABLETTE ET DESKTOP ===== */
 
-/* Responsive Styles */
-@media (max-width: 1200px) {
+/* Tablette en mode paysage et petits desktop */
+@media (min-width: 768px) {
   .login-card {
-    max-width: 1000px;
-    height: 72vh;
-    max-height: 550px;
+    width: min(90%, 900px);
+    height: clamp(500px, 70vh, 600px);
+    flex-direction: row;
   }
-
+  
   .login-form-section {
-    padding: 25px 35px;
+    flex: 1 1 51%;
+    padding: clamp(25px, 4vw, 45px);
   }
-
-  .logo-text {
-    font-size: 28px;
-  }
-
-  .title {
-    font-size: 22px;
-  }
-
-  .subtitle {
-    font-size: 13px;
-  }
-}
-
-@media (max-width: 992px) {
-  .login-card {
-    flex-direction: column;
-    max-width: 500px;
-    height: 80vh;
-    max-height: none;
-    border-radius: 25px;
-  }
-
+  
   .login-image-section {
-    order: -1;
-    flex: 0 0 28%;
-    min-height: 160px;
+    display: flex;
+    flex: 1 1 49%;
   }
-
-  .login-form-section {
-    padding: 20px 30px;
-    flex: 1;
-  }
-
-  .logo-text {
-    font-size: 26px;
-  }
-
-  .title {
-    font-size: 20px;
-  }
-
-  .subtitle {
-    font-size: 12px;
+  
+  .login-image-section img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
   }
 }
 
-@media (max-width: 768px) {
-  .login-page {
-    padding: 15px;
-  }
-
+/* Desktop */
+@media (min-width: 992px) {
   .login-card {
-    border-radius: 20px;
-    height: 82vh;
+    max-width: 1100px;
+    height: min(90vh, 600px);
   }
-
+  
   .login-form-section {
-    padding: 18px 22px;
-  }
-
-  .logo-graphic {
-    width: 50px;
-    height: 40px;
-  }
-
-  .logo-text {
-    font-size: 24px;
-  }
-
-  .title {
-    font-size: 18px;
-  }
-
-  .subtitle {
-    font-size: 11px;
-  }
-
-  .input-wrapper input {
-    height: 42px;
-  }
-
-  .submit-btn {
-    height: 42px;
-  }
-
-  .form-options {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 10px;
+    padding: 30px 45px;
   }
 }
 
-@media (max-width: 576px) {
+/* Grands écrans */
+@media (min-width: 1200px) {
+  .login-card {
+    height: min(80vh, 650px);
+  }
+}
+
+/* ===== AMÉLIORATIONS RESPONSIVES SPÉCIFIQUES ===== */
+
+/* Très petits téléphones (iPhone SE etc.) */
+@media (max-width: 360px) {
   .login-page {
     padding: 10px;
   }
-
+  
   .login-card {
-    border-radius: 18px;
-    width: 95%;
-    height: 85vh;
+    width: 100%;
+    border-radius: 20px;
   }
-
+  
   .login-form-section {
-    padding: 15px 18px;
+    padding: 15px;
   }
-
-  .logo-text {
-    font-size: 22px;
+  
+  .form-options {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
   }
-
-  .title {
-    font-size: 16px;
-  }
-
-  .subtitle {
-    font-size: 10px;
-  }
-
-  .input-wrapper input {
-    height: 40px;
-    padding: 0 35px 0 12px;
-  }
-
-  .submit-btn {
-    height: 40px;
-    margin-top: 12px;
-    font-size: 13px;
-  }
-
-  .login-form {
-    gap: 15px;
+  
+  .forgot-password {
+    align-self: flex-end;
   }
 }
 
-/* Pour les très petits écrans en mode paysage */
-@media (max-height: 550px) and (orientation: landscape) {
+/* Mode paysage sur mobile */
+@media (max-height: 500px) and (orientation: landscape) {
+  .login-page {
+    padding: 10px;
+    align-items: flex-start;
+  }
+  
   .login-card {
-    height: 95vh;
-    max-height: none;
+    height: auto;
+    min-height: auto;
+    margin: 20px 0;
   }
-
+  
   .login-form-section {
-    padding: 12px 25px;
+    padding: 15px 25px;
   }
-
+  
   .login-header {
-    margin-bottom: 12px;
+    margin-bottom: 15px;
   }
-
+  
   .logo {
-    margin-bottom: 10px;
+    margin-bottom: 8px;
   }
-
+  
   .login-form {
-    gap: 8px;
+    gap: 10px;
   }
-
+  
   .submit-btn {
-    margin-top: 8px;
+    margin-top: 10px;
+  }
+}
+
+/* Tablettes en mode portrait */
+@media (min-width: 768px) and (max-width: 1024px) and (orientation: portrait) {
+  .login-card {
+    width: min(85%, 600px);
+    height: min(80vh, 700px);
+  }
+  
+  .login-form-section {
+    padding: 30px 35px;
+  }
+}
+
+/* Support des écrans très larges */
+@media (min-width: 1600px) {
+  .login-card {
+    max-width: 1200px;
+  }
+  
+  .login-form-section {
+    padding: 40px 50px;
+  }
+}
+
+/* Améliorations d'accessibilité */
+@media (prefers-reduced-motion: reduce) {
+  .login-card,
+  .submit-btn,
+  .input-wrapper input,
+  .checkbox-icon {
+    transition: none;
+  }
+  
+  .submit-btn:hover {
+    transform: none;
+  }
+}
+
+/* Support mode sombre */
+@media (prefers-color-scheme: dark) {
+  .login-page {
+    background: #1a1a1a;
+  }
+  
+  .login-card {
+    background-color: #2d2d2d;
+    box-shadow: 4px 5px 15px rgba(0, 0, 0, 0.4);
+  }
+  
+  .title {
+    color: #ffffff;
+  }
+  
+  .subtitle {
+    color: rgba(255, 255, 255, 0.7);
+  }
+  
+  .form-group label {
+    color: #ffffff;
+  }
+  
+  .input-wrapper input {
+    background-color: #3d3d3d;
+    border-color: #555555;
+    color: #ffffff;
+  }
+  
+  .input-wrapper input::placeholder {
+    color: #aaaaaa;
+  }
+  
+  .remember-me {
+    color: #ffffff;
+  }
+}
+
+/* Correction pour les vieux navigateurs */
+@supports not (height: 100dvh) {
+  .login-page {
+    height: 100vh;
+  }
+}
+
+/* Optimisation pour le pliage d'écran */
+@media (max-width: 300px) {
+  .login-card {
+    border-radius: 15px;
+  }
+  
+  .login-form-section {
+    padding: 12px;
+  }
+  
+  .logo-text {
+    font-size: 20px;
+  }
+  
+  .title {
+    font-size: 16px;
   }
 }

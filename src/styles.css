@@ -64,6 +64,7 @@ button:hover {
   --blue-header: rgba(13, 166, 242, 0.8);
   --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
   --shadow-md: 0 2px 6px rgba(0,0,0,0.1);
+  --shadow: var(--shadow-md);
 }
 
 /* --- Structure générale --- */
@@ -277,29 +278,23 @@ button {
   font-size: 0.7rem;
 }
 
-/* Boutons compacts */
-.btn,
-.add-btn,
-.filter-btn,
-.reset-btn,
-.back-btn {
+/* BOUTONS AMÉLIORÉS - Focus sur les boutons Ajouter */
+.btn {
   display: inline-flex;
   align-items: center;
-  gap: 0.375rem;
-  padding: 0.5rem 1rem;
-  border-radius: 4px;
-  font-size: 0.8rem;
+  justify-content: center;
+  gap: 10px;
+  padding: 0.75rem 1.5rem;
+  border-radius: 5px;
+  font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
   border: none;
   font-family: inherit;
   text-decoration: none;
-  justify-content: center;
-  height: 2rem;
-  width: 8rem;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+  position: relative;
+  overflow: hidden;
 }
 
 /* --- Form layout consistency for all 'add' forms --- */
@@ -356,18 +351,13 @@ button {
 }
 
 
-.btn-primary,
-.add-btn,
-.filter-btn {
-  background-color: #a885d8;
-  color: #ffffff;
-}
-
-.btn-primary:hover,
-.add-btn:hover,
-.filter-btn:hover {
-  background-color: #8c6bb8;
-  transform: translateY(-1px);
+.btn-primary {
+  background: #A885D8;
+  color: var(--white);
+  box-shadow: var(--shadow);
+  padding: 0.875rem 2rem;
+  font-size: 1.1rem;
+  min-width: 160px;
 }
 
 .btn-secondary,
@@ -501,6 +491,34 @@ button {
   border: 1px solid #e6e6e6;
   border-radius: 4px;
   box-sizing: border-box;
+}
+
+/* Prevent visual "double frames" when templates nest wrappers (input-container / input-field)
+   If a wrapper contains another wrapper, we visually collapse the inner border and let the outer wrapper
+   provide the visible frame. This avoids the doubled border look the user reported. */
+.input-container .input-field,
+.input-field .input-container,
+.input-container .textarea-field,
+.input-field .textarea-field,
+.select-container .select-field,
+.select-field .select-container {
+  border: none;
+  background: transparent;
+  padding: 0;
+}
+
+/* Ensure native inputs inside styled wrappers don't render their own borders so only the wrapper shows a frame */
+.input-field input,
+.input-container input,
+.input-field textarea,
+.input-container textarea,
+.select-container select,
+.select-field select {
+  border: none !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  padding: 0.15rem 0 !important;
+  width: 100%;
 }
 
 .form-group.full-width { grid-column: 1 / -1; }

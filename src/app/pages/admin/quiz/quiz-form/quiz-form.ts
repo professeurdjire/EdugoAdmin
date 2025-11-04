@@ -1,374 +1,235 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-
-interface Question {
-  id: number;
-  numero: number;
-  type: string;
-  question: string;
-  points: number;
-  reponses: Reponse[];
-  bonneReponse: string | string[];
-  pairesAppariement?: PaireAppariement[];
-  reponseCourte?: string;
-  reponseLongue?: string;
-}
+import { FormsModule } from '@angular/forms';
 
 interface Reponse {
   lettre: string;
   texte: string;
-  correcte: boolean;
+  correcte?: boolean;
 }
 
-interface PaireAppariement {
-  id: number;
+interface AppariementPaire {
   elementGauche: string;
   elementDroit: string;
+}
+
+interface Question {
+  numero: number;
+  type: string;
+  question: string;
+  points?: number;
+  reponses: Reponse[];
+  bonneReponse?: string;
+  pairesAppariement?: AppariementPaire[];
+}
+
+interface Quiz {
+  livreAssocie: string;
+  titre: string;
+  description: string;
+  duree?: number;
+  difficulte?: string;
+  questions: Question[];
 }
 
 @Component({
   selector: 'app-quiz-form',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './quiz-form.html',
   styleUrls: ['./quiz-form.css']
 })
 export class QuizForm {
-  // Données du formulaire
-  quiz = {
+  // Données du formulaire (initialisées avec propriétés attendues)
+  quiz: Quiz = {
     livreAssocie: '',
     titre: '',
     description: '',
     duree: 30,
     difficulte: 'moyen',
-    questions: [] as Question[]
+    questions: [
+      {
+        numero: 1,
+        type: 'choix_multiple',
+        question: '',
+        points: 1,
+        reponses: [
+          { lettre: 'A', texte: '', correcte: false },
+          { lettre: 'B', texte: '', correcte: false },
+          { lettre: 'C', texte: '', correcte: false },
+          { lettre: 'D', texte: '', correcte: false }
+        ],
+        bonneReponse: ''
+      }
+    ]
   };
 
-  // Types de questions disponibles avec leurs configurations
+  // Types de questions disponibles (objet pour template)
   typesQuestions = [
-    { 
-      value: 'choix_multiple', 
-      label: 'Question à choix multiples',
-      description: 'Plusieurs choix, une seule bonne réponse',
-      icon: '🔘'
-    },
-    { 
-      value: 'multi_reponse', 
-      label: 'Question à réponses multiples',
-      description: 'Plusieurs choix, plusieurs bonnes réponses possibles',
-      icon: '☑️'
-    },
-    { 
-      value: 'vrai_faux', 
-      label: 'Question vrai/faux',
-      description: 'L\'utilisateur doit choisir entre vrai ou faux',
-      icon: '⚖️'
-    },
-    { 
-      value: 'reponse_courte', 
-      label: 'Question à réponse courte',
-      description: 'Réponse texte courte (quelques mots)',
-      icon: '📝'
-    },
-    { 
-      value: 'reponse_longue', 
-      label: 'Question à réponse longue',
-      description: 'Réponse texte développée',
-      icon: '📄'
-    },
-    { 
-      value: 'appariement', 
-      label: 'Question d\'appariement',
-      description: 'Associer des éléments de deux colonnes',
-      icon: '🔗'
-    },
-    { 
-      value: 'ordre', 
-      label: 'Mise en ordre',
-      description: 'Remettre les éléments dans le bon ordre',
-      icon: '🔢'
-    },
-    { 
-      value: 'case_a_cocher', 
-      label: 'Case à cocher',
-      description: 'Cocher les bonnes réponses',
-      icon: '✅'
-    }
+    { value: 'choix_multiple', icon: '📝', label: 'Choix multiple' },
+    { value: 'multi_reponse', icon: '✅', label: 'Multi-réponse' },
+    { value: 'vrai_faux', icon: '✔️', label: 'Vrai / Faux' },
+    { value: 'reponse_courte', icon: '✍️', label: 'Réponse courte' },
+    { value: 'reponse_longue', icon: '🧾', label: 'Réponse longue' },
+    { value: 'appariement', icon: '🔗', label: 'Appariement' },
+    { value: 'ordre', icon: '🔢', label: 'Ordre' }
   ];
 
-  // Niveaux de difficulté
   niveauxDifficulte = [
     { value: 'facile', label: 'Facile' },
     { value: 'moyen', label: 'Moyen' },
     { value: 'difficile', label: 'Difficile' }
   ];
 
-  // Lettres pour les réponses
-  lettresReponses = ['A', 'B', 'C', 'D', 'E', 'F'];
-
-  constructor() {
-    // Ajouter une question par défaut au chargement
-    this.ajouterQuestion();
+  // --- Navigation / actions ---
+  onRetour() {
+    // prefer Location.back() in real app; kept simple here
+    history.back();
   }
 
-  // Calculer le total des points du quiz (utilisé depuis le template)
-  totalPoints(): number {
-    return this.quiz.questions.reduce((total, q) => total + (q.points || 0), 0);
+  onAnnuler() {
+    this.resetQuiz();
   }
 
-  // Méthodes pour la gestion des questions
+  resetQuiz() {
+    this.quiz = {
+      livreAssocie: '',
+      titre: '',
+      description: '',
+      duree: 30,
+      difficulte: 'moyen',
+      questions: [
+        {
+          numero: 1,
+          type: 'choix_multiple',
+          question: '',
+          points: 1,
+          reponses: [
+            { lettre: 'A', texte: '', correcte: false },
+            { lettre: 'B', texte: '', correcte: false },
+            { lettre: 'C', texte: '', correcte: false },
+            { lettre: 'D', texte: '', correcte: false }
+          ],
+          bonneReponse: ''
+        }
+      ]
+    };
+  }
 
+  // --- Questions management ---
   ajouterQuestion() {
-    const nouvelleQuestion: Question = {
-      id: Date.now(),
-      numero: this.quiz.questions.length + 1,
+    const nouveauNumero = this.quiz.questions.length + 1;
+    this.quiz.questions.push({
+      numero: nouveauNumero,
       type: 'choix_multiple',
       question: '',
       points: 1,
-      reponses: this.lettresReponses.slice(0, 4).map(lettre => ({
-        lettre,
-        texte: '',
-        correcte: false
-      })),
-      bonneReponse: '',
-      pairesAppariement: [
-        { id: 1, elementGauche: '', elementDroit: '' },
-        { id: 2, elementGauche: '', elementDroit: '' },
-        { id: 3, elementGauche: '', elementDroit: '' }
-      ]
-    };
-    
-    this.quiz.questions.push(nouvelleQuestion);
-  }
-
-  supprimerQuestion(index: number) {
-    if (this.quiz.questions.length > 1) {
-      this.quiz.questions.splice(index, 1);
-      this.renumeroterQuestions();
-    }
-  }
-
-  renumeroterQuestions() {
-    this.quiz.questions.forEach((question, index) => {
-      question.numero = index + 1;
+      reponses: [
+        { lettre: 'A', texte: '', correcte: false },
+        { lettre: 'B', texte: '', correcte: false }
+      ],
+      bonneReponse: ''
     });
   }
 
   dupliquerQuestion(index: number) {
-    const questionOriginale = this.quiz.questions[index];
-    const questionDupliquee: Question = {
-      ...JSON.parse(JSON.stringify(questionOriginale)),
-      id: Date.now(),
-      numero: this.quiz.questions.length + 1
-    };
-    this.quiz.questions.push(questionDupliquee);
+    const q = this.quiz.questions[index];
+    const copie: Question = JSON.parse(JSON.stringify(q));
+    copie.numero = this.quiz.questions.length + 1;
+    this.quiz.questions.splice(index + 1, 0, copie);
+    this.renumeroterQuestions();
   }
 
-  // Méthodes pour la gestion des réponses
+  deplacerQuestion(index: number, direction: 'up' | 'down') {
+    const target = direction === 'up' ? index - 1 : index + 1;
+    if (target < 0 || target >= this.quiz.questions.length) return;
+    const tmp = this.quiz.questions[target];
+    this.quiz.questions[target] = this.quiz.questions[index];
+    this.quiz.questions[index] = tmp;
+    this.renumeroterQuestions();
+  }
 
-  ajouterReponse(questionIndex: number) {
-    const question = this.quiz.questions[questionIndex];
-    if (question.reponses.length < 6) {
-      const nouvelleLettre = this.lettresReponses[question.reponses.length];
-      question.reponses.push({
-        lettre: nouvelleLettre,
-        texte: '',
-        correcte: false
-      });
+  supprimerQuestion(index: number) {
+    if (this.quiz.questions.length <= 1) return;
+    this.quiz.questions.splice(index, 1);
+    this.renumeroterQuestions();
+  }
+
+  renumeroterQuestions() {
+    this.quiz.questions.forEach((q, i) => (q.numero = i + 1));
+  }
+
+  // Type change handler (template calls with index)
+  onTypeQuestionChange(index: number) {
+    // ensure type value exists; template binds question.type via ngModel
+    const q = this.quiz.questions[index];
+    if (!q.type) q.type = 'choix_multiple';
+    // initialize structures depending on type
+    if (q.type === 'appariement' && !q.pairesAppariement) {
+      q.pairesAppariement = [
+        { elementGauche: '', elementDroit: '' },
+        { elementGauche: '', elementDroit: '' }
+      ];
     }
+  }
+
+  // --- Réponses management ---
+  ajouterReponse(questionIndex: number) {
+    const q = this.quiz.questions[questionIndex];
+    const nextLetter = String.fromCharCode(65 + q.reponses.length);
+    q.reponses.push({ lettre: nextLetter, texte: '', correcte: false });
   }
 
   supprimerReponse(questionIndex: number, reponseIndex: number) {
-    const question = this.quiz.questions[questionIndex];
-    if (question.reponses.length > 2) {
-      question.reponses.splice(reponseIndex, 1);
-      // Recalculer les lettres
-      question.reponses.forEach((reponse, index) => {
-        reponse.lettre = this.lettresReponses[index];
-      });
+    const q = this.quiz.questions[questionIndex];
+    if (q.reponses.length <= 2) return;
+    q.reponses.splice(reponseIndex, 1);
+  }
+
+  onReponseCorrecteChange(questionIndex: number, reponseIndex: number, type: string) {
+    const q = this.quiz.questions[questionIndex];
+    if (type === 'multi_reponse' || type === 'case_a_cocher') {
+      // toggle
+      q.reponses[reponseIndex].correcte = !q.reponses[reponseIndex].correcte;
+    } else {
+      // single choice — ensure only one correct
+      q.reponses.forEach((r, i) => (r.correcte = i === reponseIndex));
     }
   }
 
-  // Méthodes pour l'appariement
-
+  // --- Appariement ---
   ajouterPaireAppariement(questionIndex: number) {
-    const question = this.quiz.questions[questionIndex];
-    if (question.pairesAppariement && question.pairesAppariement.length < 6) {
-      question.pairesAppariement.push({
-        id: Date.now(),
-        elementGauche: '',
-        elementDroit: ''
-      });
-    }
+    const q = this.quiz.questions[questionIndex];
+    if (!q.pairesAppariement) q.pairesAppariement = [];
+    q.pairesAppariement.push({ elementGauche: '', elementDroit: '' });
   }
 
   supprimerPaireAppariement(questionIndex: number, paireIndex: number) {
-    const question = this.quiz.questions[questionIndex];
-    if (question.pairesAppariement && question.pairesAppariement.length > 2) {
-      question.pairesAppariement.splice(paireIndex, 1);
-    }
+    const q = this.quiz.questions[questionIndex];
+    if (!q.pairesAppariement || q.pairesAppariement.length <= 2) return;
+    q.pairesAppariement.splice(paireIndex, 1);
   }
 
-  // Gestion des changements de type
-
-  onTypeQuestionChange(questionIndex: number) {
-    const question = this.quiz.questions[questionIndex];
-    
-    // Réinitialiser les données selon le type
-    switch (question.type) {
-      case 'choix_multiple':
-        question.reponses = this.lettresReponses.slice(0, 4).map(lettre => ({
-          lettre,
-          texte: '',
-          correcte: false
-        }));
-        question.bonneReponse = '';
-        break;
-        
-      case 'multi_reponse':
-        question.reponses = this.lettresReponses.slice(0, 4).map(lettre => ({
-          lettre,
-          texte: '',
-          correcte: false
-        }));
-        question.bonneReponse = [];
-        break;
-        
-      case 'vrai_faux':
-        question.reponses = [
-          { lettre: 'V', texte: 'Vrai', correcte: false },
-          { lettre: 'F', texte: 'Faux', correcte: false }
-        ];
-        question.bonneReponse = '';
-        break;
-        
-      case 'appariement':
-        question.pairesAppariement = [
-          { id: 1, elementGauche: '', elementDroit: '' },
-          { id: 2, elementGauche: '', elementDroit: '' },
-          { id: 3, elementGauche: '', elementDroit: '' }
-        ];
-        break;
-        
-      case 'reponse_courte':
-      case 'reponse_longue':
-        question.reponses = [];
-        question.bonneReponse = '';
-        break;
-        
-      case 'ordre':
-        question.reponses = this.lettresReponses.slice(0, 4).map(lettre => ({
-          lettre,
-          texte: '',
-          correcte: false
-        }));
-        question.bonneReponse = [];
-        break;
-    }
+  // --- Helpers / validation ---
+  totalPoints(): number {
+    return this.quiz.questions.reduce((acc, q) => acc + (q.points || 0), 0);
   }
 
-  // Gestion des réponses correctes
-
-  onReponseCorrecteChange(questionIndex: number, reponseIndex: number, type: string) {
-    const question = this.quiz.questions[questionIndex];
-    const reponse = question.reponses[reponseIndex];
-    
-    if (type === 'choix_multiple' || type === 'vrai_faux') {
-      // Une seule réponse correcte
-      question.reponses.forEach(r => r.correcte = false);
-      reponse.correcte = true;
-      question.bonneReponse = reponse.lettre;
-    } else if (type === 'multi_reponse' || type === 'case_a_cocher') {
-      // Plusieurs réponses correctes
-      reponse.correcte = !reponse.correcte;
-      question.bonneReponse = question.reponses
-        .filter(r => r.correcte)
-        .map(r => r.lettre);
-    }
+  getDescriptionType(type: string) {
+    const t = this.typesQuestions.find(x => x.value === type);
+    return t ? t.label : '';
   }
-
-  // Validation
 
   estFormulaireValide(): boolean {
-    if (!this.quiz.titre || !this.quiz.livreAssocie) {
-      return false;
-    }
-    
-    return this.quiz.questions.every(question => {
-      if (!question.question || !question.type) return false;
-      
-      switch (question.type) {
-        case 'choix_multiple':
-        case 'vrai_faux':
-          return question.bonneReponse !== '';
-        case 'multi_reponse':
-        case 'case_a_cocher':
-          return Array.isArray(question.bonneReponse) && question.bonneReponse.length > 0;
-        case 'reponse_courte':
-        case 'reponse_longue':
-          return question.bonneReponse !== '';
-        case 'appariement':
-          return question.pairesAppariement?.every(paire => 
-            paire.elementGauche && paire.elementDroit
-          ) || false;
-        default:
-          return true;
-      }
-    });
-  }
-
-  // Méthodes d'action
-
-  onRetour() {
-    console.log('Retour');
-    // Navigation vers la page précédente
-  }
-
-  onAnnuler() {
-    if (confirm('Êtes-vous sûr de vouloir annuler ? Toutes les modifications seront perdues.')) {
-      this.quiz = {
-        livreAssocie: '',
-        titre: '',
-        description: '',
-        duree: 30,
-        difficulte: 'moyen',
-        questions: []
-      };
-      this.ajouterQuestion();
-    }
+    if (!this.quiz.titre || this.quiz.titre.trim() === '') return false;
+    if (!this.quiz.questions || this.quiz.questions.length === 0) return false;
+    // simple validation: every question must have text
+    return this.quiz.questions.every(q => q.question && q.question.trim().length > 0);
   }
 
   onEnregistrerQuiz() {
-    if (this.estFormulaireValide()) {
-      console.log('Quiz enregistré:', this.quiz);
-      // Logique d'enregistrement du quiz
-      alert('Quiz enregistré avec succès !');
-    } else {
-      alert('Veuillez remplir tous les champs obligatoires et vérifier vos questions.');
-    }
-  }
-
-  // Utilitaires
-
-  getTypeQuestionLabel(typeValue: string): string {
-    const type = this.typesQuestions.find(t => t.value === typeValue);
-    return type ? type.label : 'Type inconnu';
-  }
-
-  getDescriptionType(typeValue: string): string {
-    const type = this.typesQuestions.find(t => t.value === typeValue);
-    return type ? type.description : '';
-  }
-
-  // Réorganisation des questions
-  deplacerQuestion(index: number, direction: 'up' | 'down') {
-    if ((direction === 'up' && index > 0) || 
-        (direction === 'down' && index < this.quiz.questions.length - 1)) {
-      const newIndex = direction === 'up' ? index - 1 : index + 1;
-      const [question] = this.quiz.questions.splice(index, 1);
-      this.quiz.questions.splice(newIndex, 0, question);
-      this.renumeroterQuestions();
-    }
+    if (!this.estFormulaireValide()) return;
+    console.log('Quiz enregistré:', this.quiz);
+    // TODO: call API to save
   }
 }

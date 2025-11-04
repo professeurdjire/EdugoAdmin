@@ -47,25 +47,33 @@
   margin: 0;
 }
 
-/* Boutons */
+/* BOUTONS AMÉLIORÉS - Focus sur les boutons Ajouter */
 .btn {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 8px;
   padding: 0.75rem 1.5rem;
-  border-radius: 8px;
-  font-size: 0.9rem;
+  border-radius: 5px;
+  font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
   border: none;
   font-family: inherit;
   text-decoration: none;
+  position: relative;
+  overflow: hidden;
 }
 
+/* Bouton Principal - AMÉLIORÉ */
 .btn-primary {
-  background-color: #a885d8;
-  color: #ffffff;
+  background: #A885D8;
+  color: var(--white);
+  box-shadow: var(--shadow);
+  padding: 0.6rem 2rem;
+  font-size: 1.1rem;
+  min-width: 160px;
 }
 
 .btn-primary:hover {

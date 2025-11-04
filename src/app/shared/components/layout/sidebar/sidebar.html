@@ -10,36 +10,36 @@
     <a routerLink="/admin/contenus" routerLinkActive="active" class="menu-item">
       <i class="fa-solid fa-layer-group"></i> Contenu
     </a>
-    <a routerLink="/admin/livredetails" routerLinkActive="active" class="menu-item">
-      <i class="fa-solid fa-book"></i> Livre
+    <a routerLink="/admin/livreList" routerLinkActive="active" class="menu-item">
+      <i class="fa-solid fa-book"></i> Livres
     </a>
-    <a routerLink="/admin/quizdetails" routerLinkActive="active" class="menu-item">
+    <a routerLink="/admin/quizList" routerLinkActive="active" class="menu-item">
       <i class="fa-solid fa-question-circle"></i> Quiz
     </a>
-    <a routerLink="/admin/defidetails" routerLinkActive="active" class="menu-item">
+    <a routerLink="/admin/defiList" routerLinkActive="active" class="menu-item">
       <i class="fa-solid fa-flag"></i> Défis
     </a>
-    <a routerLink="/admin/challengedetails" routerLinkActive="active" class="menu-item">
+    <a routerLink="/admin/challengeList" routerLinkActive="active" class="menu-item">
       <i class="fa-solid fa-trophy"></i> Challenge
     </a>
-    <a routerLink="/admin/exercicedetails" routerLinkActive="active" class="menu-item">
-      <i class="fa-solid fa-dumbbell"></i> Exercice
+    <a routerLink="/admin/exerciceList" routerLinkActive="active" class="menu-item">
+      <i class="fa-solid fa-dumbbell"></i> Exercices
     </a>
-    <a routerLink="/admin/recompensedetails" routerLinkActive="active" class="menu-item">
-      <i class="fa-solid fa-gift"></i> Recompense
+    <a routerLink="/admin/recompenseList" routerLinkActive="active" class="menu-item">
+      <i class="fa-solid fa-gift"></i> Récompenses
     </a>
     <a routerLink="/admin/paramatresList" routerLinkActive="active" class="menu-item">
-      <i class="fa-solid fa-sliders"></i> Parametre
+      <i class="fa-solid fa-sliders"></i> Paramètres
     </a>
   </nav>
 
 
 
   <div class="deconnexion">
-    <a routerLink="/auth/login" class="menu-item">
-      <i class="fa-solid fa-right-from-bracket"></i>
-      <span>Déconnexion</span>
-    </a>
+      <button type="button" (click)="logout()" class="logout-btn">
+        <i class="fa-solid fa-right-from-bracket"></i>
+        <span>Déconnexion</span>
+      </button>
   </div>
 
 
