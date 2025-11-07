@@ -14,8 +14,8 @@ export const appConfig: ApplicationConfig = {
   provideRouter(routes),
   // provide HttpClient to the application (required for generated client and AuthService)
   provideHttpClient(),
-    // configure generated OpenAPI client with base path and bearer token resolver
-    provideApi({ basePath: environment.apiUrl, credentials: { bearerAuth: () => localStorage.getItem('auth_token') } }),
+    // configure generated OpenAPI client with base path
+    provideApi({ basePath: environment.apiUrl }),
     // register auth interceptor to attach Bearer token
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true }
   ]

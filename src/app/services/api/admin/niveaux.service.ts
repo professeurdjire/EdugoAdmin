@@ -2,11 +2,11 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../../environments/environment';
-import { Niveau } from '../../../models/niveau.model';
+import { Niveau } from '../../../api/model/niveau';
 
 @Injectable({ providedIn: 'root' })
 export class NiveauxService {
-  private base = `${environment.apiUrl.replace(/\/$/, '')}/admin/niveaux`;
+  private base = `${environment.apiUrl.replace(/\/$/, '')}/niveaux`;
 
   constructor(private http: HttpClient) {}
 

@@ -1,122 +1,71 @@
-<div class="exercices-management-content">
-
-  <div class="content-header-title">
-    <h2 class="page-title">Exercices</h2>
-    <div class="header-actions">
-      <button class="btn-new-exercice">
-        <span class="icon">+</span> Nouveau exercice
-      </button>
-    </div>
+<div class="exercices-container">
+  <div class="header">
+    <h1>Exercices</h1>
+    <a routerLink="/admin/ajouterexercice" class="add-btn">+ Ajouter un exercice</a>
   </div>
 
-  <div class="stats-cards-grid">
-    <div class="stats-card stat-green">
-      <div class="stat-icon-wrapper active-green">
-        <span class="stat-icon icon-people">🧑‍🤝‍🧑</span>
-      </div>
-      <div class="stat-value">10 000</div>
-      <div class="stat-label">Exercices Actifs</div>
-    </div>
-    <div class="stats-card stat-green">
-      <div class="stat-icon-wrapper active-green">
-        <span class="stat-icon icon-people">🧑‍🤝‍🧑</span>
-      </div>
-      <div class="stat-value">10 000</div>
-      <div class="stat-label">Participants Actifs</div>
-    </div>
-    <div class="stats-card stat-blue">
-      <div class="stat-icon-wrapper completed-blue">
-        <span class="stat-icon icon-check">✔</span>
-      </div>
-      <div class="stat-value">10 000</div>
-      <div class="stat-label">Exercices Complétés</div>
-    </div>
-    <div class="stats-card stat-blue">
-      <div class="stat-icon-wrapper points-blue">
-        <span class="stat-icon icon-gift">🎁</span>
-      </div>
-      <div class="stat-value">10 000</div>
-      <div class="stat-label">Nombre de points gagnés</div>
-    </div>
+  <!-- Filtres -->
+  <div class="filters">
+    <input type="text" placeholder="Titre de l'exercice..." [(ngModel)]="searchTerm" (keyup.enter)="applyFilters()" />
+    <select [(ngModel)]="selectedDifficulty">
+      <option value="">Toutes les difficultés</option>
+      <option value="1">1 (Facile)</option>
+      <option value="2">2 (Moyen)</option>
+      <option value="3">3 (Difficile)</option>
+      <option value="4">4 (Très difficile)</option>
+      <option value="5">5 (Expert)</option>
+    </select>
+    <button class="filter-btn" (click)="applyFilters()">Filtrer</button>
+    <button class="reset-btn" (click)="resetFilters()">Réinitialiser</button>
   </div>
 
-  <div class="filters-bar">
-    <div class="filters-group">
-      <div class="filter-item">
-        <label class="filter-label">Recherche</label>
-        <input type="text" placeholder="Nom, email, téléphone..." class="filter-input">
-      </div>
-      <div class="filter-item">
-        <label class="filter-label">Type de défis</label>
-        <select class="filter-select">
-          <option>Tous les niveaux</option>
-        </select>
-      </div>
-      <div class="filter-item">
-        <label class="filter-label">Matière</label>
-        <select class="filter-select">
-          <option>Toutes les matières</option>
-        </select>
-      </div>
-      <div class="filter-item">
-        <label class="filter-label">Statut</label>
-        <select class="filter-select">
-          <option>Tous les statuts</option>
-        </select>
-      </div>
-    </div>
-    <div class="filter-actions">
-      <a href="#" class="view-all-link">Tout voir</a>
-      <button class="btn-icon btn-reset" aria-label="Réinitialiser les filtres"><span class="icon">⟳</span></button>
-      <button class="btn-icon btn-search" aria-label="Rechercher"><span class="icon">🔍</span></button>
-    </div>
+  <!-- Message d'erreur -->
+  <div *ngIf="error" class="error-message">
+    {{ error }}
   </div>
 
-  <div class="exercices-items-grid">
-
-    <div *ngFor="let i of [1,2,3,4,5,6]" class="exercice-item">
-      <span class="item-badge status-nouveau">Nouveau</span>
-      <span class="item-badge status-en-ligne">En ligne</span>
-      <h3 class="item-title">Mathématiques 4 ème - Algèbre</h3>
-      <p class="item-description">
-        Résolvez 20 problèmes en moins de 30 minutes
-      </p>
-      <div class="item-meta">
-        <div class="meta-detail time"><span class="meta-icon">⏱️</span> 30 minutes</div>
-        <div class="meta-detail participants"><span class="meta-icon">👥</span> 1200 participants</div>
-      </div>
-      <div class="item-footer">
-        <div class="footer-info">
-          <span class="block-label">Niveau</span>
-          <span class="block-value">4 ème - 5 ème</span>
-        </div>
-        <div class="footer-info">
-          <span class="block-label">Matière</span>
-          <span class="block-value">Mathématiques</span>
-        </div>
-        <div class="action-buttons">
-          <button class="btn-details">
-            <span class="icon">👁️</span> Voir détails
-          </button>
-          <button class="btn-icon-action edit" aria-label="Modifier"><span class="icon">✏️</span></button>
-          <button class="btn-icon-action delete" aria-label="Supprimer"><span class="icon">🗑️</span></button>
-        </div>
-      </div>
-    </div>
-
+  <!-- Indicateur de chargement -->
+  <div *ngIf="loading" class="loading-overlay">
+    <div class="loading-spinner"></div>
+    <p>Chargement des exercices...</p>
   </div>
 
-  <div class="pagination-footer">
-    <button class="pagination-btn prev-btn" disabled>← Previous</button>
-    <div class="page-numbers">
-      <span class="page-link active">1</span>
-      <span class="page-link">2</span>
-      <span class="page-link">3</span>
-      <span class="page-link dots">...</span>
-      <span class="page-link">9</span>
-      <span class="page-link">10</span>
-    </div>
-    <button class="pagination-btn next-btn">Next →</button>
+  <!-- Tableau d'exercices -->
+  <div *ngIf="!loading && !error" class="table-container">
+    <table class="exercices-table">
+      <thead>
+        <tr>
+          <th>Titre</th>
+          <th>Description</th>
+          <th>Date de création</th>
+          <th>Difficulté</th>
+          <th>Matière</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let exercice of pagedExercices">
+          <td>{{ exercice.titre }}</td>
+          <td>{{ exercice.description }}</td>
+          <td>{{ exercice.dateCreation }}</td>
+          <td>{{ exercice.niveauDifficulte }}</td>
+          <td>{{ exercice.matiere }}</td>
+          <td class="actions">
+            <button class="view-btn" (click)="viewExercice(exercice)">Voir</button>
+            <button class="edit-btn" (click)="editExercice(exercice)">Modifier</button>
+            <button class="delete-btn" (click)="deleteExercice(exercice)">Supprimer</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
   </div>
 
+  <!-- Pagination -->
+  <div class="pagination" *ngIf="!loading && !error && totalPages > 1">
+    <button (click)="changePage(currentPage - 1)" [disabled]="currentPage === 1">Précédent</button>
+    <span *ngFor="let p of [].constructor(totalPages); let i = index"
+          (click)="changePage(i + 1)"
+          [class.active]="(i + 1) === currentPage">{{ i + 1 }}</span>
+    <button (click)="changePage(currentPage + 1)" [disabled]="currentPage === totalPages">Suivant</button>
+  </div>
 </div>

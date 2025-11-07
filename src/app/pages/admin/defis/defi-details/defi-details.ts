@@ -1,50 +1,80 @@
-import {Component} from '@angular/core';
-import {CommonModule} from '@angular/common';
-import { RouterLink } from '@angular/router';
-
+import { CommonModule } from '@angular/common';
+import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
+import { DefisService } from '../../../../services/api/admin/defis.service';
+import { Defi } from '../../../../api/model/defi';
+import { AuthService } from '../../../../services/api/auth.service';
 
 @Component({
   selector: 'app-defi-details',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule],
   templateUrl: './defi-details.html',
   styleUrls: ['./defi-details.css'],
 })
-export class DefiDetails {
-  // Données simulées pour la liste des défis
-  defis = Array(12).fill(0).map((_, i) => ({
-    id: i + 1,
-    nom: 'Défis Mathematiques Express',
-    description: 'Devenez incontournable en math!',
-    niveau: '4 ème',
-    matiere: 'mathématiques',
-    date: '10/10/2025',
-    difficulte: 'Moyenne',
-    statut: 'Actif'
-  }));
+export class DefiDetails implements OnInit {
+  defi: Defi | null = null;
+  loading: boolean = false;
+  error: string | null = null;
+  defiId: number | null = null;
 
-  // Méthodes pour les actions
-  onView(defi: any) {
-    console.log('Voir le défi:', defi);
+  constructor(
+    private route: ActivatedRoute,
+    private router: Router,
+    private defisService: DefisService,
+    private authService: AuthService
+  ) {}
+
+  ngOnInit(): void {
+    // Check if user is authenticated
+    if (!this.authService.isLoggedIn()) {
+      this.error = "Vous devez vous connecter pour accéder à cette page.";
+      return;
+    }
+
+    // Get defi ID from route parameters
+    this.route.params.subscribe(params => {
+      if (params['id']) {
+        this.defiId = +params['id'];
+        this.loadDefiDetails(this.defiId);
+      } else {
+        this.error = "ID du défi non spécifié.";
+      }
+    });
   }
 
-  onEdit(defi: any) {
-    console.log('Modifier le défi:', defi);
+  loadDefiDetails(id: number): void {
+    this.loading = true;
+    this.error = null;
+
+    this.defisService.get(id).subscribe({
+      next: (defi: Defi) => {
+        this.defi = defi;
+        this.loading = false;
+      },
+      error: (err) => {
+        console.error('Error loading defi details:', err);
+        if (err.status === 401 || err.status === 403) {
+          this.error = "Vous n'êtes pas autorisé à accéder à cette ressource.";
+        } else if (err.status === 404) {
+          this.error = "Défi non trouvé.";
+        } else if (err.status === 0) {
+          this.error = "Impossible de se connecter au serveur. Veuillez vérifier que le backend est en cours d'exécution.";
+        } else {
+          this.error = `Erreur lors du chargement des détails du défi: ${err.message || 'Erreur inconnue'}`;
+        }
+        this.loading = false;
+      }
+    });
   }
 
-  onDelete(defi: any) {
-    console.log('Supprimer le défi:', defi);
+  goBack(): void {
+    this.router.navigate(['/admin/defiList']);
   }
 
-  onFilter() {
-    console.log('Filtrer la liste');
-  }
-
-  onRefresh() {
-    console.log('Actualiser la liste');
-  }
-
-  onPageChange(page: number) {
-    console.log('Changer de page:', page);
+  editDefi(): void {
+    if (this.defiId) {
+      this.router.navigate(['/admin/ajouterdefi']);
+    }
   }
 }

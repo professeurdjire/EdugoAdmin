@@ -1,151 +1,69 @@
-<div class="defis-management-content">
-
-  <div class="content-header-title">
-    <h2 class="page-title">Défis</h2>
-    <div class="header-actions">
-      <button class="btn-new-defis">
-        <span class="icon">+</span> Nouveau défis
-      </button>
-    </div>
+<div class="defis-container">
+  <div class="header">
+    <h1>Défis</h1>
+    <a routerLink="/admin/ajouterdefi" class="add-btn">+ Ajouter un défi</a>
   </div>
 
-  <div class="stats-cards-grid row-1">
-    <div class="stats-card card-active">
-      <div class="stat-icon-wrapper active">
-        <span class="stat-icon"></span>
-      </div>
-      <div class="stat-value">10 000</div>
-      <div class="stat-label">Défis Actifs</div>
-    </div>
-    <div class="stats-card card-participants">
-      <div class="stat-icon-wrapper participants">
-        <span class="stat-icon"></span>
-      </div>
-      <div class="stat-value">10 000</div>
-      <div class="stat-label">Participants Actifs</div>
-    </div>
-    <div class="stats-card card-completed">
-      <div class="stat-icon-wrapper completed">
-        <span class="stat-icon"></span>
-      </div>
-      <div class="stat-value">10 000</div>
-      <div class="stat-label">Défis Complétés</div>
-    </div>
-    <div class="stats-card card-distributed">
-      <div class="stat-icon-wrapper distributed">
-        <span class="stat-icon"></span>
-      </div>
-      <div class="stat-value">10 000</div>
-      <div class="stat-label">Récompenses Distribuées</div>
-    </div>
+  <!-- Filtres -->
+  <div class="filters">
+    <input type="text" placeholder="Titre du défi..." [(ngModel)]="searchTerm" (keyup.enter)="applyFilters()" />
+    <select [(ngModel)]="selectedType">
+      <option value="">Tous les types</option>
+      <option value="QCM">QCM</option>
+      <option value="EXERCICE">Exercice</option>
+      <option value="PROJET">Projet</option>
+    </select>
+    <button class="filter-btn" (click)="applyFilters()">Filtrer</button>
+    <button class="reset-btn" (click)="resetFilters()">Réinitialiser</button>
   </div>
 
-  <div class="stats-cards-grid row-2">
-    <div class="type-card">
-      <h3 class="type-title">Défis Quotidiens</h3>
-      <p class="type-description">Nouveaux défis chaque jour pour maintenir l'engagement</p>
-      <div class="type-meta">
-        <span class="meta-item">7 actifs</span>
-        <span class="meta-item">85 participations</span>
-      </div>
-    </div>
-    <div class="type-card">
-      <h3 class="type-title">Défis hebdomadaire</h3>
-      <p class="type-description">Nouveaux défis chaque jour pour maintenir l'engagement</p>
-      <div class="type-meta">
-        <span class="meta-item">7 actifs</span>
-        <span class="meta-item">85 participations</span>
-      </div>
-    </div>
-    <div class="type-card">
-      <h3 class="type-title">Défis mensuels</h3>
-      <p class="type-description">Nouveaux défis chaque jour pour maintenir l'engagement</p>
-      <div class="type-meta">
-        <span class="meta-item">7 actifs</span>
-        <span class="meta-item">85 participations</span>
-      </div>
-    </div>
-    <div class="type-card">
-      <h3 class="type-title">Défis trimestriels</h3>
-      <p class="type-description">Nouveaux défis chaque jour pour maintenir l'engagement</p>
-      <div class="type-meta">
-        <span class="meta-item">7 actifs</span>
-        <span class="meta-item">85 participations</span>
-      </div>
-    </div>
+  <!-- Message d'erreur -->
+  <div *ngIf="error" class="error-message">
+    {{ error }}
   </div>
 
-  <div class="filters-bar">
-    <div class="filters-group">
-      <div class="filter-item">
-        <label class="filter-label">Recherche</label>
-        <input type="text" placeholder="titre..." class="filter-input">
-      </div>
-      <div class="filter-item">
-        <label class="filter-label">Type de défis</label>
-        <select class="filter-select">
-          <option>Type défi</option>
-        </select>
-      </div>
-      <div class="filter-item">
-        <label class="filter-label">Matière</label>
-        <select class="filter-select">
-          <option>Matière</option>
-        </select>
-      </div>
-    </div>
-    <div class="filter-actions">
-      <a href="#" class="view-all-link">Tout voir</a>
-      <button class="btn-icon btn-reset" aria-label="Réinitialiser les filtres"><span class="icon">⟳</span></button>
-      <button class="btn-icon btn-search" aria-label="Rechercher"><span class="icon">🔍</span></button>
-    </div>
+  <!-- Indicateur de chargement -->
+  <div *ngIf="loading" class="loading-overlay">
+    <div class="loading-spinner"></div>
+    <p>Chargement des défis...</p>
   </div>
 
-  <div class="defis-items-grid">
-
-    <div *ngFor="let i of [1,2,3,4,5,6,7,8,9]" class="defis-item">
-      <span class="defis-badge level">Niveau</span>
-      <span class="defis-badge status">En ligne</span>
-      <h3 class="item-title">Mathématiques 4 ème - Algèbre</h3>
-      <p class="item-description">
-        Résolvez 20 problèmes en moins de 30 minutes
-      </p>
-      <div class="item-meta">
-        <div class="meta-detail time"><span class="meta-icon">⏱️</span> 30 minutes</div>
-        <div class="meta-detail participants"><span class="meta-icon">👥</span> 1200 participants</div>
-      </div>
-      <div class="item-footer">
-        <div class="footer-info">
-          <span class="block-label">Niveau</span>
-          <span class="block-value">4 ème - 5 ème</span>
-        </div>
-        <div class="footer-info">
-          <span class="block-label">Matière</span>
-          <span class="block-value">Mathématiques</span>
-        </div>
-        <div class="action-buttons">
-          <button class="btn-details">
-            <span class="icon">👁️</span> Voir détails
-          </button>
-          <button class="btn-icon-action" aria-label="Modifier"><span class="icon">✏️</span></button>
-          <button class="btn-icon-action" aria-label="Supprimer"><span class="icon">🗑️</span></button>
-        </div>
-      </div>
-    </div>
-
+  <!-- Tableau de défis -->
+  <div *ngIf="!loading && !error" class="table-container">
+    <table class="defis-table">
+      <thead>
+        <tr>
+          <th>Titre</th>
+          <th>Énoncé</th>
+          <th>Date d'ajout</th>
+          <th>Points</th>
+          <th>Type</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let defi of pagedDefis">
+          <td>{{ defi.titre }}</td>
+          <td>{{ defi.ennonce }}</td>
+          <td>{{ defi.dateAjout }}</td>
+          <td>{{ defi.pointDefi }}</td>
+          <td>{{ defi.typeDefi }}</td>
+          <td class="actions">
+            <button class="view-btn" (click)="viewDefi(defi)">Voir</button>
+            <button class="edit-btn" (click)="editDefi(defi)">Modifier</button>
+            <button class="delete-btn" (click)="deleteDefi(defi)">Supprimer</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
   </div>
 
-  <div class="pagination-footer">
-    <button class="pagination-btn prev-btn" disabled>← Previous</button>
-    <div class="page-numbers">
-      <span class="page-link active">1</span>
-      <span class="page-link">2</span>
-      <span class="page-link">3</span>
-      <span class="page-link dots">...</span>
-      <span class="page-link">8</span>
-      <span class="page-link">13</span>
-    </div>
-    <button class="pagination-btn next-btn">Next →</button>
+  <!-- Pagination -->
+  <div class="pagination" *ngIf="!loading && !error && totalPages > 1">
+    <button (click)="changePage(currentPage - 1)" [disabled]="currentPage === 1">Précédent</button>
+    <span *ngFor="let p of [].constructor(totalPages); let i = index"
+          (click)="changePage(i + 1)"
+          [class.active]="(i + 1) === currentPage">{{ i + 1 }}</span>
+    <button (click)="changePage(currentPage + 1)" [disabled]="currentPage === totalPages">Suivant</button>
   </div>
-
 </div>

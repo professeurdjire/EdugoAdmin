@@ -1,103 +1,86 @@
-<div class="users-page-container">
-  <div class="page-header">
-    <h1 class="page-title">Challenges</h1>
-    <!-- optional add button if needed -->
-    <a routerLink="/admin/ajouterchallenge" class="add-btn">Ajouter un challenge</a>
-  </div>
+<div class="challenge-management-container">
+  <div class="users-page-container">
+    <div class="page-header">
+      <h1 class="page-title">Détails du Challenge</h1>
+      <button class="back-btn" (click)="goBack()">← Retour</button>
+    </div>
 
-  <!-- Filters (adapted) -->
-  <div class="filter">
-    <section class="filters-container">
-      <div class="filter-group">
-        <label>Recherche</label>
-        <input type="text" placeholder="Nom, description..." />
-      </div>
-      <div class="filter-group">
-        <label>Niveau scolaire</label>
-        <select>
-          <option>Tous les niveaux</option>
-          <option>4 ème</option>
-          <option>3 ème</option>
-        </select>
-      </div>
-      <div class="filter-group">
-        <label>Statut</label>
-        <select>
-          <option>Tous les statuts</option>
-          <option>Encours</option>
-          <option>Terminé</option>
-        </select>
-      </div>
-      <div class="action-buttons">
-        <button class="filter-btn">Filtrer</button>
-        <button class="reset-btn">Réinitialiser</button>
-      </div>
-    </section>
-  </div>
+    <!-- Loading indicator -->
+    <div *ngIf="loading" class="loading-indicator">
+      <p>Chargement des détails du challenge...</p>
+    </div>
+    
+    <!-- Error message -->
+    <div *ngIf="error" class="error-message">
+      <p>{{ error }}</p>
+      <button class="retry-btn" (click)="loadChallengeDetails(challengeId!)">Réessayer</button>
+    </div>
 
-  <div class="table-header-info">
-    <h2>Liste des Challenges (2,847)</h2>
-  </div>
+    <!-- Challenge details -->
+    <div *ngIf="challenge && !loading && !error" class="challenge-details-container">
+      <div class="challenge-header">
+        <div class="challenge-info">
+          <h2>{{ challenge.titre }}</h2>
+          <p class="challenge-description">{{ challenge.description }}</p>
+          
+          <div class="challenge-meta">
+            <div class="meta-item">
+              <span class="label">ID:</span>
+              <span class="value">{{ challenge.id }}</span>
+            </div>
+            <div class="meta-item">
+              <span class="label">Date de début:</span>
+              <span class="value">{{ challenge.dateDebut | date:'dd/MM/yyyy' }}</span>
+            </div>
+            <div class="meta-item">
+              <span class="label">Date de fin:</span>
+              <span class="value">{{ challenge.dateFin | date:'dd/MM/yyyy' }}</span>
+            </div>
+            <div class="meta-item">
+              <span class="label">Type:</span>
+              <span class="value">{{ challenge.typeChallenge || 'Non spécifié' }}</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="challenge-actions">
+          <button class="edit-btn" (click)="editChallenge()">Modifier</button>
+        </div>
+      </div>
 
-  <section class="users-table-section">
-    <div class="table-wrapper">
-      <table>
-        <thead>
-          <tr>
-            <th>Utilisateurs</th>
-            <th>Type</th>
-            <th>Matières</th>
-            <th>Date</th>
-            <th>Difficultés</th>
-            <th>Statut</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let item of [1,2,3,4,5,6,7,8,9,10]">
-            <td class="user-details-cell">
-              <div class="user-avatar"></div>
-              <div class="user-info-text">
-                <p class="name">Défis Mathematiques Express</p>
-                <small class="email">Devenez incontournable en math!</small>
-              </div>
-            </td>
-            <td><span class="level-badge">4 ème</span></td>
-            <td>Mathématiques</td>
-            <td>10/10/2025</td>
-            <td><span class="badge">Moyenne</span></td>
-            <td><span class="status-badge encours">Encours</span></td>
-            <td class="actions-cell">
-              <button class="action-icon-btn"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path d="M7.99984 3.33325C3.79517 3.33325 1.75517 7.12192 1.39317 7.87192C1.37382 7.91181 1.36377 7.95558 1.36377 7.99992C1.36377 8.04426 1.37382 8.08802 1.39317 8.12792C1.7545 8.87792 3.7945 12.6666 7.99984 12.6666C12.2052 12.6666 14.2445 8.87792 14.6065 8.12792C14.6259 8.08802 14.6359 8.04426 14.6359 7.99992C14.6359 7.95558 14.6259 7.91181 14.6065 7.87192C14.2452 7.12192 12.2052 3.33325 7.99984 3.33325Z" stroke="black" stroke-opacity="0.5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M8 10C9.10457 10 10 9.10457 10 8C10 6.89543 9.10457 6 8 6C6.89543 6 6 6.89543 6 8C6 9.10457 6.89543 10 8 10Z" stroke="black" stroke-opacity="0.5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-</svg>
-</button>
-              <button class="action-icon-btn"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path d="M2 11.5V14H4.5L11.8733 6.62665L9.37333 4.12665L2 11.5ZM13.8067 4.69331C13.8685 4.63164 13.9175 4.55838 13.951 4.47773C13.9844 4.39708 14.0016 4.31063 14.0016 4.22331C14.0016 4.136 13.9844 4.04955 13.951 3.9689C13.9175 3.88825 13.8685 3.81499 13.8067 3.75331L12.2467 2.19331C12.185 2.13151 12.1117 2.08248 12.0311 2.04903C11.9504 2.01557 11.864 1.99835 11.7767 1.99835C11.6894 1.99835 11.6029 2.01557 11.5223 2.04903C11.4416 2.08248 11.3683 2.13151 11.3067 2.19331L10.0867 3.41331L12.5867 5.91331L13.8067 4.69331Z" fill="#808080"/>
-</svg>
-</button>
-              <button class="action-icon-btn"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path d="M3.99967 12.6667C3.99967 13.4 4.59967 14 5.33301 14H10.6663C11.3997 14 11.9997 13.4 11.9997 12.6667V4.66667H3.99967V12.6667ZM12.6663 2.66667H10.333L9.66634 2H6.33301L5.66634 2.66667H3.33301V4H12.6663V2.66667Z" fill="#808080"/>
-</svg>
-</button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+      <div class="challenge-details-grid">
+        <div class="detail-card">
+          <h3>Organisation</h3>
+          <div class="detail-row">
+            <span class="label">Niveau:</span>
+            <span class="value">{{ challenge.niveau?.nom || 'Non spécifié' }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="label">Classe:</span>
+            <span class="value">{{ challenge.classe?.nom || 'Non spécifiée' }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="label">Mode de récompense:</span>
+            <span class="value">{{ challenge.rewardMode || 'Non spécifié' }}</span>
+          </div>
+        </div>
 
-      <div class="book-list__footer">
-        <p>Affichage de 1 à 10 sur 2,847 Challenges</p>
-        <nav class="pagination">
-          <button class="pagination__arrow"><img src="/images/430_2316.svg" alt="Previous"></button>
-          <button class="pagination__number active">1</button>
-          <button class="pagination__number">2</button>
-          <button class="pagination__number">3</button>
-          <button class="pagination__number">4</button>
-          <button class="pagination__number">5</button>
-          <button class="pagination__arrow"><img src="/images/430_2314.svg" alt="Next"></button>
-        </nav>
+        <div class="detail-card">
+          <h3>Statistiques</h3>
+          <div class="detail-row">
+            <span class="label">Nombre de questions:</span>
+            <span class="value">{{ challenge.questionsChallenge?.length || 0 }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="label">Nombre de participations:</span>
+            <span class="value">{{ challenge.participations?.length || 0 }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="label">Nombre de récompenses:</span>
+            <span class="value">{{ challenge.rewards?.length || 0 }}</span>
+          </div>
+        </div>
       </div>
     </div>
-  </section>
+  </div>
 </div>

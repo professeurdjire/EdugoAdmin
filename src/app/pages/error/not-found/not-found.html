@@ -1,1 +1,93 @@
-<p>not-found works!</p>
+<div class="not-found-container">
+  <div class="not-found-content">
+    <!-- Illustration -->
+    <div class="illustration-section">
+      <div class="error-illustration">
+        <div class="error-icon">🔍</div>
+        <div class="error-graphic">
+          <div class="search-icon">❓</div>
+          <div class="error-line"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Contenu texte -->
+    <div class="text-section">
+      <h1 class="error-code">404</h1>
+      <h2 class="error-title">Page introuvable</h2>
+      <p class="error-description">
+        Désolé, la page que vous recherchez n'existe pas ou a été déplacée.
+      </p>
+      
+      <!-- Suggestions -->
+      <div class="suggestions">
+        <p class="suggestions-title">Voici quelques suggestions :</p>
+        <ul class="suggestions-list">
+          <li>Vérifiez l'URL pour les fautes de frappe</li>
+          <li>Retournez à la page précédente</li>
+          <li>Visitez notre page d'accueil</li>
+          <li>Contactez le support si le problème persiste</li>
+        </ul>
+      </div>
+
+      <!-- Actions -->
+      <div class="action-buttons">
+        <button class="btn btn-primary" (click)="goBack()">
+          <i class="icon-arrow">←</i>
+          Retour
+        </button>
+        <button class="btn btn-secondary" (click)="goHome()">
+          <i class="icon-home">🏠</i>
+          Page d'accueil
+        </button>
+        <button class="btn btn-outline" (click)="contactSupport()">
+          <i class="icon-support">💬</i>
+          Support
+        </button>
+      </div>
+
+      <!-- Recherche -->
+      <div class="search-section">
+        <p class="search-title">Ou essayez de rechercher :</p>
+        <div class="search-box">
+          <input 
+            type="text" 
+            placeholder="Rechercher sur le site..." 
+            class="search-input"
+            [(ngModel)]="searchQuery"
+            (keyup.enter)="onSearch()">
+          <button class="search-btn" (click)="onSearch()">
+            <i class="icon-search">🔍</i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Pied de page informatif -->
+  <div class="info-footer">
+    <div class="info-grid">
+      <div class="info-item">
+        <i class="info-icon">📧</i>
+        <div class="info-content">
+          <h4>Email de support</h4>
+          <p>support@edugo.ml</p>
+        </div>
+      </div>
+      <div class="info-item">
+        <i class="info-icon">📞</i>
+        <div class="info-content">
+          <h4>Téléphone</h4>
+          <p>+223 74469970</p>
+        </div>
+      </div>
+      <div class="info-item">
+        <i class="info-icon">🕒</i>
+        <div class="info-content">
+          <h4>Disponibilité</h4>
+          <p>Lun - Ven: 8h - 18h</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

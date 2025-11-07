@@ -1,333 +1,67 @@
-<main class="main-content">
-
-
-  <div class="main-actions">
-    <h2 class="section-title">Quiz</h2>
-    <div class="action-buttons">
-      <button class="btn btn-secondary">
-        <img src="images/I289_360_215_244.svg" alt="">
-        <span>Exporter</span>
-      </button>
-      <button class="btn btn-primary">
-        <img src="images/I289_376_289_136.svg" alt="">
-        <span>Nouvel Quiz</span>
-      </button>
-    </div>
+<div class="quizs-container">
+  <div class="header">
+    <h1>Quiz</h1>
+    <a routerLink="/admin/ajouterQuiz" class="add-btn">+ Ajouter un quiz</a>
   </div>
 
-  <section class="stats-grid">
-    <div class="stat-card active">
-      <div class="stat-icon-wrapper blue-bright">
-        <img src="images/823_4379.svg" alt="Quiz Actif icon">
-      </div>
-      <div class="stat-text">
-        <p class="stat-number">10 000</p>
-        <p class="stat-label">Quiz Actif</p>
-      </div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-icon-wrapper green">
-        <img src="images/386_1613.svg" alt="Questions Disponibles icon">
-      </div>
-      <div class="stat-text">
-        <p class="stat-number">10 000</p>
-        <p class="stat-label">Questions Disponibles</p>
-      </div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-icon-wrapper blue-dark">
-        <img src="images/386_1615.svg" alt="Quiz Completés icon">
-      </div>
-      <div class="stat-text">
-        <p class="stat-number">10 000</p>
-        <p class="stat-label">Quiz Completés</p>
-      </div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-icon-wrapper blue-dark">
-        <img src="images/386_1617.svg" alt="Score Moyen icon">
-      </div>
-      <div class="stat-text">
-        <p class="stat-number">10 000</p>
-        <p class="stat-label">Score Moyen</p>
-      </div>
-    </div>
-  </section>
+  <!-- Filtres -->
+  <div class="filters">
+    <input type="text" placeholder="Livre associé..." [(ngModel)]="searchTerm" (keyup.enter)="applyFilters()" />
+    <select [(ngModel)]="selectedStatus">
+      <option value="">Tous les statuts</option>
+      <option value="ACTIF">Actif</option>
+      <option value="INACTIF">Inactif</option>
+      <option value="BROUILLON">Brouillon</option>
+    </select>
+    <button class="filter-btn" (click)="applyFilters()">Filtrer</button>
+    <button class="reset-btn" (click)="resetFilters()">Réinitialiser</button>
+  </div>
 
-  <section class="filters-section">
-    <div class="filter-group">
-      <label for="search">Recherche</label>
-      <div class="input-wrapper">
-        <input type="text" id="search" placeholder="Nom, email, telephone...">
-      </div>
-    </div>
-    <div class="filter-group">
-      <label for="level">Niveau Scolaire</label>
-      <div class="input-wrapper">
-        <select id="level">
-          <option>Tous les niveaux</option>
-        </select>
-        <img src="images/404_955.svg" alt="" class="select-arrow">
-      </div>
-    </div>
-    <div class="filter-group">
-      <label for="subject">Matière</label>
-      <div class="input-wrapper">
-        <select id="subject">
-          <option>Toutes les ùatières</option>
-        </select>
-        <img src="images/404_957.svg" alt="" class="select-arrow">
-      </div>
-    </div>
-    <div class="filter-group">
-      <label for="status">Statut</label>
-      <div class="input-wrapper">
-        <select id="status">
-          <option>Tous les statuts</option>
-        </select>
-        <img src="images/404_992.svg" alt="" class="select-arrow">
-      </div>
-    </div>
-    <div class="filter-actions">
-      <a href="#" class="view-all-link">Tout voir</a>
-      <div class="action-icons">
-        <button class="icon-btn"><img src="images/404_953.svg" alt="Filter"></button>
-        <button class="icon-btn"><img src="images/404_951.svg" alt="Refresh"></button>
-      </div>
-    </div>
-  </section>
+  <!-- Message d'erreur -->
+  <div *ngIf="error" class="error-message">
+    {{ error }}
+  </div>
 
-  <section class="quiz-grid">
-    <article class="quiz-card">
-      <header class="quiz-card-header">
-        <img src="images/427_1048.svg" alt="Book icon">
-        <div class="quiz-card-title">
-          <h3>Mathematiques 4 ème - Algebre</h3>
-          <p>Matématiques. 4 ème</p>
-        </div>
-        <span class="status-badge">Actif</span>
-      </header>
-      <div class="quiz-card-body">
-        <div class="quiz-card-tags">
-          <span class="tag">4 ème</span>
-          <span class="questions-count">15 questions</span>
-        </div>
-        <div class="quiz-card-stats">
-          <div class="mini-stat">
-            <p>10000</p>
-            <span>Tentatives</span>
-          </div>
-          <div class="mini-stat">
-            <p>10000</p>
-            <span>Reussites</span>
-          </div>
-          <div class="mini-stat">
-            <p>10000</p>
-            <span>Echecs</span>
-          </div>
-        </div>
-      </div>
-      <footer class="quiz-card-footer">
-        <button class="btn btn-primary btn-view"><img src="images/427_1054.svg" alt="">Voir</button>
-        <button class="btn-icon-only"><img src="images/427_1056.svg" alt="Edit"></button>
-        <button class="btn-icon-only"><img src="images/427_1059.svg" alt="Delete"></button>
-      </footer>
-    </article>
-    <!-- Repeat quiz-card for more items -->
-    <article class="quiz-card">
-      <header class="quiz-card-header">
-        <img src="images/I430_886_427_1048.svg" alt="Book icon">
-        <div class="quiz-card-title">
-          <h3>Mathematiques 4 ème - Algebre</h3>
-          <p>Matématiques. 4 ème</p>
-        </div>
-        <span class="status-badge">Actif</span>
-      </header>
-      <div class="quiz-card-body">
-        <div class="quiz-card-tags">
-          <span class="tag">4 ème</span>
-          <span class="questions-count">15 questions</span>
-        </div>
-        <div class="quiz-card-stats">
-          <div class="mini-stat">
-            <p>10000</p>
-            <span>Tentatives</span>
-          </div>
-          <div class="mini-stat">
-            <p>10000</p>
-            <span>Reussites</span>
-          </div>
-          <div class="mini-stat">
-            <p>10000</p>
-            <span>Echecs</span>
-          </div>
-        </div>
-      </div>
-      <footer class="quiz-card-footer">
-        <button class="btn btn-primary btn-view"><img src="images/I430_886_427_1054.svg" alt="">Voir</button>
-        <button class="btn-icon-only"><img src="images/I430_886_427_1056.svg" alt="Edit"></button>
-        <button class="btn-icon-only"><img src="images/I430_886_427_1059.svg" alt="Delete"></button>
-      </footer>
-    </article>
-    <article class="quiz-card">
-      <header class="quiz-card-header">
-        <img src="images/I430_918_427_1048.svg" alt="Book icon">
-        <div class="quiz-card-title">
-          <h3>Mathematiques 4 ème - Algebre</h3>
-          <p>Matématiques. 4 ème</p>
-        </div>
-        <span class="status-badge">Actif</span>
-      </header>
-      <div class="quiz-card-body">
-        <div class="quiz-card-tags">
-          <span class="tag">4 ème</span>
-          <span class="questions-count">15 questions</span>
-        </div>
-        <div class="quiz-card-stats">
-          <div class="mini-stat">
-            <p>10000</p>
-            <span>Tentatives</span>
-          </div>
-          <div class="mini-stat">
-            <p>10000</p>
-            <span>Reussites</span>
-          </div>
-          <div class="mini-stat">
-            <p>10000</p>
-            <span>Echecs</span>
-          </div>
-        </div>
-      </div>
-      <footer class="quiz-card-footer">
-        <button class="btn btn-primary btn-view"><img src="images/I430_918_427_1054.svg" alt="">Voir</button>
-        <button class="btn-icon-only"><img src="images/I430_918_427_1056.svg" alt="Edit"></button>
-        <button class="btn-icon-only"><img src="images/I430_918_427_1059.svg" alt="Delete"></button>
-      </footer>
-    </article>
-    <article class="quiz-card">
-      <header class="quiz-card-header">
-        <img src="images/I430_1047_427_1048.svg" alt="Book icon">
-        <div class="quiz-card-title">
-          <h3>Mathematiques 4 ème - Algebre</h3>
-          <p>Matématiques. 4 ème</p>
-        </div>
-        <span class="status-badge">Actif</span>
-      </header>
-      <div class="quiz-card-body">
-        <div class="quiz-card-tags">
-          <span class="tag">4 ème</span>
-          <span class="questions-count">15 questions</span>
-        </div>
-        <div class="quiz-card-stats">
-          <div class="mini-stat">
-            <p>10000</p>
-            <span>Tentatives</span>
-          </div>
-          <div class="mini-stat">
-            <p>10000</p>
-            <span>Reussites</span>
-          </div>
-          <div class="mini-stat">
-            <p>10000</p>
-            <span>Echecs</span>
-          </div>
-        </div>
-      </div>
-      <footer class="quiz-card-footer">
-        <button class="btn btn-primary btn-view"><img src="images/I430_1047_427_1054.svg" alt="">Voir</button>
-        <button class="btn-icon-only"><img src="images/I430_1047_427_1056.svg" alt="Edit"></button>
-        <button class="btn-icon-only"><img src="images/I430_1047_427_1059.svg" alt="Delete"></button>
-      </footer>
-    </article>
-    <article class="quiz-card">
-      <header class="quiz-card-header">
-        <img src="images/I430_1048_427_1048.svg" alt="Book icon">
-        <div class="quiz-card-title">
-          <h3>Mathematiques 4 ème - Algebre</h3>
-          <p>Matématiques. 4 ème</p>
-        </div>
-        <span class="status-badge">Actif</span>
-      </header>
-      <div class="quiz-card-body">
-        <div class="quiz-card-tags">
-          <span class="tag">4 ème</span>
-          <span class="questions-count">15 questions</span>
-        </div>
-        <div class="quiz-card-stats">
-          <div class="mini-stat">
-            <p>10000</p>
-            <span>Tentatives</span>
-          </div>
-          <div class="mini-stat">
-            <p>10000</p>
-            <span>Reussites</span>
-          </div>
-          <div class="mini-stat">
-            <p>10000</p>
-            <span>Echecs</span>
-          </div>
-        </div>
-      </div>
-      <footer class="quiz-card-footer">
-        <button class="btn btn-primary btn-view"><img src="images/I430_1048_427_1054.svg" alt="">Voir</button>
-        <button class="btn-icon-only"><img src="images/I430_1048_427_1056.svg" alt="Edit"></button>
-        <button class="btn-icon-only"><img src="images/I430_1048_427_1059.svg" alt="Delete"></button>
-      </footer>
-    </article>
-    <article class="quiz-card">
-      <header class="quiz-card-header">
-        <img src="images/I430_1049_427_1048.svg" alt="Book icon">
-        <div class="quiz-card-title">
-          <h3>Mathematiques 4 ème - Algebre</h3>
-          <p>Matématiques. 4 ème</p>
-        </div>
-        <span class="status-badge">Actif</span>
-      </header>
-      <div class="quiz-card-body">
-        <div class="quiz-card-tags">
-          <span class="tag">4 ème</span>
-          <span class="questions-count">15 questions</span>
-        </div>
-        <div class="quiz-card-stats">
-          <div class="mini-stat">
-            <p>10000</p>
-            <span>Tentatives</span>
-          </div>
-          <div class="mini-stat">
-            <p>10000</p>
-            <span>Reussites</span>
-          </div>
-          <div class="mini-stat">
-            <p>10000</p>
-            <span>Echecs</span>
-          </div>
-        </div>
-      </div>
-      <footer class="quiz-card-footer">
-        <button class="btn btn-primary btn-view"><img src="images/I430_1049_427_1054.svg" alt="">Voir</button>
-        <button class="btn-icon-only"><img src="images/I430_1049_427_1056.svg" alt="Edit"></button>
-        <button class="btn-icon-only"><img src="images/I430_1049_427_1059.svg" alt="Delete"></button>
-      </footer>
-    </article>
-  </section>
+  <!-- Indicateur de chargement -->
+  <div *ngIf="loading" class="loading-overlay">
+    <div class="loading-spinner"></div>
+    <p>Chargement des quiz...</p>
+  </div>
 
-  <nav class="pagination-nav" aria-label="Pagination">
-    <button class="pagination-btn prev">
-      <img src="images/465_1852.svg" alt="Previous page">
-      <span>Previous</span>
-    </button>
-    <ul class="pagination-pages">
-      <li><a href="#" class="page-number active" aria-current="page">1</a></li>
-      <li><a href="#" class="page-number">2</a></li>
-      <li><a href="#" class="page-number">3</a></li>
-      <li><span class="page-ellipsis">...</span></li>
-      <li><a href="#" class="page-number">8</a></li>
-      <li><a href="#" class="page-number">9</a></li>
-      <li><a href="#" class="page-number">10</a></li>
-    </ul>
-    <button class="pagination-btn next">
-      <span>Next</span>
-      <img src="images/465_1880.svg" alt="Next page">
-    </button>
-  </nav>
-</main>
+  <!-- Tableau de quiz -->
+  <div *ngIf="!loading && !error" class="table-container">
+    <table class="quizs-table">
+      <thead>
+        <tr>
+          <th>Livre associé</th>
+          <th>Statut</th>
+          <th>Date de création</th>
+          <th>Nombre de questions</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let quiz of pagedQuizs">
+          <td>{{ quiz.livre }}</td>
+          <td>{{ quiz.statut }}</td>
+          <td>{{ quiz.createdAt }}</td>
+          <td>{{ quiz.nombreQuestions }}</td>
+          <td class="actions">
+            <button class="view-btn" (click)="viewQuiz(quiz)">Voir</button>
+            <button class="edit-btn" (click)="editQuiz(quiz)">Modifier</button>
+            <button class="delete-btn" (click)="deleteQuiz(quiz)">Supprimer</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Pagination -->
+  <div class="pagination" *ngIf="!loading && !error && totalPages > 1">
+    <button (click)="changePage(currentPage - 1)" [disabled]="currentPage === 1">Précédent</button>
+    <span *ngFor="let p of [].constructor(totalPages); let i = index"
+          (click)="changePage(i + 1)"
+          [class.active]="(i + 1) === currentPage">{{ i + 1 }}</span>
+    <button (click)="changePage(currentPage + 1)" [disabled]="currentPage === totalPages">Suivant</button>
+  </div>
+</div>

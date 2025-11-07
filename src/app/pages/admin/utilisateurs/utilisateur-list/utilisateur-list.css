@@ -683,3 +683,51 @@ body::-webkit-scrollbar-thumb:hover {
     font-size: 12px;
   }
 }
+
+/* Loading indicator styles */
+.loading-indicator {
+  text-align: center;
+  padding: 20px;
+  font-size: 16px;
+  color: #666;
+}
+
+/* Error message styles */
+.error-message {
+  text-align: center;
+  padding: 20px;
+  background-color: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+  border-radius: 4px;
+  margin: 20px 0;
+}
+
+.retry-btn {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+.retry-btn:hover {
+  background-color: #0056b3;
+}
+
+/* No data message styles */
+.no-data-message {
+  text-align: center;
+  padding: 40px 20px;
+  color: #666;
+  font-style: italic;
+}
+
+/* Pagination styles */
+.pagination__arrow:disabled,
+.pagination__arrow[disabled] {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

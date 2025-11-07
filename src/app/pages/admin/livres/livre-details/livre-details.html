@@ -1,116 +1,92 @@
-
 <div class="users-page-container">
   <div class="page-header">
-  <h1 class="page-title">Livres</h1>
-
-      <a routerLink="/admin/ajouterlivre" class="add-btn" >Ajouter un livre</a>
-    
-    </div>
-
-  <!-- Filtres -->
-  <div class="filter">
-    <section class="filters-container">
-      <div class="filter-group">
-        <label>Recherche</label>
-        <input type="text" placeholder="Titre, auteur..." />
-      </div>
-
-      <div class="filter-group">
-        <label>Niveau</label>
-        <select>
-          <option>Tous les niveaux</option>
-          <option>4 ème</option>
-          <option>3 ème</option>
-        </select>
-      </div>
-
-      <div class="filter-group">
-        <label>Matière</label>
-        <select>
-          <option>Toutes les matières</option>
-        </select>
-      </div>
-
-      <div class="action-buttons">
-        <button class="filter-btn">Filtrer</button>
-        <button class="reset-btn">Réinitialiser</button>
-      </div>
-    </section>
+    <h1 class="page-title">Détails du livre</h1>
+    <button class="back-btn" (click)="goBack()">← Retour</button>
   </div>
 
-  <div class="table-header-info">
-    <h2>Liste des livres (2,847)</h2>
-    
+  <!-- Loading indicator -->
+  <div *ngIf="loading" class="loading-indicator">
+    <p>Chargement des détails du livre...</p>
+  </div>
+  
+  <!-- Error message -->
+  <div *ngIf="error" class="error-message">
+    <p>{{ error }}</p>
+    <button class="retry-btn" (click)="loadLivreDetails(livreId!)">Réessayer</button>
   </div>
 
-  <section class="users-table-section">
-    <div class="table-wrapper">
-      <table>
-        <thead>
-          <tr>
-            <th>Livre</th>
-            <th>Niveau</th>
-            <th>Pages</th>
-            <th>Téléchargements</th>
-            <th>Matières</th>
-            <th>Statut</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td class="user-details-cell">
-              <div class="user-initials blue">BK</div>
-              <div class="user-info-text">
-                <p class="name">Mathématiques 4 ème</p>
-                <small class="email">Par Dr. Issa Traoré</small>
-              </div>
-            </td>
-            <td><span class="level-badge">4 ème</span></td>
-            <td>356</td>
-            <td>1 000</td>
-            <td>Mathématiques</td>
-            <td><span class="status-badge active-status">Actif</span></td>
-            <td class="actions-cell">
-              <button class="action-icon-btn"><img src="/images/430_2274.svg" alt="Voir"></button>
-              <button class="action-icon-btn"><img src="/images/430_2294.svg" alt="Supprimer"></button>
-            </td>
-          </tr>
-
-          <!-- autre ligne exemple -->
-          <tr>
-            <td class="user-details-cell">
-              <div class="user-initials green">BK</div>
-              <div class="user-info-text">
-                <p class="name">Français 3 ème</p>
-                <small class="email">Par Mme. Kouyate</small>
-              </div>
-            </td>
-            <td><span class="level-badge">3 ème</span></td>
-            <td>210</td>
-            <td>254</td>
-            <td>Français</td>
-            <td><span class="status-badge">Inactif</span></td>
-            <td class="actions-cell">
-              <button class="action-icon-btn"><img src="/images/430_2276.svg" alt="Voir"></button>
-              <button class="action-icon-btn"><img src="/images/430_2296.svg" alt="Supprimer"></button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-
-      <div class="book-list__footer">
-        <p>Affichage de 1 à 10 sur 2,847 Livres</p>
-        <nav class="pagination">
-          <button class="pagination__arrow"><img src="/images/430_2316.svg" alt="Previous"></button>
-          <button class="pagination__number active">1</button>
-          <button class="pagination__number">2</button>
-          <button class="pagination__number">3</button>
-          <button class="pagination__number">4</button>
-          <button class="pagination__number">5</button>
-          <button class="pagination__arrow"><img src="/images/430_2314.svg" alt="Next"></button>
-        </nav>
+  <!-- Livre details -->
+  <div *ngIf="livre && !loading && !error" class="livre-details-container">
+    <div class="livre-header">
+      <div class="livre-cover" *ngIf="livre.imageCouverture">
+        <img [src]="livre.imageCouverture" alt="Couverture du livre" class="cover-image">
+      </div>
+      <div class="livre-cover-placeholder" *ngIf="!livre.imageCouverture">
+        <div class="cover-placeholder">Aucune image</div>
+      </div>
+      
+      <div class="livre-info">
+        <h2>{{ livre.titre }}</h2>
+        <p class="livre-author">Par {{ livre.auteur }}</p>
+        <p class="livre-description">{{ livre.description }}</p>
+        
+        <div class="livre-meta">
+          <div class="meta-item">
+            <span class="label">Éditeur:</span>
+            <span class="value">{{ livre.editeur || 'Non spécifié' }}</span>
+          </div>
+          <div class="meta-item">
+            <span class="label">Année de publication:</span>
+            <span class="value">{{ livre.anneePublication || 'Non spécifiée' }}</span>
+          </div>
+          <div class="meta-item">
+            <span class="label">Pages:</span>
+            <span class="value">{{ livre.totalPages || 'Non spécifié' }}</span>
+          </div>
+          <div class="meta-item">
+            <span class="label">ISBN:</span>
+            <span class="value">{{ livre.isbn || 'Non spécifié' }}</span>
+          </div>
+        </div>
+      </div>
+      
+      <div class="livre-actions">
+        <button class="edit-btn" (click)="editLivre()">Modifier</button>
       </div>
     </div>
-  </section>
+
+    <div class="livre-details-grid">
+      <div class="detail-card">
+        <h3>Informations pédagogiques</h3>
+        <div class="detail-row">
+          <span class="label">Niveau:</span>
+          <span class="value">{{ livre.niveau?.nom || 'Non spécifié' }}</span>
+        </div>
+        <div class="detail-row">
+          <span class="label">Matière:</span>
+          <span class="value">{{ livre.matiere?.nom || 'Non spécifiée' }}</span>
+        </div>
+        <div class="detail-row">
+          <span class="label">Classe:</span>
+          <span class="value">{{ livre.classe?.nom || 'Non spécifiée' }}</span>
+        </div>
+      </div>
+
+      <div class="detail-card">
+        <h3>Caractéristiques</h3>
+        <div class="detail-row">
+          <span class="label">Lecture automatique:</span>
+          <span class="value">{{ livre.lectureAuto ? 'Oui' : 'Non' }}</span>
+        </div>
+        <div class="detail-row">
+          <span class="label">Interactif:</span>
+          <span class="value">{{ livre.interactif ? 'Oui' : 'Non' }}</span>
+        </div>
+        <div class="detail-row">
+          <span class="label">Langue:</span>
+          <span class="value">{{ livre.langue || 'Non spécifiée' }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>

@@ -1,11 +1,15 @@
 import {Component, OnInit} from '@angular/core';
 import {FormsModule} from '@angular/forms';
 import {FaIconComponent} from '@fortawesome/angular-fontawesome';
-import {CommonModule,Location} from '@angular/common';
+import {CommonModule, Location} from '@angular/common';
 import {faArrowLeft, faEye, faFilter, faPenToSquare, faRedoAlt} from '@fortawesome/free-solid-svg-icons';
+import { UsersService } from '../../../../services/api/admin/users.service';
+import { User } from '../../../../api/model/user';
+import { AuthService } from '../../../../services/api/auth.service';
+import { Router } from '@angular/router';
 
-
-interface User {
+// Updated interface to match API model
+interface UserDisplay {
   id: number;
   initials: string;
   firstName: string;
@@ -31,15 +35,23 @@ interface User {
   styleUrl: './utilisateur-list.css'
 })
 export class UtilisateurList implements OnInit{
-  constructor(private location: Location) {} //  injection du service Angular
+  constructor(
+    private location: Location,
+    private usersService: UsersService,
+    private authService: AuthService,
+    private router: Router
+  ) {}
+
   // Icônes FontAwesome
   faPen = faPenToSquare;
 
   // Données utilisateurs (simule une future API)
-  users: User[] = [];
-  filteredUsers: User[] = [];
-  pagedUsers: User[] = [];
+  users: UserDisplay[] = [];
+  filteredUsers: UserDisplay[] = [];
+  pagedUsers: UserDisplay[] = [];
   totalFiltered: number = 0;
+  loading: boolean = false;
+  error: string | null = null;
 
   // Pagination
   pageSize: number = 10;          // items par page (change si besoin)
@@ -57,21 +69,68 @@ export class UtilisateurList implements OnInit{
   selectedStatus: string = 'Tous les statuts';
 
   ngOnInit(): void {
-    // Simule le chargement depuis une API
-    this.users = [
-      { id: 1, initials: 'HD', firstName: 'Hamidou', lastName: 'DJIRÉ', email: 'hamidou.djire@gmail.com', phone: '+223 74409973', level: '4ème', registrationDate: '2025-10-18', points: '1,20k', status: 'Actif', color: 'blue' },
-      { id: 2, initials: 'AB', firstName: 'Awa', lastName: 'B.', email: 'awa@example.com', phone: '+223 70000000', level: '3ème', registrationDate: '2025-08-01', points: '900', status: 'Inactif', color: 'green' },
-      { id: 3, initials: 'MK', firstName: 'Moussa', lastName: 'K.', email: 'moussa@example.com', phone: '+223 70123456', level: '4ème', registrationDate: '2025-01-12', points: '2,1k', status: 'Actif', color: 'red' },
-      { id: 4, initials: 'SD', firstName: 'Sira', lastName: 'D.', email: 'sira@example.com', phone: '+223 71234567', level: '2ème', registrationDate: '2024-12-10', points: '350', status: 'Actif', color: 'darkblue' },
-      { id: 4, initials: 'SD', firstName: 'Sira', lastName: 'D.', email: 'sira@example.com', phone: '+223 71234567', level: '2ème', registrationDate: '2024-12-10', points: '350', status: 'Actif', color: 'darkblue' },
-      { id: 4, initials: 'SD', firstName: 'Sira', lastName: 'D.', email: 'sira@example.com', phone: '+223 71234567', level: '2ème', registrationDate: '2024-12-10', points: '350', status: 'Actif', color: 'darkblue' },
-      { id: 4, initials: 'SD', firstName: 'Sira', lastName: 'D.', email: 'sira@example.com', phone: '+223 71234567', level: '2ème', registrationDate: '2024-12-10', points: '350', status: 'Actif', color: 'darkblue' },
-      // ... ajoute plus d'éléments de test si besoin pour voir la pagination
-    ];
+    this.loadUsers();
+  }
 
-    this.filteredUsers = [...this.users];
-    this.totalFiltered = this.filteredUsers.length;
-    this.updatePagination();
+  loadUsers(): void {
+    this.loading = true;
+    this.error = null;
+    
+    // Check if user is authenticated
+    if (!this.authService.isLoggedIn()) {
+      this.error = "Vous devez vous connecter pour accéder à cette page.";
+      this.loading = false;
+      return;
+    }
+    
+    this.usersService.list().subscribe({
+      next: (apiUsers: User[]) => {
+        // Filter users by role - only show users with role 'ELEVE'
+        const eleveUsers = apiUsers.filter(user => user.role === 'ELEVE');
+        
+        // Transform API users to display format
+        this.users = eleveUsers.map(user => this.transformUser(user));
+        this.filteredUsers = [...this.users];
+        this.totalFiltered = this.filteredUsers.length;
+        this.updatePagination();
+        this.loading = false;
+      },
+      error: (err) => {
+        console.error('Error loading users:', err);
+        if (err.status === 401 || err.status === 403) {
+          this.error = "Vous n'êtes pas autorisé à accéder à cette ressource. Veuillez vous connecter avec les bonnes permissions.";
+        } else if (err.status === 0) {
+          this.error = "Impossible de se connecter au serveur. Veuillez vérifier que le backend est en cours d'exécution.";
+        } else {
+          this.error = `Erreur lors du chargement des utilisateurs: ${err.message || 'Erreur inconnue'}`;
+        }
+        this.loading = false;
+      }
+    });
+  }
+
+  // Transform API User to display format
+  transformUser(user: User): UserDisplay {
+    // Generate initials from first name and last name
+    const initials = `${user.prenom?.charAt(0) || ''}${user.nom?.charAt(0) || ''}`.toUpperCase();
+    
+    // Determine color based on some logic (you can customize this)
+    const colors = ['blue', 'green', 'red', 'darkblue'];
+    const colorIndex = user.id ? user.id % colors.length : 0;
+    
+    return {
+      id: user.id || 0,
+      initials: initials,
+      firstName: user.prenom || '',
+      lastName: user.nom || '',
+      email: user.email || '',
+      phone: '', // Not in API model, you might need to add this to your backend
+      level: '', // Not in API model, you might need to add this to your backend
+      registrationDate: user.dateCreation || '',
+      points: '0', // Not in API model, you might need to add this to your backend
+      status: user.estActive ? 'Actif' : 'Inactif',
+      color: colors[colorIndex]
+    };
   }
 
   // Met à jour filteredUsers selon les filtres
@@ -140,16 +199,18 @@ export class UtilisateurList implements OnInit{
   }
 
   // Actions
-  viewUser(user: User) {
-    console.log('Voir utilisateur:', user);
+  viewUser(user: UserDisplay) {
+    // Navigate to user details page
+    this.router.navigate(['/admin/Utilisateur', user.id]);
   }
 
-  editUser(user: User) {
-    console.log('Modifier utilisateur:', user);
+  editUser(user: UserDisplay) {
+    // Navigate to edit user page
+    this.router.navigate(['/admin/editerUtilisateur', user.id]);
   }
+  
   protected readonly faEye = faEye;
   protected readonly faFilter = faFilter;
   protected readonly faRedoAlt = faRedoAlt;
   protected readonly faArrowLeft = faArrowLeft;
 }
-

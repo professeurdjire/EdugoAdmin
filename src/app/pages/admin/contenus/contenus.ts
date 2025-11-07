@@ -2,8 +2,15 @@ import { Component, OnInit } from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {FaIconComponent} from '@fortawesome/angular-fontawesome';
 import {FormsModule} from '@angular/forms';
+import { NiveauxService } from '../../../services/api/admin/niveaux.service';
+import { ClassesService } from '../../../services/api/admin/classes.service';
+import { MatieresService } from '../../../services/api/admin/matieres.service';
+import { Niveau } from '../../../api/model/niveau';
+import { Classe } from '../../../api/model/classe';
+import { Matiere } from '../../../api/model/matiere';
+import { AuthService } from '../../../services/api/auth.service';
 
-interface Subject {
+interface SubjectDisplay {
   id: number;
   name: string;
   description: string;
@@ -11,7 +18,7 @@ interface Subject {
   studentsCount: number;
 }
 
-interface Level {
+interface LevelDisplay {
   id: number;
   name: string;
   cycle: string;
@@ -19,7 +26,7 @@ interface Level {
   studentsCount: number;
 }
 
-interface Class {
+interface ClassDisplay {
   id: number;
   name: string;
   level: string;
@@ -39,34 +46,13 @@ export class Contenus implements OnInit {
   isModalOpen = false;
   editingId: number | null = null;
   modalTitle = '';
+  loading: boolean = false;
+  error: string | null = null;
 
   // Données d'exemple
-  subjects: Subject[] = [
-    { id: 1, name: "Mathématiques", description: "Algèbre, géométrie et analyse", quizCount: 15, studentsCount: 240 },
-    { id: 2, name: "Français", description: "Grammaire, orthographe et littérature", quizCount: 12, studentsCount: 235 },
-    { id: 3, name: "Histoire-Géographie", description: "Histoire mondiale et géographie", quizCount: 8, studentsCount: 220 },
-    { id: 4, name: "Sciences Physiques", description: "Physique et chimie", quizCount: 10, studentsCount: 180 },
-    { id: 5, name: "SVT", description: "Sciences de la Vie et de la Terre", quizCount: 7, studentsCount: 175 },
-    { id: 6, name: "Anglais", description: "Langue anglaise", quizCount: 9, studentsCount: 210 }
-  ];
-
-  levels: Level[] = [
-    { id: 1, name: "6ème", cycle: "college", classesCount: 5, studentsCount: 150 },
-    { id: 2, name: "5ème", cycle: "college", classesCount: 5, studentsCount: 145 },
-    { id: 3, name: "4ème", cycle: "college", classesCount: 5, studentsCount: 140 },
-    { id: 4, name: "3ème", cycle: "college", classesCount: 5, studentsCount: 135 },
-    { id: 5, name: "Seconde", cycle: "lycee", classesCount: 4, studentsCount: 120 },
-    { id: 6, name: "Première", cycle: "lycee", classesCount: 4, studentsCount: 115 }
-  ];
-
-  classes: Class[] = [
-    { id: 1, name: "6ème A", level: "6ème", teacher: "M. Dupont", studentsCount: 30 },
-    { id: 2, name: "6ème B", level: "6ème", teacher: "Mme. Martin", studentsCount: 28 },
-    { id: 3, name: "5ème A", level: "5ème", teacher: "M. Leroy", studentsCount: 29 },
-    { id: 4, name: "5ème B", level: "5ème", teacher: "Mme. Bernard", studentsCount: 30 },
-    { id: 5, name: "4ème A", level: "4ème", teacher: "M. Petit", studentsCount: 28 },
-    { id: 6, name: "4ème B", level: "4ème", teacher: "Mme. Durand", studentsCount: 27 }
-  ];
+  subjects: SubjectDisplay[] = [];
+  levels: LevelDisplay[] = [];
+  classes: ClassDisplay[] = [];
 
   // Données du formulaire
   formData = {
@@ -77,7 +63,101 @@ export class Contenus implements OnInit {
     teacher: ''
   };
 
-  ngOnInit() {}
+  constructor(
+    private niveauxService: NiveauxService,
+    private classesService: ClassesService,
+    private matieresService: MatieresService,
+    private authService: AuthService
+  ) {}
+
+  ngOnInit() {
+    this.loadData();
+  }
+
+  loadData() {
+    // Check if user is authenticated
+    if (!this.authService.isLoggedIn()) {
+      this.error = "Vous devez vous connecter pour accéder à cette page.";
+      return;
+    }
+    
+    this.loadSubjects();
+    this.loadLevels();
+    this.loadClasses();
+  }
+
+  loadSubjects() {
+    this.loading = true;
+    this.matieresService.list().subscribe({
+      next: (matieres: Matiere[]) => {
+        this.subjects = matieres.map(matiere => ({
+          id: matiere.id || 0,
+          name: matiere.nom || '',
+          description: '', // Not in API model
+          quizCount: 0, // Not in API model
+          studentsCount: 0 // Not in API model
+        }));
+        this.loading = false;
+      },
+      error: (err) => {
+        console.error('Error loading subjects:', err);
+        this.handleError(err, 'matières');
+        this.loading = false;
+      }
+    });
+  }
+
+  loadLevels() {
+    this.loading = true;
+    this.niveauxService.list().subscribe({
+      next: (niveaux: Niveau[]) => {
+        this.levels = niveaux.map(niveau => ({
+          id: niveau.id || 0,
+          name: niveau.nom || '',
+          cycle: 'college', // Default value
+          classesCount: niveau.classes?.length || 0,
+          studentsCount: 0 // Not in API model
+        }));
+        this.loading = false;
+      },
+      error: (err) => {
+        console.error('Error loading levels:', err);
+        this.handleError(err, 'niveaux');
+        this.loading = false;
+      }
+    });
+  }
+
+  loadClasses() {
+    this.loading = true;
+    this.classesService.list().subscribe({
+      next: (classes: Classe[]) => {
+        this.classes = classes.map(classe => ({
+          id: classe.id || 0,
+          name: classe.nom || '',
+          level: classe.niveau?.nom || '',
+          teacher: '', // Not in API model
+          studentsCount: classe.eleves?.length || 0
+        }));
+        this.loading = false;
+      },
+      error: (err) => {
+        console.error('Error loading classes:', err);
+        this.handleError(err, 'classes');
+        this.loading = false;
+      }
+    });
+  }
+
+  handleError(err: any, entityType: string) {
+    if (err.status === 401 || err.status === 403) {
+      this.error = "Vous n'êtes pas autorisé à accéder à cette ressource. Veuillez vous connecter avec les bonnes permissions.";
+    } else if (err.status === 0) {
+      this.error = `Impossible de se connecter au serveur pour charger les ${entityType}. Veuillez vérifier que le backend est en cours d'exécution.`;
+    } else {
+      this.error = `Erreur lors du chargement des ${entityType}: ${err.message || 'Erreur inconnue'}`;
+    }
+  }
 
   switchTab(tab: 'subjects' | 'levels' | 'classes') {
     this.currentTab = tab;
@@ -159,20 +239,40 @@ export class Contenus implements OnInit {
       case 'subjects':
         if (this.editingId) {
           // Modification
-          const subject = this.subjects.find(s => s.id === this.editingId);
-          if (subject) {
-            subject.name = this.formData.name;
-            subject.description = this.formData.description;
-          }
+          this.matieresService.update(this.editingId, { nom: this.formData.name }).subscribe({
+            next: (updatedMatiere: Matiere) => {
+              // Update local data
+              const index = this.subjects.findIndex(s => s.id === this.editingId);
+              if (index !== -1) {
+                this.subjects[index] = {
+                  ...this.subjects[index],
+                  name: updatedMatiere.nom || ''
+                };
+              }
+              this.closeModal();
+            },
+            error: (err) => {
+              console.error('Error updating subject:', err);
+              alert('Erreur lors de la mise à jour de la matière');
+            }
+          });
         } else {
           // Ajout
-          const newId = this.subjects.length > 0 ? Math.max(...this.subjects.map(s => s.id)) + 1 : 1;
-          this.subjects.push({
-            id: newId,
-            name: this.formData.name,
-            description: this.formData.description,
-            quizCount: 0,
-            studentsCount: 0
+          this.matieresService.create({ nom: this.formData.name }).subscribe({
+            next: (newMatiere: Matiere) => {
+              this.subjects.push({
+                id: newMatiere.id || 0,
+                name: newMatiere.nom || '',
+                description: '',
+                quizCount: 0,
+                studentsCount: 0
+              });
+              this.closeModal();
+            },
+            error: (err) => {
+              console.error('Error creating subject:', err);
+              alert('Erreur lors de la création de la matière');
+            }
           });
         }
         break;
@@ -180,20 +280,40 @@ export class Contenus implements OnInit {
       case 'levels':
         if (this.editingId) {
           // Modification
-          const level = this.levels.find(l => l.id === this.editingId);
-          if (level) {
-            level.name = this.formData.name;
-            level.cycle = this.formData.cycle;
-          }
+          this.niveauxService.update(this.editingId, { nom: this.formData.name }).subscribe({
+            next: (updatedNiveau: Niveau) => {
+              // Update local data
+              const index = this.levels.findIndex(l => l.id === this.editingId);
+              if (index !== -1) {
+                this.levels[index] = {
+                  ...this.levels[index],
+                  name: updatedNiveau.nom || ''
+                };
+              }
+              this.closeModal();
+            },
+            error: (err) => {
+              console.error('Error updating level:', err);
+              alert('Erreur lors de la mise à jour du niveau');
+            }
+          });
         } else {
           // Ajout
-          const newId = this.levels.length > 0 ? Math.max(...this.levels.map(l => l.id)) + 1 : 1;
-          this.levels.push({
-            id: newId,
-            name: this.formData.name,
-            cycle: this.formData.cycle,
-            classesCount: 0,
-            studentsCount: 0
+          this.niveauxService.create({ nom: this.formData.name }).subscribe({
+            next: (newNiveau: Niveau) => {
+              this.levels.push({
+                id: newNiveau.id || 0,
+                name: newNiveau.nom || '',
+                cycle: this.formData.cycle,
+                classesCount: 0,
+                studentsCount: 0
+              });
+              this.closeModal();
+            },
+            error: (err) => {
+              console.error('Error creating level:', err);
+              alert('Erreur lors de la création du niveau');
+            }
           });
         }
         break;
@@ -201,40 +321,92 @@ export class Contenus implements OnInit {
       case 'classes':
         if (this.editingId) {
           // Modification
-          const classItem = this.classes.find(c => c.id === this.editingId);
-          if (classItem) {
-            classItem.name = this.formData.name;
-            classItem.level = this.formData.level;
-            classItem.teacher = this.formData.teacher;
-          }
+          // For classes, we need to find the niveau by name
+          const niveau = this.levels.find(l => l.name === this.formData.level);
+          this.classesService.update(this.editingId, { 
+            nom: this.formData.name,
+            niveau: niveau ? { id: niveau.id } : undefined
+          }).subscribe({
+            next: (updatedClasse: Classe) => {
+              // Update local data
+              const index = this.classes.findIndex(c => c.id === this.editingId);
+              if (index !== -1) {
+                this.classes[index] = {
+                  ...this.classes[index],
+                  name: updatedClasse.nom || '',
+                  level: updatedClasse.niveau?.nom || ''
+                };
+              }
+              this.closeModal();
+            },
+            error: (err) => {
+              console.error('Error updating class:', err);
+              alert('Erreur lors de la mise à jour de la classe');
+            }
+          });
         } else {
           // Ajout
-          const newId = this.classes.length > 0 ? Math.max(...this.classes.map(c => c.id)) + 1 : 1;
-          this.classes.push({
-            id: newId,
-            name: this.formData.name,
-            level: this.formData.level,
-            teacher: this.formData.teacher,
-            studentsCount: 0
+          // For classes, we need to find the niveau by name
+          const niveau = this.levels.find(l => l.name === this.formData.level);
+          this.classesService.create({ 
+            nom: this.formData.name,
+            niveau: niveau ? { id: niveau.id } : undefined
+          }).subscribe({
+            next: (newClasse: Classe) => {
+              this.classes.push({
+                id: newClasse.id || 0,
+                name: newClasse.nom || '',
+                level: newClasse.niveau?.nom || this.formData.level,
+                teacher: this.formData.teacher,
+                studentsCount: 0
+              });
+              this.closeModal();
+            },
+            error: (err) => {
+              console.error('Error creating class:', err);
+              alert('Erreur lors de la création de la classe');
+            }
           });
         }
         break;
     }
-
-    this.closeModal();
   }
 
   deleteItem(id: number) {
     if (confirm('Êtes-vous sûr de vouloir supprimer cet élément ?')) {
       switch(this.currentTab) {
         case 'subjects':
-          this.subjects = this.subjects.filter(s => s.id !== id);
+          this.matieresService.delete(id).subscribe({
+            next: () => {
+              this.subjects = this.subjects.filter(s => s.id !== id);
+            },
+            error: (err) => {
+              console.error('Error deleting subject:', err);
+              alert('Erreur lors de la suppression de la matière');
+            }
+          });
           break;
         case 'levels':
-          this.levels = this.levels.filter(l => l.id !== id);
+          this.niveauxService.delete(id).subscribe({
+            next: () => {
+              this.levels = this.levels.filter(l => l.id !== id);
+            },
+            error: (err) => {
+              console.error('Error deleting level:', err);
+              alert('Erreur lors de la suppression du niveau');
+            }
+          });
           break;
         case 'classes':
-          this.classes = this.classes.filter(c => c.id !== id);
+          this.classesService.delete(id).subscribe({
+            next: () => {
+              this.classes = this.classes.filter(c => c.id !== id);
+            },
+            error: (err) => {
+              console.error('Error deleting class:', err);
+              alert('Erreur lors de la suppression de la classe');
+            }
+          });
           break;
       }
     }

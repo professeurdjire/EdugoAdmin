@@ -1,63 +1,95 @@
 <div class="form-container">
   <!-- Header -->
   <div class="form-header">
-    <h1 class="form-title">Ajouter un livre</h1>
-    <a routerLink="/admin/livredetails" class="back-btn" (click)="onRetour()">
-      <span class="back-icon">←</span>
-      <span>Retour</span>
-    </a>
-  </div>
-
-  <!-- Description -->
-  <div class="form-description">
-    Remplissez les informations suivantes pour ajouter un livre dans la bibliothèque !
+    <button class="back-btn" routerLink="/admin/livreList">
+      <i class="icon-arrow">←</i>
+      Retour
+    </button>
+    
+    <div class="header-content">
+      <h1 class="page-title">Ajouter un livre</h1>
+      <p class="page-subtitle">Remplissez les informations pour ajouter un livre dans la bibliothèque</p>
+    </div>
   </div>
 
   <!-- Formulaire -->
-  <div class="form-content">
+  <form class="form-content" [formGroup]="livreForm" (ngSubmit)="onSubmit()">
+    
     <!-- Section 1: Informations de base -->
     <div class="form-section">
-      <div class="section-title">
-        <div class="title-icon">ℹ️</div>
-        <h2>Information de bases</h2>
+      <div class="section-header">
+        <h3 class="section-title">
+          <i class="icon-info">ℹ</i>
+          Informations de base
+        </h3>
       </div>
 
       <div class="form-grid">
-        <!-- Ligne 1 -->
+        <!-- Titre du livre -->
         <div class="form-group">
-          <label class="form-label">Titre du Livre *</label>
-          <div class="input-container">
-            <input type="text" placeholder="Ex: Mathématiques 4 ème" class="form-input">
+          <label for="titre" class="form-label">
+            Titre du livre <span class="required">*</span>
+          </label>
+          <input 
+            type="text" 
+            id="titre" 
+            formControlName="titre"
+            class="form-control"
+            placeholder="Ex: Mathématiques 4ème">
+          <div class="error-message" *ngIf="showError('titre')">
+            {{ getError('titre') }}
           </div>
         </div>
 
+        <!-- Auteur -->
         <div class="form-group">
-          <label class="form-label">Auteur *</label>
-          <div class="input-container">
-            <input type="text" placeholder="Ex: Dr. Hamidou DJIRE" class="form-input">
+          <label for="auteur" class="form-label">
+            Auteur <span class="required">*</span>
+          </label>
+          <input 
+            type="text" 
+            id="auteur" 
+            formControlName="auteur"
+            class="form-control"
+            placeholder="Ex: Dr. Hamidou DJIRE">
+          <div class="error-message" *ngIf="showError('auteur')">
+            {{ getError('auteur') }}
           </div>
         </div>
 
-        <!-- Ligne 2 -->
+        <!-- ISBN -->
         <div class="form-group">
-          <label class="form-label">ISBN</label>
-          <div class="input-container">
-            <input type="text" placeholder="Ex: 978-2-1234-5680-3" class="form-input">
-          </div>
+          <label for="isbn" class="form-label">ISBN</label>
+          <input 
+            type="text" 
+            id="isbn" 
+            formControlName="isbn"
+            class="form-control"
+            placeholder="Ex: 978-2-1234-5680-3">
         </div>
 
+        <!-- Éditeur -->
         <div class="form-group">
-          <label class="form-label">Editeur</label>
-          <div class="input-container">
-            <input type="text" placeholder="Ex: Edition EDUGO" class="form-input">
-          </div>
+          <label for="editeur" class="form-label">Éditeur</label>
+          <input 
+            type="text" 
+            id="editeur" 
+            formControlName="editeur"
+            class="form-control"
+            placeholder="Ex: Edition EDUGO">
         </div>
 
         <!-- Description -->
         <div class="form-group full-width">
-          <label class="form-label">Description</label>
-          <div class="textarea-container">
-            <textarea placeholder="Description detaillée du livre..." class="form-textarea"></textarea>
+          <label for="description" class="form-label">Description</label>
+          <textarea 
+            id="description" 
+            formControlName="description"
+            rows="3" 
+            class="form-control"
+            placeholder="Description détaillée du livre..."></textarea>
+          <div class="char-counter">
+            {{ description?.value?.length || 0 }}/500
           </div>
         </div>
       </div>
@@ -65,47 +97,56 @@
 
     <!-- Section 2: Classification -->
     <div class="form-section">
-      <div class="section-title">
-        <div class="title-icon">📚</div>
-        <h2>Classification</h2>
+      <div class="section-header">
+        <h3 class="section-title">
+          <i class="icon-category">📚</i>
+          Classification
+        </h3>
       </div>
 
       <div class="form-grid">
+        <!-- Matière -->
         <div class="form-group">
-          <label class="form-label">Matière *</label>
-          <div class="select-container">
-            <select class="form-select">
-              <option value="">Selectionner une matière</option>
-              <option value="mathematiques">Mathématiques</option>
-              <option value="physique">Physique</option>
-              <option value="chimie">Chimie</option>
+          <label for="matiere" class="form-label">
+            Matière <span class="required">*</span>
+          </label>
+          <div class="input-wrapper">
+            <select id="matiere" formControlName="matiere" class="form-control">
+              <option value="">Sélectionner une matière</option>
+              <option *ngFor="let matiere of matieres" [value]="matiere.value">{{ matiere.label }}</option>
             </select>
-            <span class="select-arrow">▼</span>
+            <i class="dropdown-arrow">▼</i>
+          </div>
+          <div class="error-message" *ngIf="showError('matiere')">
+            {{ getError('matiere') }}
           </div>
         </div>
 
+        <!-- Niveau scolaire -->
         <div class="form-group">
-          <label class="form-label">Niveau scolaire *</label>
-          <div class="select-container">
-            <select class="form-select">
-              <option value="">Selectionner un niveau scolaire</option>
-              <option value="4eme">4ème</option>
-              <option value="3eme">3ème</option>
-              <option value="2nde">2nde</option>
+          <label for="niveau" class="form-label">
+            Niveau scolaire <span class="required">*</span>
+          </label>
+          <div class="input-wrapper">
+            <select id="niveau" formControlName="niveau" class="form-control">
+              <option value="">Sélectionner un niveau</option>
+              <option *ngFor="let niveau of niveaux" [value]="niveau.value">{{ niveau.label }}</option>
             </select>
-            <span class="select-arrow">▼</span>
+            <i class="dropdown-arrow">▼</i>
+          </div>
+          <div class="error-message" *ngIf="showError('niveau')">
+            {{ getError('niveau') }}
           </div>
         </div>
 
-        <div class="form-group full-width">
-          <label class="form-label">Langues</label>
-          <div class="select-container">
-            <select class="form-select">
-              <option value="francais">Francais</option>
-              <option value="anglais">Anglais</option>
-              <option value="espagnol">Espagnol</option>
+        <!-- Langue -->
+        <div class="form-group">
+          <label for="langue" class="form-label">Langue</label>
+          <div class="input-wrapper">
+            <select id="langue" formControlName="langue" class="form-control">
+              <option *ngFor="let langue of langues" [value]="langue.value">{{ langue.label }}</option>
             </select>
-            <span class="select-arrow">▼</span>
+            <i class="dropdown-arrow">▼</i>
           </div>
         </div>
       </div>
@@ -113,23 +154,42 @@
 
     <!-- Section 3: Fichiers du livre -->
     <div class="form-section">
-      <div class="section-title">
-        <div class="title-icon">📁</div>
-        <h2>Fichiers du livre</h2>
+      <div class="section-header">
+        <h3 class="section-title">
+          <i class="icon-file">📁</i>
+          Fichiers du livre
+        </h3>
       </div>
 
       <div class="form-grid">
+        <!-- Fichier principal -->
         <div class="form-group full-width">
-          <label class="form-label">Fichier principal (PDF/EPUB) *</label>
-          <div class="file-upload-area" (click)="fileInput.click()">
-            <input type="file" #fileInput class="file-input" accept=".pdf,.epub">
+          <label class="form-label">
+            Fichier principal (PDF/EPUB) <span class="required">*</span>
+          </label>
+          <div class="file-upload-area" 
+               (click)="fileInput.click()"
+               (dragover)="onDragOver($event)"
+               (drop)="onDrop($event, 'file')"
+               [class.has-file]="livreForm.get('fichierPrincipal')?.value">
+            <input 
+              type="file" 
+              #fileInput 
+              class="file-input" 
+              accept=".pdf,.epub"
+              (change)="onFileSelected($event, 'file')">
             <div class="upload-content">
-              <div class="upload-icon">📥</div>
+              <i class="upload-icon">📥</i>
               <div class="upload-text">
-                <div class="upload-main">Glissez deposez votre fichier ici ou cliquez pour parcourir</div>
-                <div class="upload-sub">Formats acceptés: PDF, EPUB * taille max: 50 MB</div>
+                <div class="upload-main">
+                  {{ livreForm.get('fichierPrincipal')?.value ? livreForm.get('fichierPrincipal')?.value.name : 'Glissez-déposez votre fichier ici ou cliquez pour parcourir' }}
+                </div>
+                <div class="upload-sub">Formats acceptés: PDF, EPUB • Taille max: 50 MB</div>
               </div>
             </div>
+          </div>
+          <div class="error-message" *ngIf="showError('fichierPrincipal')">
+            {{ getError('fichierPrincipal') }}
           </div>
         </div>
       </div>
@@ -137,16 +197,34 @@
 
     <!-- Section 4: Image de couverture -->
     <div class="form-section">
+      <div class="section-header">
+        <h3 class="section-title">
+          <i class="icon-image">🖼️</i>
+          Image de couverture
+        </h3>
+      </div>
+
       <div class="form-grid">
         <div class="form-group full-width">
           <label class="form-label">Image de couverture</label>
-          <div class="image-upload-area" (click)="imageInput.click()">
-            <input type="file" #imageInput class="file-input" accept=".jpg,.jpeg,.png,.webp">
+          <div class="image-upload-area"
+               (click)="imageInput.click()"
+               (dragover)="onDragOver($event)"
+               (drop)="onDrop($event, 'image')"
+               [class.has-file]="livreForm.get('imageCouverture')?.value">
+            <input 
+              type="file" 
+              #imageInput 
+              class="file-input" 
+              accept=".jpg,.jpeg,.png,.webp"
+              (change)="onFileSelected($event, 'image')">
             <div class="upload-content">
-              <div class="upload-icon">🖼️</div>
+              <i class="upload-icon">🖼️</i>
               <div class="upload-text">
-                <div class="upload-main">Glissez deposez l'image de couverture</div>
-                <div class="upload-sub">Formats: JPG, PNG, WebP . taille max: 10 MB</div>
+                <div class="upload-main">
+                  {{ livreForm.get('imageCouverture')?.value ? livreForm.get('imageCouverture')?.value.name : 'Glissez-déposez l\'image de couverture' }}
+                </div>
+                <div class="upload-sub">Formats: JPG, PNG, WebP • Taille max: 10 MB</div>
               </div>
             </div>
           </div>
@@ -154,11 +232,13 @@
       </div>
     </div>
 
-    <!-- Section 5: Options Avancées -->
+    <!-- Section 5: Options avancées -->
     <div class="form-section">
-      <div class="section-title">
-        <div class="title-icon">⚙️</div>
-        <h2>Options Avancées</h2>
+      <div class="section-header">
+        <h3 class="section-title">
+          <i class="icon-settings">⚙️</i>
+          Options avancées
+        </h3>
       </div>
 
       <div class="form-grid">
@@ -166,40 +246,50 @@
         <div class="form-group full-width">
           <div class="checkboxes-group">
             <label class="checkbox-item">
-              <input type="checkbox" class="checkbox-input">
+              <input 
+                type="checkbox" 
+                formControlName="lectureAuto"
+                class="checkbox-input">
               <span class="checkbox-custom"></span>
-              <span class="checkbox-label">Activez la lecture automatique</span>
+              <span class="checkbox-label">Activer la lecture automatique</span>
             </label>
             <label class="checkbox-item">
-              <input type="checkbox" class="checkbox-input">
+              <input 
+                type="checkbox" 
+                formControlName="interactif"
+                class="checkbox-input">
               <span class="checkbox-custom"></span>
               <span class="checkbox-label">Livre interactif avec exercices intégrés</span>
             </label>
             <label class="checkbox-item">
-              <input type="checkbox" class="checkbox-input">
+              <input 
+                type="checkbox" 
+                formControlName="telechargementHorsLigne"
+                class="checkbox-input">
               <span class="checkbox-custom"></span>
-              <span class="checkbox-label">Autoriser le telechargement hors ligne</span>
+              <span class="checkbox-label">Autoriser le téléchargement hors ligne</span>
             </label>
           </div>
         </div>
 
-        <!-- Dernière ligne -->
+        <!-- Mots-clés et Année -->
         <div class="form-group">
-          <label class="form-label">Mots-clés</label>
-          <div class="input-container">
-            <input type="text" placeholder="Francais" class="form-input">
-          </div>
+          <label for="motsCles" class="form-label">Mots-clés</label>
+          <input 
+            type="text" 
+            id="motsCles" 
+            formControlName="motsCles"
+            class="form-control"
+            placeholder="Français, Mathématiques...">
         </div>
 
         <div class="form-group">
-          <label class="form-label">Année de publication</label>
-          <div class="select-container">
-            <select class="form-select">
-              <option value="moyen">Moyen</option>
-              <option value="2024">2024</option>
-              <option value="2023">2023</option>
+          <label for="anneePublication" class="form-label">Année de publication</label>
+          <div class="input-wrapper">
+            <select id="anneePublication" formControlName="anneePublication" class="form-control">
+              <option *ngFor="let annee of annees" [value]="annee.value">{{ annee.label }}</option>
             </select>
-            <span class="select-arrow">▼</span>
+            <i class="dropdown-arrow">▼</i>
           </div>
         </div>
       </div>
@@ -207,8 +297,14 @@
 
     <!-- Actions -->
     <div class="form-actions">
-      <button class="btn btn-secondary btn-action" (click)="onAnnuler()">Annuler</button>
-      <button class="btn btn-primary btn-action" (click)="onSubmit()">Enregistrer le livre</button>
+      <button type="button" class="btn btn-secondary" (click)="onAnnuler()">
+        <i class="icon-cancel">✕</i>
+        Annuler
+      </button>
+      <button type="submit" class="btn btn-primary" [disabled]="!livreForm.valid || isSubmitting">
+        <i class="icon-save" [class.loading]="isSubmitting">💾</i>
+        {{ isSubmitting ? 'Enregistrement...' : 'Enregistrer le livre' }}
+      </button>
     </div>
-  </div>
+  </form>
 </div>

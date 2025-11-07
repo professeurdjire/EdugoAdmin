@@ -4,60 +4,70 @@
     <a routerLink="/admin/ajouterlivre" class="add-btn">+ Ajouter un livre</a>
   </div>
 
-  <!-- Statistiques -->
-  <div class="stats-grid">
-    <div class="stat-card" *ngFor="let stat of stats" [style.borderTopColor]="stat.color">
-      <div class="icon" [style.backgroundColor]="stat.bgColor">
-        <fa-icon [icon]="stat.icon"></fa-icon>
-      </div>
-      <div class="info">
-        <h2>{{ stat.value | number }}</h2>
-        <p>{{ stat.label }}</p>
-      </div>
-    </div>
-  </div>
-
   <!-- Filtres -->
   <div class="filters">
-    <input type="text" placeholder="Nom, auteur, catégorie..." [(ngModel)]="searchTerm" />
-    <select [(ngModel)]="selectedNiveau">
-      <option value="">Tous les niveaux</option>
-      <option *ngFor="let n of niveaux">{{ n }}</option>
-    </select>
-    <select [(ngModel)]="selectedMatiere">
+    <input type="text" placeholder="Titre ou auteur du livre..." [(ngModel)]="searchTerm" (keyup.enter)="applyFilters()" />
+    <select [(ngModel)]="selectedSubject">
       <option value="">Toutes les matières</option>
-      <option *ngFor="let m of matieres">{{ m }}</option>
+      <option value="Mathématiques">Mathématiques</option>
+      <option value="Français">Français</option>
+      <option value="Anglais">Anglais</option>
+      <option value="Histoire">Histoire</option>
+      <option value="Géographie">Géographie</option>
+      <option value="Physique">Physique</option>
+      <option value="Chimie">Chimie</option>
     </select>
-    <button class="filter-btn">Filtrer</button>
+    <button class="filter-btn" (click)="applyFilters()">Filtrer</button>
+    <button class="reset-btn" (click)="resetFilters()">Réinitialiser</button>
   </div>
 
-  <!-- Grille de livres -->
-  <div class="books-grid">
-    <div class="book-card" *ngFor="let livre of livresFiltres">
-      <div class="book-img"></div>
-      <span class="badge">Nouveau</span>
-      <div class="book-info">
-        <h3>{{ livre.titre }}</h3>
-        <p>Par : <strong>{{ livre.auteur }}</strong></p>
-        <p>{{ livre.pages }} pages</p>
-        <p class="matiere">{{ livre.matiere }}</p>
-        <div class="actions">
-          <button class="view-btn"><fa-icon [icon]="faEye"></fa-icon> Voir</button>
-          <div class="actions-icons">
-            <fa-icon [icon]="faDownload"></fa-icon>
-            <fa-icon [icon]="faBookOpen"></fa-icon>
-          </div>
-        </div>
-      </div>
-    </div>
+  <!-- Message d'erreur -->
+  <div *ngIf="error" class="error-message">
+    {{ error }}
+  </div>
+
+  <!-- Indicateur de chargement -->
+  <div *ngIf="loading" class="loading-overlay">
+    <div class="loading-spinner"></div>
+    <p>Chargement des livres...</p>
+  </div>
+
+  <!-- Tableau de livres -->
+  <div *ngIf="!loading && !error" class="table-container">
+    <table class="livres-table">
+      <thead>
+        <tr>
+          <th>Titre</th>
+          <th>Auteur</th>
+          <th>Année de publication</th>
+          <th>Matière</th>
+          <th>Langue</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let livre of pagedLivres">
+          <td>{{ livre.titre }}</td>
+          <td>{{ livre.auteur }}</td>
+          <td>{{ livre.anneePublication }}</td>
+          <td>{{ livre.matiere }}</td>
+          <td>{{ livre.langue }}</td>
+          <td class="actions">
+            <button class="view-btn" (click)="viewLivre(livre)">Voir</button>
+            <button class="edit-btn" (click)="editLivre(livre)">Modifier</button>
+            <button class="delete-btn" (click)="deleteLivre(livre)">Supprimer</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
   </div>
 
   <!-- Pagination -->
-  <div class="pagination">
-    <button (click)="prevPage()" [disabled]="page === 1">Précédent</button>
-    <span *ngFor="let p of totalPagesArray"
-          (click)="goToPage(p)"
-          [class.active]="p === page">{{ p }}</span>
-    <button (click)="nextPage()" [disabled]="page === totalPages">Suivant</button>
+  <div class="pagination" *ngIf="!loading && !error && totalPages > 1">
+    <button (click)="changePage(currentPage - 1)" [disabled]="currentPage === 1">Précédent</button>
+    <span *ngFor="let p of [].constructor(totalPages); let i = index"
+          (click)="changePage(i + 1)"
+          [class.active]="(i + 1) === currentPage">{{ i + 1 }}</span>
+    <button (click)="changePage(currentPage + 1)" [disabled]="currentPage === totalPages">Suivant</button>
   </div>
 </div>
