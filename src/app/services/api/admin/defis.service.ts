@@ -6,7 +6,8 @@ import { Defi } from '../../../api/model/defi';
 
 @Injectable({ providedIn: 'root' })
 export class DefisService {
-  private base = `${environment.apiUrl.replace(/\/$/, '')}/admin/defis`;
+  // Le backend a un context path /api, donc les URLs doivent être /api/api/...
+  private base = `${environment.apiUrl.replace(/\/$/, '')}/api/admin/defis`;
 
   constructor(private http: HttpClient) {}
 

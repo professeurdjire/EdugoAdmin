@@ -2,6 +2,10 @@
   <div class="header">
     <h1>Gestion des Contenus</h1>
     <p class="subtitle">Gérez les matières, niveaux et classes</p>
+    <!-- Debug info -->
+    <p class="debug-info" *ngIf="!loading && !error">
+      Sujets: {{ subjects.length }}, Niveaux: {{ levels.length }}, Classes: {{ classes.length }}
+    </p>
   </div>
 
   <!-- Loading indicator -->
@@ -33,6 +37,9 @@
       [class.active]="currentTab === 'classes'"
       (click)="switchTab('classes')">
       Classes
+    </button>
+    <button class="tab-btn refresh-btn" (click)="refreshData()">
+      <i class="fas fa-sync"></i> Actualiser
     </button>
   </div>
 
@@ -79,6 +86,9 @@
                   <i class="fas fa-trash"></i>
                 </button>
               </td>
+            </tr>
+            <tr *ngIf="subjects.length === 0">
+              <td colspan="5" class="no-data">Aucune matière trouvée</td>
             </tr>
           </tbody>
         </table>
@@ -133,6 +143,9 @@
                 </button>
               </td>
             </tr>
+            <tr *ngIf="levels.length === 0">
+              <td colspan="5" class="no-data">Aucun niveau trouvé</td>
+            </tr>
           </tbody>
         </table>
       </div>
@@ -180,6 +193,9 @@
                   <i class="fas fa-trash"></i>
                 </button>
               </td>
+            </tr>
+            <tr *ngIf="classes.length === 0">
+              <td colspan="5" class="no-data">Aucune classe trouvée</td>
             </tr>
           </tbody>
         </table>

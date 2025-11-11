@@ -13,7 +13,11 @@
   height: calc(100vh - 61px);
   overflow: auto;
   z-index: 1000;
+  transition: width 0.3s ease;
+}
 
+.sidebar.collapsed {
+  width: 70px;
 }
 
 .menu {
@@ -34,6 +38,7 @@
   gap: 0.5rem;
   text-decoration: none;
   color: #393E46;
+  transition: all 0.3s ease;
 }
 
 .menu-item.active {
@@ -55,7 +60,25 @@
   border-radius: 10px 0 0 10px;
 }
 
+.menu-item span {
+  transition: opacity 0.3s ease;
+}
 
+.sidebar.collapsed .menu-item span {
+  opacity: 0;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+}
+
+.sidebar.collapsed .menu-item {
+  justify-content: center;
+  padding: 0.5rem;
+}
+
+.sidebar.collapsed .menu-item i {
+  font-size: 1.2rem;
+}
 
 .deconnexion {
   margin-top: 30px;
@@ -88,6 +111,20 @@
   box-shadow: 0px 4px 12px rgba(0,0,0,0.15);
 }
 
+.sidebar.collapsed .logout-btn span {
+  display: none;
+}
+
+.sidebar.collapsed .logout-btn {
+  justify-content: center;
+  padding: 10px;
+}
+
+.sidebar.collapsed .deconnexion {
+  display: flex;
+  justify-content: center;
+}
+
 /* ✅ Responsive (sidebar cachée sur mobile et transformée en menu burger) */
 @media (max-width: 768px) {
   .sidebar {
@@ -103,5 +140,9 @@
   .logout-btn {
     font-size: 15px;
     padding: 10px 15px;
+  }
+  
+  .sidebar.collapsed {
+    width: 60px;
   }
 }

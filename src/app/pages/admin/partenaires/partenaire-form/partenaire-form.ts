@@ -3,25 +3,8 @@ import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
-
-interface PartenaireForms {
-  id?: number;
-  nom: string;
-  domaine: string;
-  type: string;
-  autreType?: string;
-  email: string;
-  telephone?: string;
-  siteWeb?: string;
-  adresse?: string;
-  ville?: string;
-  pays: string;
-  autrePays?: string;
-  statut: string;
-  dateDebut?: string;
-  description?: string;
-  newsletter: boolean;
-}
+import { Partenaire } from '../../../../models/partenaire.model';
+import { PartenaireService } from '../../../../services/api/partenaire.service';
 
 @Component({
   selector: 'app-partenaire-form',
@@ -36,11 +19,13 @@ export class PartenaireForm implements OnInit, OnDestroy {
   isLoading = false;
   showSuccessModal = false;
   private routeSub: Subscription | undefined;
+  partenaireId: number | null = null;
 
   constructor(
     private fb: FormBuilder,
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private partenaireService: PartenaireService
   ) {
     this.partenaireForm = this.createForm();
   }
@@ -49,7 +34,8 @@ export class PartenaireForm implements OnInit, OnDestroy {
     this.routeSub = this.route.params.subscribe(params => {
       if (params['id']) {
         this.isEditMode = true;
-        this.loadPartenaire(parseInt(params['id']));
+        this.partenaireId = parseInt(params['id']);
+        this.loadPartenaire(this.partenaireId);
       }
     });
 
@@ -103,12 +89,25 @@ export class PartenaireForm implements OnInit, OnDestroy {
   }
 
   loadPartenaire(id: number): void {
-    // Simulation du chargement d'un partenaire existant
-    // En réalité, vous feriez un appel à votre service
     this.isLoading = true;
 
+    this.partenaireService.getById(id).subscribe({
+      next: (partenaire: Partenaire) => {
+        this.partenaireForm.patchValue(partenaire);
+        this.isLoading = false;
+      },
+      error: (error) => {
+        console.error('Erreur lors du chargement du partenaire:', error);
+        // Fallback to mock data
+        this.loadPartenaireMock(id);
+      }
+    });
+  }
+
+  loadPartenaireMock(id: number): void {
+    // Simulation du chargement d'un partenaire existant
     setTimeout(() => {
-      const partenaireMock: PartenaireForms = {
+      const partenaireMock: Partenaire = {
         id: id,
         nom: 'Université de Bamako',
         domaine: 'Éducation supérieure',
@@ -158,18 +157,41 @@ export class PartenaireForm implements OnInit, OnDestroy {
       this.isLoading = true;
 
       // Préparer les données pour l'envoi
-      const formData: PartenaireForm = {
+      const formData: Partenaire = {
         ...this.partenaireForm.value,
         type: this.getFinalType(),
         pays: this.getFinalCountry()
       };
 
-      // Simuler un appel API
-      setTimeout(() => {
-        console.log('Données du formulaire:', formData);
-        this.isLoading = false;
-        this.showSuccessModal = true;
-      }, 1500);
+      if (this.isEditMode && this.partenaireId) {
+        // Update existing partenaire
+        this.partenaireService.update(this.partenaireId, formData).subscribe({
+          next: (updatedPartenaire) => {
+            console.log('Partenaire mis à jour:', updatedPartenaire);
+            this.isLoading = false;
+            this.showSuccessModal = true;
+          },
+          error: (error) => {
+            console.error('Erreur lors de la mise à jour:', error);
+            this.isLoading = false;
+            // Handle error (show message to user)
+          }
+        });
+      } else {
+        // Create new partenaire
+        this.partenaireService.create(formData).subscribe({
+          next: (newPartenaire) => {
+            console.log('Nouveau partenaire créé:', newPartenaire);
+            this.isLoading = false;
+            this.showSuccessModal = true;
+          },
+          error: (error) => {
+            console.error('Erreur lors de la création:', error);
+            this.isLoading = false;
+            // Handle error (show message to user)
+          }
+        });
+      }
     } else {
       // Marquer tous les champs comme touchés pour afficher les erreurs
       this.markAllFieldsAsTouched();
@@ -202,7 +224,7 @@ export class PartenaireForm implements OnInit, OnDestroy {
   }
 
   navigateToList(): void {
-    this.router.navigate(['/partenaires']);
+    this.router.navigate(['/admin/partenaire']);
   }
 
   closeSuccessModal(): void {

@@ -1,10 +1,10 @@
 <div class="form-page-container">
   <header class="form-header">
     <h1>Ajouter un exercice</h1>
-    <a routerLink="/admin/exerciceList" class="back-btn">
+    <button routerLink="/admin/exercicelist" class="back-btn">
       <span class="back-icon">←</span>
       <span>Retour</span>
-    </a>
+    </button>
   </header>
 
   <form class="exercice-form" [formGroup]="exerciceForm" (ngSubmit)="onSubmit()">

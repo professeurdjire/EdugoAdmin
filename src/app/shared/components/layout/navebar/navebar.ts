@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, Output, EventEmitter } from '@angular/core';
 import {RouterLink, RouterLinkActive} from '@angular/router';
 import {CommonModule} from '@angular/common';
 
@@ -10,5 +10,9 @@ import {CommonModule} from '@angular/common';
   styleUrls: ['./navebar.css'],
 })
 export class Navebar {
+  @Output() toggleSidebarEvent = new EventEmitter<void>();
 
+  toggleSidebar() {
+    this.toggleSidebarEvent.emit();
+  }
 }

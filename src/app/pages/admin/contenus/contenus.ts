@@ -1,14 +1,12 @@
 import { Component, OnInit } from '@angular/core';
-import {CommonModule} from '@angular/common';
-import {FaIconComponent} from '@fortawesome/angular-fontawesome';
-import {FormsModule} from '@angular/forms';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { NiveauxService } from '../../../services/api/admin/niveaux.service';
 import { ClassesService } from '../../../services/api/admin/classes.service';
 import { MatieresService } from '../../../services/api/admin/matieres.service';
 import { Niveau } from '../../../api/model/niveau';
 import { Classe } from '../../../api/model/classe';
 import { Matiere } from '../../../api/model/matiere';
-import { AuthService } from '../../../services/api/auth.service';
 
 interface SubjectDisplay {
   id: number;
@@ -39,7 +37,7 @@ interface ClassDisplay {
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './contenus.html',
-  styleUrls: [ './contenus.css'],
+  styleUrls: ['./contenus.css'],
 })
 export class Contenus implements OnInit {
   currentTab: 'subjects' | 'levels' | 'classes' = 'subjects';
@@ -49,7 +47,7 @@ export class Contenus implements OnInit {
   loading: boolean = false;
   error: string | null = null;
 
-  // Données d'exemple
+  // Données
   subjects: SubjectDisplay[] = [];
   levels: LevelDisplay[] = [];
   classes: ClassDisplay[] = [];
@@ -66,8 +64,7 @@ export class Contenus implements OnInit {
   constructor(
     private niveauxService: NiveauxService,
     private classesService: ClassesService,
-    private matieresService: MatieresService,
-    private authService: AuthService
+    private matieresService: MatieresService
   ) {}
 
   ngOnInit() {
@@ -75,92 +72,136 @@ export class Contenus implements OnInit {
   }
 
   loadData() {
-    // Check if user is authenticated
-    if (!this.authService.isLoggedIn()) {
-      this.error = "Vous devez vous connecter pour accéder à cette page.";
-      return;
-    }
+    this.loading = true;
+    this.error = null;
     
+    // Load all data in parallel
     this.loadSubjects();
     this.loadLevels();
     this.loadClasses();
   }
 
   loadSubjects() {
-    this.loading = true;
     this.matieresService.list().subscribe({
-      next: (matieres: Matiere[]) => {
+      next: (matieres: any[]) => {
+        console.log('Matieres loaded:', matieres);
         this.subjects = matieres.map(matiere => ({
           id: matiere.id || 0,
-          name: matiere.nom || '',
-          description: '', // Not in API model
-          quizCount: 0, // Not in API model
-          studentsCount: 0 // Not in API model
+          name: matiere.nom || 'Sans nom',
+          description: 'Description non disponible',
+          quizCount: 0,
+          studentsCount: 0
         }));
-        this.loading = false;
+        console.log('Mapped subjects:', this.subjects);
+        
+        // Check if all data is loaded
+        this.checkIfLoadingComplete();
       },
       error: (err) => {
         console.error('Error loading subjects:', err);
         this.handleError(err, 'matières');
-        this.loading = false;
       }
     });
   }
 
   loadLevels() {
-    this.loading = true;
     this.niveauxService.list().subscribe({
-      next: (niveaux: Niveau[]) => {
+      next: (niveaux: any[]) => {
+        console.log('Niveaux loaded:', niveaux);
         this.levels = niveaux.map(niveau => ({
           id: niveau.id || 0,
-          name: niveau.nom || '',
-          cycle: 'college', // Default value
-          classesCount: niveau.classes?.length || 0,
-          studentsCount: 0 // Not in API model
+          name: niveau.nom || 'Sans nom',
+          cycle: this.determineCycle(niveau.nom || ''),
+          classesCount: 0,
+          studentsCount: 0
         }));
-        this.loading = false;
+        console.log('Mapped levels:', this.levels);
+        
+        // Set default level for form if needed
+        if (this.levels.length > 0 && !this.formData.level) {
+          this.formData.level = this.levels[0].name;
+        }
+        
+        // Check if all data is loaded
+        this.checkIfLoadingComplete();
       },
       error: (err) => {
         console.error('Error loading levels:', err);
         this.handleError(err, 'niveaux');
-        this.loading = false;
       }
     });
   }
 
   loadClasses() {
-    this.loading = true;
     this.classesService.list().subscribe({
-      next: (classes: Classe[]) => {
+      next: (classes: any[]) => {
+        console.log('Classes loaded:', classes);
         this.classes = classes.map(classe => ({
           id: classe.id || 0,
-          name: classe.nom || '',
-          level: classe.niveau?.nom || '',
-          teacher: '', // Not in API model
-          studentsCount: classe.eleves?.length || 0
+          name: classe.nom || 'Sans nom',
+          level: classe.niveauNom || 'Non assigné',
+          studentsCount: 0,
+          teacher: 'Non assigné'
         }));
-        this.loading = false;
+        console.log('Mapped classes:', this.classes);
+        
+        // Check if all data is loaded
+        this.checkIfLoadingComplete();
       },
       error: (err) => {
         console.error('Error loading classes:', err);
         this.handleError(err, 'classes');
-        this.loading = false;
       }
     });
   }
 
+  checkIfLoadingComplete() {
+    // Since we're loading in parallel, we need to check if all requests have completed
+    // We'll set loading to false after a short delay to ensure all requests are processed
+    setTimeout(() => {
+      this.loading = false;
+      console.log('Data loading complete. Subjects:', this.subjects.length, 'Levels:', this.levels.length, 'Classes:', this.classes.length);
+    }, 500);
+  }
+
+  // Méthode utilitaire pour déterminer le cycle basé sur le nom du niveau
+  private determineCycle(niveauNom: string): string {
+    const collegeLevels = ['6ème', '5ème', '4ème', '3ème'];
+    const lyceeLevels = ['2nde', '1ère', 'Terminale'];
+    
+    if (collegeLevels.some(level => niveauNom.includes(level))) {
+      return 'college';
+    } else if (lyceeLevels.some(level => niveauNom.includes(level))) {
+      return 'lycee';
+    }
+    return 'college'; // valeur par défaut
+  }
+
   handleError(err: any, entityType: string) {
     if (err.status === 401 || err.status === 403) {
-      this.error = "Vous n'êtes pas autorisé à accéder à cette ressource. Veuillez vous connecter avec les bonnes permissions.";
+      this.error = "Vous n'êtes pas autorisé à accéder à cette ressource.";
     } else if (err.status === 0) {
-      this.error = `Impossible de se connecter au serveur pour charger les ${entityType}. Veuillez vérifier que le backend est en cours d'exécution.`;
+      this.error = `Impossible de se connecter au serveur pour charger les ${entityType}.`;
     } else {
       this.error = `Erreur lors du chargement des ${entityType}: ${err.message || 'Erreur inconnue'}`;
     }
+    this.loading = false;
   }
 
   switchTab(tab: 'subjects' | 'levels' | 'classes') {
     this.currentTab = tab;
+    // Force change detection
+    setTimeout(() => {
+      console.log('Switched to tab:', tab, 'Data count:', 
+        tab === 'subjects' ? this.subjects.length : 
+        tab === 'levels' ? this.levels.length : 
+        this.classes.length);
+    }, 100);
+  }
+
+  refreshData() {
+    console.log('Refreshing data...');
+    this.loadData();
   }
 
   openAddModal() {
@@ -208,7 +249,6 @@ export class Contenus implements OnInit {
           this.modalTitle = 'Modifier la classe';
           this.formData.name = classItem.name;
           this.formData.level = classItem.level;
-          this.formData.teacher = classItem.teacher;
         }
         break;
     }
@@ -224,7 +264,7 @@ export class Contenus implements OnInit {
       name: '',
       description: '',
       cycle: 'college',
-      level: '6ème',
+      level: this.levels.length > 0 ? this.levels[0].name : '6ème',
       teacher: ''
     };
   }
@@ -240,7 +280,7 @@ export class Contenus implements OnInit {
         if (this.editingId) {
           // Modification
           this.matieresService.update(this.editingId, { nom: this.formData.name }).subscribe({
-            next: (updatedMatiere: Matiere) => {
+            next: (updatedMatiere: any) => {
               // Update local data
               const index = this.subjects.findIndex(s => s.id === this.editingId);
               if (index !== -1) {
@@ -259,7 +299,7 @@ export class Contenus implements OnInit {
         } else {
           // Ajout
           this.matieresService.create({ nom: this.formData.name }).subscribe({
-            next: (newMatiere: Matiere) => {
+            next: (newMatiere: any) => {
               this.subjects.push({
                 id: newMatiere.id || 0,
                 name: newMatiere.nom || '',
@@ -281,7 +321,7 @@ export class Contenus implements OnInit {
         if (this.editingId) {
           // Modification
           this.niveauxService.update(this.editingId, { nom: this.formData.name }).subscribe({
-            next: (updatedNiveau: Niveau) => {
+            next: (updatedNiveau: any) => {
               // Update local data
               const index = this.levels.findIndex(l => l.id === this.editingId);
               if (index !== -1) {
@@ -300,7 +340,7 @@ export class Contenus implements OnInit {
         } else {
           // Ajout
           this.niveauxService.create({ nom: this.formData.name }).subscribe({
-            next: (newNiveau: Niveau) => {
+            next: (newNiveau: any) => {
               this.levels.push({
                 id: newNiveau.id || 0,
                 name: newNiveau.nom || '',
@@ -327,7 +367,7 @@ export class Contenus implements OnInit {
             nom: this.formData.name,
             niveau: niveau ? { id: niveau.id } : undefined
           }).subscribe({
-            next: (updatedClasse: Classe) => {
+            next: (updatedClasse: any) => {
               // Update local data
               const index = this.classes.findIndex(c => c.id === this.editingId);
               if (index !== -1) {
@@ -352,7 +392,7 @@ export class Contenus implements OnInit {
             nom: this.formData.name,
             niveau: niveau ? { id: niveau.id } : undefined
           }).subscribe({
-            next: (newClasse: Classe) => {
+            next: (newClasse: any) => {
               this.classes.push({
                 id: newClasse.id || 0,
                 name: newClasse.nom || '',

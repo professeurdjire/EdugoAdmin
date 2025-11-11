@@ -5,7 +5,7 @@
       <h1 class="page-title">Gestion des Partenaires</h1>
       <p class="page-subtitle">Gérez les partenaires et institutions collaborant avec votre plateforme</p>
     </div>
-    <button routerLink="/admin/ajouterpartenaire" class="btn btn-primary" (click)="openAddModal()">
+    <button class="btn btn-primary" routerLink="/admin/ajouterpartenaire" (click)="openAddModal()">
       <i class="icon-add">+</i>
       Ajouter un partenaire
     </button>
@@ -159,7 +159,7 @@
         <tbody>
           <tr *ngFor="let partenaire of filteredPartenaires" 
               [class.selected]="isSelected(partenaire.id)"
-              [class.inactive]="partenaire.statut === 'inactif'">
+              [class.inactive]="partenaire.statut?.toLowerCase() === 'inactif'">
             <td>
               <label class="checkbox-cell">
                 <input 
@@ -181,7 +181,7 @@
               </div>
             </td>
             <td>
-              <span class="type-badge" [class]="partenaire.type">
+              <span class="type-badge" [class]="partenaire.type?.toLowerCase()">
                 {{ getTypeLabel(partenaire.type) }}
               </span>
             </td>
@@ -199,22 +199,19 @@
               </div>
             </td>
             <td>
-              <span class="status-badge" [class]="partenaire.statut">
+              <span class="status-badge" [class]="partenaire.statut?.toLowerCase()">
                 {{ getStatusLabel(partenaire.statut) }}
               </span>
             </td>
             <td>
               <div class="action-buttons">
-                <button class="action-btn view" (click)="viewPartenaire(partenaire.id)"
-                        title="Voir les détails">
+                <button class="action-btn view" (click)="viewPartenaire(partenaire.id)" title="Voir les détails">
                   <i class="icon-view">👁️</i>
                 </button>
-                <button class="action-btn edit" (click)="editPartenaire(partenaire.id)"
-                        title="Modifier">
+                <button class="action-btn edit" (click)="editPartenaire(partenaire.id)" title="Modifier">
                   <i class="icon-edit">✏️</i>
                 </button>
-                <button class="action-btn delete" (click)="deletePartenaire(partenaire)"
-                        title="Supprimer">
+                <button class="action-btn delete" (click)="deletePartenaire(partenaire)" title="Supprimer">
                   <i class="icon-delete">🗑️</i>
                 </button>
               </div>
@@ -228,9 +225,7 @@
         <div class="no-data-icon">🏢</div>
         <h3>Aucun partenaire trouvé</h3>
         <p>Aucun partenaire ne correspond à vos critères de recherche.</p>
-        <button class="btn btn-primary" (click)="resetFilters()">
-          Réinitialiser les filtres
-        </button>
+        <button class="btn btn-primary" (click)="resetFilters()">Réinitialiser les filtres</button>
       </div>
     </div>
 
@@ -240,21 +235,20 @@
         Affichage de {{ getDisplayRange() }} sur {{ totalPartenaires }} partenaires
       </div>
       <div class="pagination-controls">
-        <button class="pagination-btn" (click)="previousPage()" [disabled]="currentPage === 1">
+        <button class="pagination-btn" (click)="previousPage()" [disabled]="currentPage === 0">
           <i class="icon-prev">←</i>
         </button>
         
         <div class="pagination-numbers">
           <button *ngFor="let page of getPages()" 
                   class="pagination-number" 
-                  [class.active]="page === currentPage"
+                  [class.active]="page === currentPage + 1"
                   (click)="goToPage(page)">
             {{ page }}
           </button>
         </div>
 
-        <button class="pagination-btn" (click)="nextPage()" 
-                [disabled]="currentPage === totalPages">
+        <button class="pagination-btn" (click)="nextPage()" [disabled]="currentPage === totalPages - 1">
           <i class="icon-next">→</i>
         </button>
       </div>

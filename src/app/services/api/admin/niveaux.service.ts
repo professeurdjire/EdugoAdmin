@@ -1,32 +1,44 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../../environments/environment';
 import { Niveau } from '../../../api/model/niveau';
 
 @Injectable({ providedIn: 'root' })
 export class NiveauxService {
-  private base = `${environment.apiUrl.replace(/\/$/, '')}/niveaux`;
+  // Le backend a un context path /api, donc les URLs doivent être /api/api/...
+  private base = `${environment.apiUrl}/niveaux`;
 
   constructor(private http: HttpClient) {}
 
+  private getHeaders(): HttpHeaders {
+    const token = sessionStorage.getItem('token');
+    let headers = new HttpHeaders();
+    
+    if (token) {
+      headers = headers.set('Authorization', `Bearer ${JSON.parse(token)}`);
+    }
+    
+    return headers;
+  }
+
   list(): Observable<Niveau[]> {
-    return this.http.get<Niveau[]>(this.base);
+    return this.http.get<Niveau[]>(this.base, { headers: this.getHeaders() });
   }
 
   get(id: number): Observable<Niveau> {
-    return this.http.get<Niveau>(`${this.base}/${id}`);
+    return this.http.get<Niveau>(`${this.base}/${id}`, { headers: this.getHeaders() });
   }
 
   create(payload: Partial<Niveau>): Observable<Niveau> {
-    return this.http.post<Niveau>(this.base, payload);
+    return this.http.post<Niveau>(this.base, payload, { headers: this.getHeaders() });
   }
 
   update(id: number, payload: Partial<Niveau>): Observable<Niveau> {
-    return this.http.put<Niveau>(`${this.base}/${id}`, payload);
+    return this.http.put<Niveau>(`${this.base}/${id}`, payload, { headers: this.getHeaders() });
   }
 
   delete(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.base}/${id}`);
+    return this.http.delete<void>(`${this.base}/${id}`, { headers: this.getHeaders() });
   }
 }

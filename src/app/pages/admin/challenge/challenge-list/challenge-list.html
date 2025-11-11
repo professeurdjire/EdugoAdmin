@@ -1,19 +1,7 @@
-<div class="challenges-container">
-  <div class="header">
-    <h1>Challenges</h1>
-    <a routerLink="/admin/ajouterchallenge" class="add-btn">+ Ajouter un challenge</a>
-  </div>
-
-  <!-- Filtres -->
-  <div class="filters">
-    <input type="text" placeholder="Titre du challenge..." [(ngModel)]="searchTerm" (keyup.enter)="applyFilters()" />
-    <select [(ngModel)]="selectedType">
-      <option value="">Tous les types</option>
-      <option value="INTERCLASSE">Interclasse</option>
-      <option value="INTERNIVEAU">Interniveau</option>
-    </select>
-    <button class="filter-btn" (click)="applyFilters()">Filtrer</button>
-    <button class="reset-btn" (click)="resetFilters()">Réinitialiser</button>
+<div class="users-page-container">
+  <div class="page-header">
+    <h1 class="page-title">Challenges</h1>
+    <a routerLink="/admin/ajouterchallenge" class="add-btn">Ajouter un challenge</a>
   </div>
 
   <!-- Message d'erreur -->
@@ -27,42 +15,85 @@
     <p>Chargement des challenges...</p>
   </div>
 
-  <!-- Tableau de challenges -->
-  <div *ngIf="!loading && !error" class="table-container">
-    <table class="challenges-table">
-      <thead>
-        <tr>
-          <th>Titre</th>
-          <th>Description</th>
-          <th>Date Début</th>
-          <th>Date Fin</th>
-          <th>Type</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let challenge of pagedChallenges">
-          <td>{{ challenge.titre }}</td>
-          <td>{{ challenge.description }}</td>
-          <td>{{ challenge.dateDebut }}</td>
-          <td>{{ challenge.dateFin }}</td>
-          <td>{{ challenge.typeChallenge }}</td>
-          <td class="actions">
-            <button class="view-btn" (click)="viewChallenge(challenge)">Voir</button>
-            <button class="edit-btn" (click)="editChallenge(challenge)">Modifier</button>
-            <button class="delete-btn" (click)="deleteChallenge(challenge)">Supprimer</button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+  <!-- Filters -->
+  <div class="filter" *ngIf="!loading && !error">
+    <section class="filters-container">
+      <div class="filter-group">
+        <label>Recherche</label>
+        <input type="text" placeholder="Nom, description..." [(ngModel)]="searchTerm" (keyup.enter)="applyFilters()" />
+      </div>
+      <div class="filter-group">
+        <label>Type</label>
+        <select [(ngModel)]="selectedType" (change)="applyFilters()">
+          <option value="">Tous les types</option>
+          <option value="INTERCLASSE">Interclasse</option>
+          <option value="INTERNIVEAU">Interniveau</option>
+        </select>
+      </div>
+      <div class="action-buttons">
+        <button class="filter-btn" (click)="applyFilters()">Filtrer</button>
+        <button class="reset-btn" (click)="resetFilters()">Réinitialiser</button>
+      </div>
+    </section>
   </div>
 
-  <!-- Pagination -->
-  <div class="pagination" *ngIf="!loading && !error && totalPages > 1">
-    <button (click)="changePage(currentPage - 1)" [disabled]="currentPage === 1">Précédent</button>
-    <span *ngFor="let p of [].constructor(totalPages); let i = index"
-          (click)="changePage(i + 1)"
-          [class.active]="(i + 1) === currentPage">{{ i + 1 }}</span>
-    <button (click)="changePage(currentPage + 1)" [disabled]="currentPage === totalPages">Suivant</button>
+  <div class="table-header-info" *ngIf="!loading && !error">
+    <h2>Liste des Challenges ({{ totalFiltered }})</h2>
   </div>
+
+  <section class="users-table-section" *ngIf="!loading && !error">
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>Challenge</th>
+            <th>Type</th>
+            <th>Dates</th>
+            <th>Statut</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let challenge of pagedChallenges">
+            <td class="user-details-cell">
+              <div class="user-info-text">
+                <p class="name">{{ challenge.titre }}</p>
+                <small class="email">{{ challenge.description }}</small>
+              </div>
+            </td>
+            <td><span class="level-badge">{{ challenge.typeChallenge }}</span></td>
+            <td>
+              Du {{ challenge.dateDebut }}<br>
+              Au {{ challenge.dateFin }}
+            </td>
+            <td><span class="status-badge active-status">Actif</span></td>
+            <td class="actions-cell">
+              <button class="action-icon-btn" (click)="viewChallenge(challenge)">👁️</button>
+              <button class="action-icon-btn" (click)="editChallenge(challenge)">✏️</button>
+              <button class="action-icon-btn" (click)="deleteChallenge(challenge)">🗑️</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- Pagination -->
+      <div class="book-list__footer" *ngIf="totalPages > 1">
+        <p>Affichage de {{ ((currentPage - 1) * pageSize) + 1 }} à {{ getMinValue(currentPage * pageSize, totalFiltered) }} sur {{ totalFiltered }} Challenges</p>
+        <nav class="pagination">
+          <button class="pagination__arrow" (click)="changePage(currentPage - 1)" [disabled]="currentPage === 1">
+            <span>←</span>
+          </button>
+          <span *ngFor="let page of [].constructor(totalPages); let i = index"
+                class="pagination__number" 
+                [class.active]="(i + 1) === currentPage"
+                (click)="changePage(i + 1)">
+            {{ i + 1 }}
+          </span>
+          <button class="pagination__arrow" (click)="changePage(currentPage + 1)" [disabled]="currentPage === totalPages">
+            <span>→</span>
+          </button>
+        </nav>
+      </div>
+    </div>
+  </section>
 </div>

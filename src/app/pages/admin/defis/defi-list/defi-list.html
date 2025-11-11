@@ -1,20 +1,7 @@
-<div class="defis-container">
-  <div class="header">
-    <h1>Défis</h1>
-    <a routerLink="/admin/ajouterdefi" class="add-btn">+ Ajouter un défi</a>
-  </div>
-
-  <!-- Filtres -->
-  <div class="filters">
-    <input type="text" placeholder="Titre du défi..." [(ngModel)]="searchTerm" (keyup.enter)="applyFilters()" />
-    <select [(ngModel)]="selectedType">
-      <option value="">Tous les types</option>
-      <option value="QCM">QCM</option>
-      <option value="EXERCICE">Exercice</option>
-      <option value="PROJET">Projet</option>
-    </select>
-    <button class="filter-btn" (click)="applyFilters()">Filtrer</button>
-    <button class="reset-btn" (click)="resetFilters()">Réinitialiser</button>
+<div class="users-page-container">
+  <div class="page-header">
+    <h1 class="page-title">Défis</h1>
+    <a routerLink="/admin/ajouterdefi" class="add-btn">Ajouter un défi</a>
   </div>
 
   <!-- Message d'erreur -->
@@ -28,42 +15,85 @@
     <p>Chargement des défis...</p>
   </div>
 
-  <!-- Tableau de défis -->
-  <div *ngIf="!loading && !error" class="table-container">
-    <table class="defis-table">
-      <thead>
-        <tr>
-          <th>Titre</th>
-          <th>Énoncé</th>
-          <th>Date d'ajout</th>
-          <th>Points</th>
-          <th>Type</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let defi of pagedDefis">
-          <td>{{ defi.titre }}</td>
-          <td>{{ defi.ennonce }}</td>
-          <td>{{ defi.dateAjout }}</td>
-          <td>{{ defi.pointDefi }}</td>
-          <td>{{ defi.typeDefi }}</td>
-          <td class="actions">
-            <button class="view-btn" (click)="viewDefi(defi)">Voir</button>
-            <button class="edit-btn" (click)="editDefi(defi)">Modifier</button>
-            <button class="delete-btn" (click)="deleteDefi(defi)">Supprimer</button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+  <!-- Filters -->
+  <div class="filter" *ngIf="!loading && !error">
+    <section class="filters-container">
+      <div class="filter-group">
+        <label>Recherche</label>
+        <input type="text" placeholder="Nom, énoncé..." [(ngModel)]="searchTerm" (keyup.enter)="applyFilters()" />
+      </div>
+      <div class="filter-group">
+        <label>Type</label>
+        <select [(ngModel)]="selectedType" (change)="applyFilters()">
+          <option value="">Tous les types</option>
+          <option value="JOURNALIER">Journalier</option>
+          <option value="HEBDOMADAIRE">Hebdomadaire</option>
+          <option value="MENSUEL">Mensuel</option>
+        </select>
+      </div>
+      <div class="action-buttons">
+        <button class="filter-btn" (click)="applyFilters()">Filtrer</button>
+        <button class="reset-btn" (click)="resetFilters()">Réinitialiser</button>
+      </div>
+    </section>
   </div>
 
-  <!-- Pagination -->
-  <div class="pagination" *ngIf="!loading && !error && totalPages > 1">
-    <button (click)="changePage(currentPage - 1)" [disabled]="currentPage === 1">Précédent</button>
-    <span *ngFor="let p of [].constructor(totalPages); let i = index"
-          (click)="changePage(i + 1)"
-          [class.active]="(i + 1) === currentPage">{{ i + 1 }}</span>
-    <button (click)="changePage(currentPage + 1)" [disabled]="currentPage === totalPages">Suivant</button>
+  <div class="table-header-info" *ngIf="!loading && !error">
+    <h2>Liste des Défis ({{ totalFiltered }})</h2>
   </div>
+
+  <section class="users-table-section" *ngIf="!loading && !error">
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>Défi</th>
+            <th>Type</th>
+            <th>Date d'ajout</th>
+            <th>Points</th>
+            <th>Statut</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let defi of pagedDefis">
+            <td class="user-details-cell">
+              <div class="user-info-text">
+                <p class="name">{{ defi.titre }}</p>
+                <small class="email">{{ defi.ennonce }}</small>
+              </div>
+            </td>
+            <td><span class="level-badge">{{ defi.typeDefi }}</span></td>
+            <td>{{ defi.dateAjout }}</td>
+            <td>{{ defi.pointDefi }} pts</td>
+            <td><span class="status-badge active-status">Actif</span></td>
+            <td class="actions-cell">
+              <button class="action-icon-btn" (click)="viewDefi(defi)">👁️</button>
+              <button class="action-icon-btn" (click)="editDefi(defi)">✏️</button>
+              <button class="action-icon-btn" (click)="deleteDefi(defi)">🗑️</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- Pagination -->
+      <div class="book-list__footer" *ngIf="totalPages > 1">
+        <p>Affichage de {{ ((currentPage - 1) * pageSize) + 1 }} à {{ getMinValue(currentPage * pageSize, totalFiltered) }} sur {{ totalFiltered }} Défis</p>
+        <nav class="pagination">
+          <button class="pagination__arrow" (click)="changePage(currentPage - 1)" [disabled]="currentPage === 1">
+            <span>←</span>
+          </button>
+          <span *ngFor="let page of [].constructor(totalPages); let i = index"
+                class="pagination__number" 
+                [class.active]="(i + 1) === currentPage"
+                (click)="changePage(i + 1)">
+            {{ i + 1 }}
+          </span>
+          <button class="pagination__arrow" (click)="changePage(currentPage + 1)" [disabled]="currentPage === totalPages">
+            <span>→</span>
+          </button>
+        </nav>
+      </div>
+    </div>
+  </section>
 </div>

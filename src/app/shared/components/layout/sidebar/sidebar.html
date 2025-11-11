@@ -1,47 +1,57 @@
 <!-- Sidebar -->
-<aside class="sidebar" role="navigation" aria-label="Menu principal">
+<aside class="sidebar" [ngClass]="{'collapsed': isCollapsed}" role="navigation" aria-label="Menu principal">
   <nav class="menu">
     <a routerLink="/admin/dashboard" routerLinkActive="active" class="menu-item" [routerLinkActiveOptions]="{ exact: true }">
-      <i class="fa-solid fa-gauge-high"></i> Dashboard
+      <i class="fa-solid fa-gauge-high"></i>
+      <span [hidden]="isCollapsed">Dashboard</span>
     </a>
     <a routerLink="/admin/utilisateurs" routerLinkActive="active" class="menu-item">
-      <i class="fa-solid fa-users"></i> Utilisateurs
+      <i class="fa-solid fa-users"></i>
+      <span [hidden]="isCollapsed">Utilisateurs</span>
     </a>
     <a routerLink="/admin/contenus" routerLinkActive="active" class="menu-item">
-      <i class="fa-solid fa-layer-group"></i> Contenu
+      <i class="fa-solid fa-layer-group"></i>
+      <span [hidden]="isCollapsed">Contenu</span>
     </a>
-    <a routerLink="/admin/livredetails" routerLinkActive="active" class="menu-item">
-      <i class="fa-solid fa-book"></i> Livres
+    <a routerLink="/admin/livrelist" routerLinkActive="active" class="menu-item">
+      <i class="fa-solid fa-book"></i>
+      <span [hidden]="isCollapsed">Livres</span>
     </a>
-    <a routerLink="/admin/quizdetails" routerLinkActive="active" class="menu-item">
-      <i class="fa-solid fa-question-circle"></i> Quiz
+    <a routerLink="/admin/quizlist" routerLinkActive="active" class="menu-item">
+      <i class="fa-solid fa-question-circle"></i>
+      <span [hidden]="isCollapsed">Quiz</span>
     </a>
-    <a routerLink="/admin/defidetails" routerLinkActive="active" class="menu-item">
-      <i class="fa-solid fa-flag"></i> Défis
+    <a routerLink="/admin/defilist" routerLinkActive="active" class="menu-item">
+      <i class="fa-solid fa-flag"></i>
+      <span [hidden]="isCollapsed">Défis</span>
     </a>
-    <a routerLink="/admin/challengedetails" routerLinkActive="active" class="menu-item">
-      <i class="fa-solid fa-trophy"></i> Challenge
+    <a routerLink="/admin/challengelist" routerLinkActive="active" class="menu-item">
+      <i class="fa-solid fa-trophy"></i>
+      <span [hidden]="isCollapsed">Challenge</span>
     </a>
-    <a routerLink="/admin/exercicedetails" routerLinkActive="active" class="menu-item">
-      <i class="fa-solid fa-dumbbell"></i> Exercices
+    <a routerLink="/admin/exercicelist" routerLinkActive="active" class="menu-item">
+      <i class="fa-solid fa-dumbbell"></i>
+      <span [hidden]="isCollapsed">Exercices</span>
     </a>
     <a routerLink="/admin/recompensedetails" routerLinkActive="active" class="menu-item">
-      <i class="fa-solid fa-gift"></i> Récompenses
+      <i class="fa-solid fa-gift"></i>
+      <span [hidden]="isCollapsed">Récompenses</span>
     </a>
     <a routerLink="/admin/partenaire" routerLinkActive="active" class="menu-item">
-      <i class="fa-solid fa-handshake"></i> Partenaires
+      <i class="fa-solid fa-handshake"></i>
+      <span [hidden]="isCollapsed">Partenaires</span>
     </a>
     <a routerLink="/admin/paramatresList" routerLinkActive="active" class="menu-item">
-      <i class="fa-solid fa-sliders"></i> Paramètres
+      <i class="fa-solid fa-sliders"></i>
+      <span [hidden]="isCollapsed">Paramètres</span>
     </a>
   </nav>
-
 
 
   <div class="deconnexion">
       <button type="button" (click)="logout()" class="logout-btn">
         <i class="fa-solid fa-right-from-bracket"></i>
-        <span>Déconnexion</span>
+        <span [hidden]="isCollapsed">Déconnexion</span>
       </button>
   </div>
 

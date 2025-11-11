@@ -6,7 +6,8 @@ import { Exercice } from '../../../api/model/exercice';
 
 @Injectable({ providedIn: 'root' })
 export class ExercicesService {
-  private base = `${environment.apiUrl.replace(/\/$/, '')}/admin/exercices`;
+  // Le backend a un context path /api, donc les URLs doivent être /api/api/...
+  private base = `${environment.apiUrl.replace(/\/$/, '')}/api/admin/exercices`;
 
   constructor(private http: HttpClient) {}
 

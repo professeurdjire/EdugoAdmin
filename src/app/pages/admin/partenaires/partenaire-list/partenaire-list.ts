@@ -1,183 +1,100 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
-
-interface Partenaire {
-  id: number;
-  nom: string;
-  domaine: string;
-  type: string;
-  email: string;
-  telephone?: string;
-  dateAjout: Date;
-  statut: string;
-}
+import { Router, RouterLink } from '@angular/router';
+import { Partenaire } from '../../../../models/partenaire.model';
+import { PartenaireService } from '../../../../services/api/partenaire.service';
 
 @Component({
   selector: 'app-partenaire-list',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './partenaire-list.html',
   styleUrls: ['./partenaire-list.css']
 })
 export class PartenaireList implements OnInit {
-  // Données
   partenaires: Partenaire[] = [];
   filteredPartenaires: Partenaire[] = [];
   selectedIds: number[] = [];
-  
+
   // Filtres
   searchTerm: string = '';
   selectedStatus: string = '';
   selectedType: string = '';
-  
+
   // Tri
   sortField: string = 'nom';
   sortDirection: 'asc' | 'desc' = 'asc';
-  
+
   // Pagination
-  currentPage: number = 1;
+  currentPage: number = 0;
   pageSize: number = 10;
   totalPages: number = 1;
-  
+  totalElements: number = 0;
+
   // Modal
   showDeleteModal: boolean = false;
   partenaireToDelete: Partenaire | null = null;
-  
-  constructor(private router: Router) {}
+
+  // Loading
+  isLoading: boolean = false;
+  error: string | null = null;
+
+  constructor(
+    private router: Router,
+    private partenaireService: PartenaireService
+  ) {}
 
   ngOnInit(): void {
-    this.loadSampleData();
-    this.applyFilters();
+    this.loadPartenaires();
   }
 
-  /**
-   * Charge des données d'exemple
-   */
-  loadSampleData(): void {
-    this.partenaires = [
-      {
-        id: 1,
-        nom: 'Université de Bamako',
-        domaine: 'Éducation supérieure',
-        type: 'institution',
-        email: 'contact@univ-bamako.ml',
-        telephone: '+223 20 21 22 23',
-        dateAjout: new Date('2024-01-15'),
-        statut: 'actif'
-      },
-      {
-        id: 2,
-        nom: 'Orange Mali',
-        domaine: 'Télécommunications',
-        type: 'entreprise',
-        email: 'partenariat@orange.ml',
-        telephone: '+223 20 24 25 26',
-        dateAjout: new Date('2024-02-10'),
-        statut: 'actif'
-      },
-      {
-        id: 3,
-        nom: 'UNICEF Mali',
-        domaine: 'Aide humanitaire',
-        type: 'ong',
-        email: 'mali@unicef.org',
-        dateAjout: new Date('2024-03-05'),
-        statut: 'en_attente'
-      },
-      {
-        id: 4,
-        nom: 'Ministère de l\'Éducation',
-        domaine: 'Éducation nationale',
-        type: 'gouvernement',
-        email: 'contact@education.gov.ml',
-        dateAjout: new Date('2024-01-20'),
-        statut: 'actif'
-      },
-      {
-        id: 5,
-        nom: 'Mali Telecom',
-        domaine: 'Technologie',
-        type: 'entreprise',
-        email: 'info@malitelecom.ml',
-        telephone: '+223 20 27 28 29',
-        dateAjout: new Date('2024-02-28'),
-        statut: 'inactif'
-      }
-    ];
-  }
-
-  /**
-   * Applique les filtres et la recherche
-   */
-  applyFilters(): void {
-    let filtered = this.partenaires;
-
-    // Filtre par recherche
-    if (this.searchTerm) {
-      const term = this.searchTerm.toLowerCase();
-      filtered = filtered.filter(p => 
-        p.nom.toLowerCase().includes(term) ||
-        p.domaine.toLowerCase().includes(term) ||
-        p.email.toLowerCase().includes(term)
-      );
-    }
-
-    // Filtre par statut
-    if (this.selectedStatus) {
-      filtered = filtered.filter(p => p.statut === this.selectedStatus);
-    }
-
-    // Filtre par type
-    if (this.selectedType) {
-      filtered = filtered.filter(p => p.type === this.selectedType);
-    }
-
-    // Tri
-    filtered.sort((a, b) => {
-      const aValue = a[this.sortField as keyof Partenaire];
-      const bValue = b[this.sortField as keyof Partenaire];
-      
-      if (aValue < bValue) return this.sortDirection === 'asc' ? -1 : 1;
-      if (aValue > bValue) return this.sortDirection === 'asc' ? 1 : -1;
-      return 0;
-    });
-
-    this.filteredPartenaires = filtered;
-    this.updatePagination();
-  }
-
-  /**
-   * Gestion de la recherche
-   */
+  // ----------------------------------
+  // Filtrage
+  // ----------------------------------
   onSearch(): void {
-    this.currentPage = 1;
     this.applyFilters();
   }
 
-  /**
-   * Gestion du changement de filtre
-   */
   onFilterChange(): void {
-    this.currentPage = 1;
     this.applyFilters();
   }
 
-  /**
-   * Réinitialise tous les filtres
-   */
   resetFilters(): void {
     this.searchTerm = '';
     this.selectedStatus = '';
     this.selectedType = '';
-    this.currentPage = 1;
     this.applyFilters();
   }
 
-  /**
-   * Tri des colonnes
-   */
+  private applyFilters(): void {
+    this.filteredPartenaires = this.partenaires.filter(p => {
+      const matchSearch =
+        !this.searchTerm ||
+        p.nom?.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
+        p.email?.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
+        p.domaine?.toLowerCase().includes(this.searchTerm.toLowerCase());
+
+      const matchStatus =
+        !this.selectedStatus || p.statut?.toLowerCase() === this.selectedStatus.toLowerCase();
+
+      const matchType =
+        !this.selectedType || p.type?.toLowerCase() === this.selectedType.toLowerCase();
+
+      return matchSearch && matchStatus && matchType;
+    });
+
+    // Appliquer le tri après filtrage
+    this.applySort();
+
+    // Recalculer pagination
+    this.currentPage = 0;
+    this.totalPages = Math.ceil(this.filteredPartenaires.length / this.pageSize);
+  }
+
+  // ----------------------------------
+  // Tri
+  // ----------------------------------
   sortBy(field: string): void {
     if (this.sortField === field) {
       this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
@@ -185,197 +102,215 @@ export class PartenaireList implements OnInit {
       this.sortField = field;
       this.sortDirection = 'asc';
     }
-    this.applyFilters();
+    this.applySort();
   }
 
-    // Gestion de la sélection
-  toggleSelectAll(event: any): void {
-    if (event.target.checked) {
-      this.selectedIds = this.getCurrentPagePartenaires().map(p => p.id);
-    } else {
-      this.selectedIds = [];
-    }
+  private applySort(): void {
+    this.filteredPartenaires.sort((a, b) => {
+      let valA = (a as any)[this.sortField];
+      let valB = (b as any)[this.sortField];
+
+      if (valA == null) valA = '';
+      if (valB == null) valB = '';
+
+      if (typeof valA === 'string') valA = valA.toLowerCase();
+      if (typeof valB === 'string') valB = valB.toLowerCase();
+
+      if (valA < valB) return this.sortDirection === 'asc' ? -1 : 1;
+      if (valA > valB) return this.sortDirection === 'asc' ? 1 : -1;
+      return 0;
+    });
+  }
+
+  // ----------------------------------
+  // Pagination
+  // ----------------------------------
+  getPages(): number[] {
+    return Array(this.totalPages).fill(0).map((_, i) => i + 1);
+  }
+
+  goToPage(page: number): void {
+    this.currentPage = page - 1;
+  }
+
+  previousPage(): void {
+    if (this.currentPage > 0) this.currentPage--;
+  }
+
+  nextPage(): void {
+    if (this.currentPage < this.totalPages - 1) this.currentPage++;
+  }
+
+  onPageSizeChange(): void {
+    this.totalPages = Math.ceil(this.filteredPartenaires.length / this.pageSize);
+    this.currentPage = 0;
+  }
+
+  getDisplayRange(): string {
+    if (!this.filteredPartenaires.length) return '0-0';
+    const start = this.currentPage * this.pageSize + 1;
+    let end = start + this.pageSize - 1;
+    if (end > this.filteredPartenaires.length) end = this.filteredPartenaires.length;
+    return `${start}-${end}`;
+  }
+
+  // ----------------------------------
+  // Sélection multiple
+  // ----------------------------------
+  isSelected(id: number): boolean {
+    return this.selectedIds.includes(id);
   }
 
   toggleSelection(id: number): void {
-    const index = this.selectedIds.indexOf(id);
-    if (index > -1) {
-      this.selectedIds.splice(index, 1);
+    if (this.selectedIds.includes(id)) {
+      this.selectedIds = this.selectedIds.filter(x => x !== id);
     } else {
       this.selectedIds.push(id);
     }
   }
 
-  isSelected(id: number): boolean {
-    return this.selectedIds.includes(id);
-  }
-
   isAllSelected(): boolean {
-    const currentPageIds = this.getCurrentPagePartenaires().map(p => p.id);
-    return currentPageIds.length > 0 && currentPageIds.every(id => this.selectedIds.includes(id));
+    if (!this.filteredPartenaires.length) return false;
+    return this.filteredPartenaires.every(p => this.selectedIds.includes(p.id));
   }
 
-  // Pagination
-  getCurrentPagePartenaires(): Partenaire[] {
-    const startIndex = (this.currentPage - 1) * this.pageSize;
-    return this.filteredPartenaires.slice(startIndex, startIndex + this.pageSize);
-  }
-
-  updatePagination(): void {
-    this.totalPages = Math.ceil(this.filteredPartenaires.length / this.pageSize);
-    if (this.currentPage > this.totalPages && this.totalPages > 0) {
-      this.currentPage = this.totalPages;
-    }
-  }
-
-  getPages(): number[] {
-    const pages: number[] = [];
-    const total = this.totalPages;
-    const current = this.currentPage;
-    
-    if (total <= 5) {
-      for (let i = 1; i <= total; i++) pages.push(i);
+  toggleSelectAll(event: any): void {
+    if (event.target.checked) {
+      this.selectedIds = this.filteredPartenaires.map(p => p.id);
     } else {
-      if (current <= 3) {
-        pages.push(1, 2, 3, 4, 5);
-      } else if (current >= total - 2) {
-        for (let i = total - 4; i <= total; i++) pages.push(i);
-      } else {
-        for (let i = current - 2; i <= current + 2; i++) pages.push(i);
+      this.selectedIds = [];
+    }
+  }
+
+  // ----------------------------------
+  // Chargement des partenaires
+  // ----------------------------------
+  loadPartenaires(): void {
+    this.isLoading = true;
+    this.error = null;
+
+    this.partenaireService.getAll(
+      this.currentPage,
+      this.pageSize,
+      this.sortField,
+      this.sortDirection,
+      this.searchTerm,
+      this.selectedStatus,
+      this.selectedType
+    ).subscribe({
+      next: (response) => {
+        // Toujours utiliser response.content
+        this.partenaires = response?.content ?? [];
+        this.filteredPartenaires = this.partenaires;
+
+        this.totalElements = response?.totalElements ?? this.partenaires.length;
+        this.totalPages = response?.totalPages ?? Math.ceil(this.totalElements / this.pageSize);
+
+        this.isLoading = false;
+      },
+      error: (err) => {
+        console.error('Erreur lors du chargement des partenaires:', err);
+        this.error = 'Erreur lors du chargement des partenaires.';
+        this.isLoading = false;
+        this.loadSampleData();
       }
-    }
-    
-    return pages;
+    });
   }
 
-  getDisplayRange(): string {
-    const start = (this.currentPage - 1) * this.pageSize + 1;
-    const end = Math.min(this.currentPage * this.pageSize, this.filteredPartenaires.length);
-    return `${start}-${end}`;
+  loadSampleData(): void {
+    this.partenaires = [
+      { id: 1, nom: 'Université de Bamako', domaine: 'Éducation', type: 'institution', email: 'contact@univ-bamako.ml', telephone: '+22320212223', dateAjout: '2024-01-15', statut: 'actif', pays: 'Mali', newsletter: true },
+      { id: 2, nom: 'Orange Mali', domaine: 'Télécom', type: 'entreprise', email: 'partenariat@orange.ml', telephone: '+22320242526', dateAjout: '2024-02-10', statut: 'actif', pays: 'Mali', newsletter: true },
+      { id: 3, nom: 'UNICEF Mali', domaine: 'Humanitaire', type: 'ong', email: 'mali@unicef.org', dateAjout: '2024-03-05', statut: 'en_attente', pays: 'Mali', newsletter: true }
+    ];
+    this.filteredPartenaires = this.partenaires;
+    this.totalElements = this.partenaires.length;
+    this.totalPages = 1;
   }
 
-  previousPage(): void {
-    if (this.currentPage > 1) {
-      this.currentPage--;
-    }
-  }
-
-  nextPage(): void {
-    if (this.currentPage < this.totalPages) {
-      this.currentPage++;
-    }
-  }
-
-  goToPage(page: number): void {
-    this.currentPage = page;
-  }
-
-  onPageSizeChange(): void {
-    this.currentPage = 1;
-    this.updatePagination();
-  }
-
-  // Statistiques
+  // ----------------------------------
+  // Getters statistiques
+  // ----------------------------------
   get totalPartenaires(): number {
-    return this.partenaires.length;
+    return this.totalElements;
   }
 
   get activePartenaires(): number {
-    return this.partenaires.filter(p => p.statut === 'actif').length;
+    return (this.partenaires ?? []).filter(p => p?.statut === 'actif').length;
   }
 
   get pendingPartenaires(): number {
-    return this.partenaires.filter(p => p.statut === 'en_attente').length;
+    return (this.partenaires ?? []).filter(p => p?.statut === 'en_attente').length;
   }
 
   get newThisMonth(): number {
+    const list = this.partenaires ?? [];
     const currentMonth = new Date().getMonth();
     const currentYear = new Date().getFullYear();
-    return this.partenaires.filter(p => {
+
+    return list.filter(p => {
+      if (!p?.dateAjout) return false;
       const date = new Date(p.dateAjout);
-      return date.getMonth() === currentMonth && date.getFullYear() === currentYear;
+      return !isNaN(date.getTime()) && date.getMonth() === currentMonth && date.getFullYear() === currentYear;
     }).length;
   }
 
-  // Utilitaires d'affichage
   getInitials(nom: string): string {
+    if (!nom) return '';
     return nom
-      .split(' ')
-      .map(word => word.charAt(0))
+      .trim()
+      .split(/\s+/)
+      .map(w => w.charAt(0).toUpperCase())
       .join('')
-      .toUpperCase()
       .substring(0, 2);
   }
 
   getTypeLabel(type: string): string {
-    const labels: { [key: string]: string } = {
-      'institution': 'Institution',
-      'entreprise': 'Entreprise',
-      'ong': 'ONG',
-      'gouvernement': 'Gouvernement'
-    };
-    return labels[type] || type;
+    if (!type) return 'Non défini';
+    const labels: Record<string, string> = { institution: 'Institution', entreprise: 'Entreprise', ong: 'ONG', gouvernement: 'Gouvernement' };
+    return labels[type.toLowerCase()] || type;
   }
 
   getStatusLabel(statut: string): string {
-    const labels: { [key: string]: string } = {
-      'actif': 'Actif',
-      'inactif': 'Inactif',
-      'en_attente': 'En attente'
-    };
-    return labels[statut] || statut;
+    if (!statut) return 'Non défini';
+    const labels: Record<string, string> = { actif: 'Actif', inactif: 'Inactif', en_attente: 'En attente' };
+    return labels[statut.toLowerCase()] || statut;
   }
 
-  // Actions
-  openAddModal(): void {
-    // Navigation vers la page d'ajout ou ouverture d'un modal
-    this.router.navigate(['/partenaires/nouveau']);
-  }
-
-  viewPartenaire(id: number): void {
-    this.router.navigate(['/partenaires', id]);
-  }
-
-  editPartenaire(id: number): void {
-    this.router.navigate(['/partenaires', id, 'editer']);
-  }
-
-  deletePartenaire(partenaire: Partenaire): void {
-    this.partenaireToDelete = partenaire;
-    this.showDeleteModal = true;
-  }
-
-  closeDeleteModal(): void {
-    this.showDeleteModal = false;
-    this.partenaireToDelete = null;
-  }
-
+  // ----------------------------------
+  // Actions CRUD
+  // ----------------------------------
+  openAddModal(): void { this.router.navigate(['/admin/ajouterpartenaire']); }
+  viewPartenaire(id: number): void { this.router.navigate(['/admin/ajouterpartenaire', id]); }
+  editPartenaire(id: number): void { this.router.navigate(['/admin/ajouterpartenaire', id]); }
+  deletePartenaire(p: Partenaire): void { this.partenaireToDelete = p; this.showDeleteModal = true; }
+  closeDeleteModal(): void { this.showDeleteModal = false; this.partenaireToDelete = null; }
   confirmDelete(): void {
-    if (this.partenaireToDelete) {
-      // Simulation de suppression - à remplacer par un appel API
-      this.partenaires = this.partenaires.filter(p => p.id !== this.partenaireToDelete!.id);
-      this.applyFilters();
-      this.closeDeleteModal();
-      
-      // Réinitialiser la sélection
-      this.selectedIds = this.selectedIds.filter(id => id !== this.partenaireToDelete!.id);
-    }
+    if (!this.partenaireToDelete?.id) return;
+    this.partenaireService.delete(this.partenaireToDelete.id).subscribe({
+      next: () => { this.loadPartenaires(); this.closeDeleteModal(); this.selectedIds = this.selectedIds.filter(id => id !== this.partenaireToDelete!.id); },
+      error: (err) => { console.error('Erreur suppression:', err); this.error = 'Erreur lors de la suppression'; }
+    });
   }
 
   exportToExcel(): void {
-    // Implémentation de l'export Excel
-    console.log('Export des partenaires vers Excel:', this.filteredPartenaires);
-    // Ici vous pourriez utiliser une bibliothèque comme xlsx
+    const filters = { search: this.searchTerm, status: this.selectedStatus, type: this.selectedType };
+    this.partenaireService.exportToExcel(filters).subscribe({
+      next: (blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `partenaires_${new Date().toISOString().split('T')[0]}.xlsx`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+      },
+      error: (err) => { console.error('Erreur export:', err); this.error = 'Erreur export Excel'; }
+    });
   }
 
-  refreshData(): void {
-    this.loadSampleData();
-    this.applyFilters();
-    this.selectedIds = [];
-  }
+  refreshData(): void { this.loadPartenaires(); this.selectedIds = []; }
 
-  // Méthode utilitaire pour le débogage
-  get debugInfo(): string {
-    return `Partenaires: ${this.partenaires.length} | Filtres: ${this.filteredPartenaires.length} | Page: ${this.currentPage}/${this.totalPages}`;
-  }
+  debugInfo(): string { return `Partenaires: ${this.partenaires.length} | Page: ${this.currentPage+1}/${this.totalPages}`; }
 }

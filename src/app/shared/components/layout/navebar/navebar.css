@@ -47,26 +47,12 @@
   position: absolute;
   top: -5px;
   right: -5px;
-  background-color: red;
+  background-color: #A885D8;
   border-radius: 50%;
   width: 8px;
   height: 8px;
 }
 
-.user-info {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.user-circle {
-  width: 40px;
-  height: 40px;
-  background-color: #cfffe2;
-  border-radius: 50%;
-}
-
-/* Styles pour la partie utilisateur */
 .user-profile {
   display: flex;
   align-items: center;
@@ -128,25 +114,25 @@
   font-size: 12px;
 }
 
-/* Ajustement de l'espacement dans header-right */
-.header-right {
+/* Sidebar toggle button styles */
+.sidebar-toggle {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: #333;
+  padding: 10px;
+  margin-right: 10px;
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
+}
+
+.sidebar-toggle:hover {
+  background-color: #f0f0f0;
+}
+
+/* Header left section */
+.header-left {
   display: flex;
   align-items: center;
-  gap: 20px;
-}
-
-.notification-icon {
-  position: relative;
-  font-size: 1.2rem;
-  color: #666;
-}
-
-.notification-badge {
-  position: absolute;
-  top: -5px;
-  right: -5px;
-  background-color: #A885D8;
-  border-radius: 50%;
-  width: 8px;
-  height: 8px;
 }

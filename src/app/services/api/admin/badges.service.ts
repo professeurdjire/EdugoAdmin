@@ -7,7 +7,8 @@ import { BadgeRequest } from '../../../api/model/badgeRequest';
 
 @Injectable({ providedIn: 'root' })
 export class BadgesService {
-  private base = `${environment.apiUrl.replace(/\/$/, '')}/api/badges`;
+  // Le backend a un context path /api, donc les URLs doivent être /api/api/...
+  private base = `${environment.apiUrl.replace(/\/$/, '')}/api/admin/badges`;
 
   constructor(private http: HttpClient) {}
 

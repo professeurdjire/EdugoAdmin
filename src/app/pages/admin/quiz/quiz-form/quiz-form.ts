@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 
 interface Reponse {
   lettre: string;
@@ -35,7 +36,7 @@ interface Quiz {
 @Component({
   selector: 'app-quiz-form',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './quiz-form.html',
   styleUrls: ['./quiz-form.css']
 })

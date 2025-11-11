@@ -1,24 +1,7 @@
-<div class="livres-container">
-  <div class="header">
-    <h1>Livres</h1>
-    <a routerLink="/admin/ajouterlivre" class="add-btn">+ Ajouter un livre</a>
-  </div>
-
-  <!-- Filtres -->
-  <div class="filters">
-    <input type="text" placeholder="Titre ou auteur du livre..." [(ngModel)]="searchTerm" (keyup.enter)="applyFilters()" />
-    <select [(ngModel)]="selectedSubject">
-      <option value="">Toutes les matières</option>
-      <option value="Mathématiques">Mathématiques</option>
-      <option value="Français">Français</option>
-      <option value="Anglais">Anglais</option>
-      <option value="Histoire">Histoire</option>
-      <option value="Géographie">Géographie</option>
-      <option value="Physique">Physique</option>
-      <option value="Chimie">Chimie</option>
-    </select>
-    <button class="filter-btn" (click)="applyFilters()">Filtrer</button>
-    <button class="reset-btn" (click)="resetFilters()">Réinitialiser</button>
+<div class="users-page-container">
+  <div class="page-header">
+    <h1 class="page-title">Livres</h1>
+    <a routerLink="/admin/ajouterlivre" class="add-btn">Ajouter un livre</a>
   </div>
 
   <!-- Message d'erreur -->
@@ -32,42 +15,89 @@
     <p>Chargement des livres...</p>
   </div>
 
-  <!-- Tableau de livres -->
-  <div *ngIf="!loading && !error" class="table-container">
-    <table class="livres-table">
-      <thead>
-        <tr>
-          <th>Titre</th>
-          <th>Auteur</th>
-          <th>Année de publication</th>
-          <th>Matière</th>
-          <th>Langue</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let livre of pagedLivres">
-          <td>{{ livre.titre }}</td>
-          <td>{{ livre.auteur }}</td>
-          <td>{{ livre.anneePublication }}</td>
-          <td>{{ livre.matiere }}</td>
-          <td>{{ livre.langue }}</td>
-          <td class="actions">
-            <button class="view-btn" (click)="viewLivre(livre)">Voir</button>
-            <button class="edit-btn" (click)="editLivre(livre)">Modifier</button>
-            <button class="delete-btn" (click)="deleteLivre(livre)">Supprimer</button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+  <!-- Filtres -->
+  <div class="filter" *ngIf="!loading && !error">
+    <section class="filters-container">
+      <div class="filter-group">
+        <label>Recherche</label>
+        <input type="text" placeholder="Titre, auteur..." [(ngModel)]="searchTerm" (keyup.enter)="applyFilters()" />
+      </div>
+
+      <div class="filter-group">
+        <label>Matière</label>
+        <select [(ngModel)]="selectedSubject" (change)="applyFilters()">
+          <option value="">Toutes les matières</option>
+          <option value="Mathématiques">Mathématiques</option>
+          <option value="Français">Français</option>
+          <option value="Anglais">Anglais</option>
+          <option value="Histoire">Histoire</option>
+        </select>
+      </div>
+
+      <div class="action-buttons">
+        <button class="filter-btn" (click)="applyFilters()">Filtrer</button>
+        <button class="reset-btn" (click)="resetFilters()">Réinitialiser</button>
+      </div>
+    </section>
   </div>
 
-  <!-- Pagination -->
-  <div class="pagination" *ngIf="!loading && !error && totalPages > 1">
-    <button (click)="changePage(currentPage - 1)" [disabled]="currentPage === 1">Précédent</button>
-    <span *ngFor="let p of [].constructor(totalPages); let i = index"
-          (click)="changePage(i + 1)"
-          [class.active]="(i + 1) === currentPage">{{ i + 1 }}</span>
-    <button (click)="changePage(currentPage + 1)" [disabled]="currentPage === totalPages">Suivant</button>
+  <div class="table-header-info" *ngIf="!loading && !error">
+    <h2>Liste des livres ({{ totalFiltered }})</h2>
   </div>
+
+  <section class="users-table-section" *ngIf="!loading && !error">
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>Livre</th>
+            <th>Année</th>
+            <th>Matière</th>
+            <th>Langue</th>
+            <th>Statut</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let livre of pagedLivres">
+            <td class="user-details-cell">
+              <div class="user-initials blue">BK</div>
+              <div class="user-info-text">
+                <p class="name">{{ livre.titre }}</p>
+                <small class="email">Par {{ livre.auteur }}</small>
+              </div>
+            </td>
+            <td>{{ livre.anneePublication }}</td>
+            <td>{{ livre.matiere }}</td>
+            <td>{{ livre.langue }}</td>
+            <td><span class="status-badge active-status">Actif</span></td>
+            <td class="actions-cell">
+              <button class="action-icon-btn" (click)="viewLivre(livre)">👁️</button>
+              <button class="action-icon-btn" (click)="editLivre(livre)">✏️</button>
+              <button class="action-icon-btn" (click)="deleteLivre(livre)">🗑️</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- Pagination -->
+      <div class="book-list__footer" *ngIf="totalPages > 1">
+        <p>Affichage de {{ ((currentPage - 1) * pageSize) + 1 }} à {{ getMinValue(currentPage * pageSize, totalFiltered) }} sur {{ totalFiltered }} Livres</p>
+        <nav class="pagination">
+          <button class="pagination__arrow" (click)="changePage(currentPage - 1)" [disabled]="currentPage === 1">
+            <span>←</span>
+          </button>
+          <span *ngFor="let page of [].constructor(totalPages); let i = index"
+                class="pagination__number" 
+                [class.active]="(i + 1) === currentPage"
+                (click)="changePage(i + 1)">
+            {{ i + 1 }}
+          </span>
+          <button class="pagination__arrow" (click)="changePage(currentPage + 1)" [disabled]="currentPage === totalPages">
+            <span>→</span>
+          </button>
+        </nav>
+      </div>
+    </div>
+  </section>
 </div>

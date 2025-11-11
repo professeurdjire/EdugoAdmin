@@ -1,28 +1,27 @@
-import { NgModule } from '@angular/core';
-import { RouterModule, Routes } from '@angular/router';
+import { Component, NgModule } from '@angular/core';
+import { Routes, RouterModule } from '@angular/router';
+import { AuthLayout } from './layouts/auth-layout/auth-layout';
+import { AdminLayout } from './layouts/admin-layout/admin-layout';
+import { Login } from './pages/auth/login/login';
+import { Dashboard } from './pages/admin/dashboard/dashboard';
 import { AuthGuard } from './core/guards/auth.guard';
-import {AuthLayout} from './layouts/auth-layout/auth-layout';
-import {Login} from './pages/auth/login/login';
-import {AdminLayout} from './layouts/admin-layout/admin-layout';
-import {Dashboard} from './pages/admin/dashboard/dashboard';
+import { ChallengeForm } from './pages/admin/challenge/challenge-form/challenge-form';
+import { ChallengeDetails } from './pages/admin/challenge/challenge-details/challenge-details';
 
-import {ChallengeForm} from './pages/admin/challenge/challenge-form/challenge-form';
-import {ChallengeDetails} from './pages/admin/challenge/challenge-details/challenge-details';
-import {DefiForm} from './pages/admin/defis/defi-form/defi-form';
-import {ExerciceForm} from './pages/admin/exercice/exercice-form/exercice-form';
-import {LivreForm} from './pages/admin/livres/livre-form/livre-form';
-import {ParamatresList} from './pages/admin/parametre/paramatres-list/paramatres-list';
-import {ParamatresForm} from './pages/admin/parametre/paramatres-form/paramatres-form';
-import {QuizForm} from './pages/admin/quiz/quiz-form/quiz-form';
-import {RecompenseForm} from './pages/admin/recompense/recompense-form/recompense-form';
-import {RecompenseDetails} from './pages/admin/recompense/recompense-details/recompense-details';
-import {RecompenseList} from './pages/admin/recompense/recompense-list/recompense-list';
+import { DefiForm } from './pages/admin/defis/defi-form/defi-form';
+import { ExerciceForm } from './pages/admin/exercice/exercice-form/exercice-form';
+import { LivreForm } from './pages/admin/livres/livre-form/livre-form';
+import { ParamatresList } from './pages/admin/parametre/paramatres-list/paramatres-list';
+import { ParamatresForm } from './pages/admin/parametre/paramatres-form/paramatres-form';
+import { QuizForm } from './pages/admin/quiz/quiz-form/quiz-form';
+import { RecompenseForm } from './pages/admin/recompense/recompense-form/recompense-form';
+import { RecompenseDetails } from './pages/admin/recompense/recompense-details/recompense-details';
+import { RecompenseList } from './pages/admin/recompense/recompense-list/recompense-list';
 import {UtilisateurList} from './pages/admin/utilisateurs/utilisateur-list/utilisateur-list';
 import {UtilisateurForm} from './pages/admin/utilisateurs/utilisateur-form/utilisateur-form';
 import {LivreDetails} from './pages/admin/livres/livre-details/livre-details';
 
 import {NotFound} from './pages/error/not-found/not-found';
-import {Contenus} from './pages/admin/contenus/contenus';
 import {QuizDetails} from './pages/admin/quiz/quiz-details/quiz-details';
 import {DefiDetails} from './pages/admin/defis/defi-details/defi-details';
 import {ExerciceDetails} from './pages/admin/exercice/exercice-details/exercice-details';
@@ -35,6 +34,7 @@ import { LivreList } from './pages/admin/livres/livre-list/livre-list';
 import { QuizList } from './pages/admin/quiz/quiz-list/quiz-list';
 import { PartenaireList } from './pages/admin/partenaires/partenaire-list/partenaire-list';
 import { PartenaireForm } from './pages/admin/partenaires/partenaire-form/partenaire-form';
+import { Contenus } from './pages/admin/contenus/contenus';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'auth/login', pathMatch: 'full' },

@@ -6,7 +6,8 @@ import { Quiz } from '../../../api/model/quiz';
 
 @Injectable({ providedIn: 'root' })
 export class QuizService {
-  private base = `${environment.apiUrl.replace(/\/$/, '')}/admin/quizzes`;
+  // Le backend a un context path /api, donc les URLs doivent être /api/api/...
+  private base = `${environment.apiUrl.replace(/\/$/, '')}/api/admin/quizzes`;
 
   constructor(private http: HttpClient) {}
 
