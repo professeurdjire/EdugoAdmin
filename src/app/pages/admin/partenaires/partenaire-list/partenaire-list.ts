@@ -185,38 +185,82 @@ export class PartenaireList implements OnInit {
   // ----------------------------------
   // Chargement des partenaires
   // ----------------------------------
-  loadPartenaires(): void {
-    this.isLoading = true;
-    this.error = null;
+  // ----------------------------------
+// Chargement des partenaires
+// ----------------------------------
+loadPartenaires(): void {
+  this.isLoading = true;
+  this.error = null;
 
-    this.partenaireService.getAll(
-      this.currentPage,
-      this.pageSize,
-      this.sortField,
-      this.sortDirection,
-      this.searchTerm,
-      this.selectedStatus,
-      this.selectedType
-    ).subscribe({
-      next: (response) => {
-        // Toujours utiliser response.content
-        this.partenaires = response?.content ?? [];
-        this.filteredPartenaires = this.partenaires;
+  console.log('Chargement partenaires avec params:', {
+    page: this.currentPage,
+    size: this.pageSize,
+    sort: this.sortField,
+    direction: this.sortDirection,
+    search: this.searchTerm,
+    status: this.selectedStatus,
+    type: this.selectedType
+  });
 
-        this.totalElements = response?.totalElements ?? this.partenaires.length;
-        this.totalPages = response?.totalPages ?? Math.ceil(this.totalElements / this.pageSize);
+  this.partenaireService.getAll(
+    this.currentPage,
+    this.pageSize,
+    this.sortField,
+    this.sortDirection,
+    this.searchTerm,
+    this.selectedStatus,
+    this.selectedType
+  ).subscribe({
+    next: (response: any) => {
+      console.log('Réponse complète:', response);
+      
+      // Gestion flexible de la réponse SANS utiliser response.data
+      if (response && response.content) {
+        // Format Spring Page (PartenaireResponse)
+        this.partenaires = response.content;
+        this.totalElements = response.totalElements || 0;
+        this.totalPages = response.totalPages || 1;
+      } else if (response && Array.isArray(response)) {
+        // Format tableau simple (Partenaire[])
+        this.partenaires = response;
+        this.totalElements = response.length;
+        this.totalPages = Math.ceil(response.length / this.pageSize);
+      } else if (response && typeof response === 'object') {
+        // Autre format d'objet - essayer d'extraire les données
+        this.partenaires = response.content || response.items || response.partenaires || [];
+        this.totalElements = response.totalElements || response.total || this.partenaires.length;
+        this.totalPages = response.totalPages || Math.ceil(this.totalElements / this.pageSize);
+      } else {
+        // Format inconnu, utiliser les données directement
+        this.partenaires = response || [];
+        this.totalElements = this.partenaires.length;
+        this.totalPages = Math.ceil(this.totalElements / this.pageSize);
+      }
 
-        this.isLoading = false;
-      },
-      error: (err) => {
-        console.error('Erreur lors du chargement des partenaires:', err);
-        this.error = 'Erreur lors du chargement des partenaires.';
-        this.isLoading = false;
+      // Toujours initialiser filteredPartenaires
+      this.filteredPartenaires = [...this.partenaires];
+      
+      console.log('Données finales:', {
+        partenaires: this.partenaires.length,
+        totalElements: this.totalElements,
+        totalPages: this.totalPages,
+        filtered: this.filteredPartenaires.length
+      });
+
+      this.isLoading = false;
+    },
+    error: (err) => {
+      console.error('Erreur lors du chargement des partenaires:', err);
+      this.error = 'Erreur lors du chargement des partenaires: ' + err.message;
+      this.isLoading = false;
+      
+      // Charger les données d'exemple seulement en cas d'erreur réelle
+      if (err.status === 0 || err.status >= 500) {
         this.loadSampleData();
       }
-    });
-  }
-
+    }
+  });
+}
   loadSampleData(): void {
     this.partenaires = [
       { id: 1, nom: 'Université de Bamako', domaine: 'Éducation', type: 'institution', email: 'contact@univ-bamako.ml', telephone: '+22320212223', dateAjout: '2024-01-15', statut: 'actif', pays: 'Mali', newsletter: true },

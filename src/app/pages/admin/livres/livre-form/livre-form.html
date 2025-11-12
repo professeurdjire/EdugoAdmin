@@ -1,3 +1,13 @@
+<!-- Indication du mode -->
+<div class="form-mode-indicator" *ngIf="isEditMode">
+  <i class="icon-edit">✏️</i>
+  Mode édition - Modification du livre
+</div>
+
+<!-- Indicateur de chargement -->
+<div *ngIf="loading" class="loading-overlay">
+  <div class="loading-spinner">Chargement des données...</div>
+</div>
 <div class="form-container">
   <!-- Header -->
   <div class="form-header">
@@ -113,7 +123,7 @@
           <div class="input-wrapper">
             <select id="matiere" formControlName="matiere" class="form-control">
               <option value="">Sélectionner une matière</option>
-              <option *ngFor="let matiere of matieres" [value]="matiere.value">{{ matiere.label }}</option>
+              <option *ngFor="let matiere of matieres" [value]="matiere.nom">{{ matiere.nom }}</option>
             </select>
             <i class="dropdown-arrow">▼</i>
           </div>
@@ -130,7 +140,7 @@
           <div class="input-wrapper">
             <select id="niveau" formControlName="niveau" class="form-control">
               <option value="">Sélectionner un niveau</option>
-              <option *ngFor="let niveau of niveaux" [value]="niveau.value">{{ niveau.label }}</option>
+              <option *ngFor="let niveau of niveaux" [value]="niveau.nom">{{ niveau.nom }}</option>
             </select>
             <i class="dropdown-arrow">▼</i>
           </div>
@@ -139,16 +149,22 @@
           </div>
         </div>
 
-        <!-- Langue -->
-        <div class="form-group">
-          <label for="langue" class="form-label">Langue</label>
-          <div class="input-wrapper">
-            <select id="langue" formControlName="langue" class="form-control">
-              <option *ngFor="let langue of langues" [value]="langue.value">{{ langue.label }}</option>
-            </select>
-            <i class="dropdown-arrow">▼</i>
-          </div>
-        </div>
+       <!-- Section Langue -->
+<div class="form-group">
+  <label for="langue" class="form-label">Langue</label>
+  <div class="input-wrapper">
+    <select id="langue" formControlName="langue" class="form-control">
+      <option value="">Sélectionner une langue</option>
+      <option *ngFor="let langue of langues" [value]="langue.id">
+        {{ langue.nom }} ({{ langue.codeIso }})
+      </option>
+    </select>
+    <i class="dropdown-arrow">▼</i>
+  </div>
+  <div class="error-message" *ngIf="showError('langue')">
+    {{ getError('langue') }}
+  </div>
+</div>
       </div>
     </div>
 

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { BehaviorSubject, catchError, Observable, tap, throwError } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
+import { BehaviorSubject, Observable, tap } from 'rxjs';
 import { Router } from '@angular/router';
 import { JwtHelperService } from '@auth0/angular-jwt';
 import { environment } from '../../../environments/environment';
@@ -46,106 +46,67 @@ export class AuthService {
     // Le backend a un context path /api, donc les URLs doivent être /api/api/...
     const baseUrl = environment.apiUrl.replace(/\/$/, '');
     const url = `${baseUrl}/api/auth/login`;
-
-  return this.http.post<LoginResponse>(url, { email, motDePasse: password }).pipe(
-    tap((res: any) => {
-      // ✅ Stockage du token et refresh token dans sessionStorage
-      if (res.token) {
-        sessionStorage.setItem(this.TOKEN_KEY, res.token);
-      }
-      if (res.refreshToken) {
-        sessionStorage.setItem(this.REFRESH_KEY, res.refreshToken);
-      }
-
-      // ✅ Enregistrement de l'utilisateur connecté
-      let userObj: User | null = null;
-      if (res.user) {
-        userObj = res.user as User;
-      } else if (res.email || res.id) {
-        userObj = {
-          id: res.id ?? 0,
-          email: res.email ?? '',
-          nom: res.nom ?? '',
-          prenom: res.prenom ?? '',
-          role: (res.role as string) ?? 'USER',
-          estActive: true,
-          dateCreation: new Date().toISOString()
-        } as User;
-      }
-
-      if (userObj) {
-        sessionStorage.setItem(this.USER_KEY, JSON.stringify(userObj));
-        this.currentUserSubject.next(userObj);
-      }
-    }),
-    // ✅ Gestion propre des erreurs
-    catchError((error: HttpErrorResponse) => {
-      console.error('Erreur HTTP complète:', error);
-
-      let errorMsg = 'Erreur inconnue';
-      if (error.error instanceof ErrorEvent) {
-        // Erreur côté client (réseau, navigateur)
-        errorMsg = `Erreur: ${error.error.message}`;
-      } else {
-        // Erreur côté serveur
-        if (typeof error.error === 'string') {
-          try {
-            const parsed = JSON.parse(error.error);
-            errorMsg = parsed.detail || error.error;
-          } catch {
-            errorMsg = error.error;
+    // Le backend attend le champ 'motDePasse' (conforme à la spec OpenAPI)
+    return this.http.post<LoginResponse>(url, { email, motDePasse: password })
+      .pipe(
+        tap(response => {
+          // token
+          if (response.token) {
+            this.setToken(response.token);
           }
-        } else if (error.error?.detail) {
-          errorMsg = error.error.detail;
-        } else if (error.message) {
-          errorMsg = error.message;
-        }
-      }
+          // refresh token
+          if ((response as any).refreshToken) {
+            this.setRefreshToken((response as any).refreshToken);
+          }
 
-      return throwError(() => ({
-        message: errorMsg,
-        status: error.status,
-        originalError: error
-      }));
-    })
-  );
-}
+          // user object may be nested or returned as flat fields
+          let userObj: User | null = null;
+          if (response.user) {
+            userObj = response.user as User;
+          } else if (response.email || response.id) {
+            userObj = {
+              id: response.id ?? 0,
+              email: response.email ?? '',
+              nom: response.nom ?? '',
+              prenom: response.prenom ?? '',
+              role: (response.role as string) ?? 'USER',
+              estActive: true,
+              dateCreation: new Date().toISOString()
+            } as User;
+          }
+          if (userObj) {
+            this.setUser(userObj);
+            this.currentUserSubject.next(userObj);
+          }
+        })
+      );
+  }
 
   logout(): void {
-    sessionStorage.removeItem(this.TOKEN_KEY);
-    sessionStorage.removeItem(this.REFRESH_KEY);
-    sessionStorage.removeItem(this.USER_KEY);
+    localStorage.removeItem(this.TOKEN_KEY);
+    localStorage.removeItem(this.USER_KEY);
     this.currentUserSubject.next(null);
     this.router.navigate(['/auth/login']);
   }
 
   isLoggedIn(): boolean {
-    // In bypass mode, we still need to check if we have a valid token
-    if (environment.bypassAuth) {
-      // If bypass is enabled, check if we have a dev token or a regular token
-      return !!environment.devToken || !!this.getToken();
-    }
-    const token = this.getToken();
-    return !!token && !this.isTokenExpired();
+    // Bypass authentication for development
+    return true;
+    // const token = this.getToken();
+    // return !!token && !this.isTokenExpired();
   }
 
   isTokenExpired(): boolean {
-    // In bypass mode, tokens are never considered expired
-    if (environment.bypassAuth) {
-      return false;
-    }
-    const token = this.getToken();
-    if (!token) return true;
-    
-    return this.jwtHelper.isTokenExpired(token);
+    // Bypass token expiration check for development
+    return false;
+    // const token = this.getToken();
+    // if (!token) return true;
+    //
+    // return this.jwtHelper.isTokenExpired(token);
   }
 
   getToken(): string | null {
-    // In bypass mode, use the dev token if no regular token exists
-    if (environment.bypassAuth && environment.devToken && !sessionStorage.getItem(this.TOKEN_KEY)) {
-      return environment.devToken;
-    }
-    return sessionStorage.getItem(this.TOKEN_KEY);
+    return localStorage.getItem(this.TOKEN_KEY);
   }
 
   getCurrentUser(): User | null {
@@ -184,24 +145,24 @@ export class AuthService {
   }
 
   private setToken(token: string): void {
-    sessionStorage.setItem(this.TOKEN_KEY, token);
+    localStorage.setItem(this.TOKEN_KEY, token);
   }
 
   private setRefreshToken(token: string): void {
-    sessionStorage.setItem(this.REFRESH_KEY, token);
+    localStorage.setItem(this.REFRESH_KEY, token);
   }
 
   private setUser(user: User): void {
-    sessionStorage.setItem(this.USER_KEY, JSON.stringify(user));
+    localStorage.setItem(this.USER_KEY, JSON.stringify(user));
   }
 
   private getUser(): User | null {
-    const userStr = sessionStorage.getItem(this.USER_KEY);
+    const userStr = localStorage.getItem(this.USER_KEY);
     return userStr ? JSON.parse(userStr) : null;
   }
 
   getRefreshToken(): string | null {
-    return sessionStorage.getItem(this.REFRESH_KEY);
+    return localStorage.getItem(this.REFRESH_KEY);
   }
 
   // Méthode pour vérifier les permissions spécifiques

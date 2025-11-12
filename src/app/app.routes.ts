@@ -35,6 +35,9 @@ import { QuizList } from './pages/admin/quiz/quiz-list/quiz-list';
 import { PartenaireList } from './pages/admin/partenaires/partenaire-list/partenaire-list';
 import { PartenaireForm } from './pages/admin/partenaires/partenaire-form/partenaire-form';
 import { Contenus } from './pages/admin/contenus/contenus';
+import { NotificationsModalComponent } from './pages/admin/notifications/notifications';
+import { UserProfileDropdownComponent } from './pages/admin/user-profile/user-profile';
+import { RewardsManagementComponent } from './pages/admin/recompense/gerer-recompense/gerer-recompense';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'auth/login', pathMatch: 'full' },
@@ -96,7 +99,10 @@ export const routes: Routes = [
       { path: 'editerUtilisateur/:id', component: UtilisateurForm },
       { path: 'contenus', component: Contenus },
        { path: 'partenaire', component: PartenaireList },
+        { path: 'notifications', component: NotificationsModalComponent },
         { path: 'ajouterpartenaire', component: PartenaireForm },
+        { path: 'user-profile', component: UserProfileDropdownComponent },
+          { path: 'gererecompense', component:  RewardsManagementComponent}
     ]
   },
   {
@@ -109,5 +115,5 @@ export const routes: Routes = [
 @NgModule({
   imports: [RouterModule.forRoot(routes)],
   exports: [RouterModule]
-})
+}) 
 export class AppRoutingModule { }

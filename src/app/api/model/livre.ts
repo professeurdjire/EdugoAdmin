@@ -7,14 +7,11 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { FichierLivre } from './fichierLivre';
-import { Progression } from './progression';
 import { Quiz } from './quiz';
 import { Langue } from './langue';
 import { Matiere } from './matiere';
 import { Niveau } from './niveau';
 import { Classe } from './classe';
-import { Tag } from './tag';
 
 
 export interface Livre { 
@@ -33,9 +30,6 @@ export interface Livre {
     classe?: Classe;
     matiere?: Matiere;
     langue?: Langue;
-    fichiers?: Array<FichierLivre>;
     quiz?: Quiz;
-    progressions?: Array<Progression>;
-    tags?: Array<Tag>;
 }
 

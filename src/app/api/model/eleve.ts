@@ -7,15 +7,8 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { EleveDefi } from './eleveDefi';
-import { Progression } from './progression';
-import { ConversionEleve } from './conversionEleve';
-import { Participation } from './participation';
-import { Suggestion } from './suggestion';
 import { GrantedAuthority } from './grantedAuthority';
 import { Classe } from './classe';
-import { FaireExercice } from './faireExercice';
-import { ReponseEleve } from './reponseEleve';
 
 
 export interface Eleve { 
@@ -32,19 +25,12 @@ export interface Eleve {
     dateNaissance?: string;
     classe?: Classe;
     pointAccumule?: number;
-    participations?: Array<Participation>;
-    progressions?: Array<Progression>;
-    eleveDefis?: Array<EleveDefi>;
-    faireExercices?: Array<FaireExercice>;
-    reponsesUtilisateurs?: Array<ReponseEleve>;
-    conversions?: Array<ConversionEleve>;
-    suggestions?: Array<Suggestion>;
     enabled?: boolean;
-    password?: string;
     username?: string;
+    password?: string;
     authorities?: Array<GrantedAuthority>;
-    accountNonExpired?: boolean;
     credentialsNonExpired?: boolean;
+    accountNonExpired?: boolean;
     accountNonLocked?: boolean;
 }
 export namespace Eleve {

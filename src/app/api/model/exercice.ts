@@ -9,7 +9,6 @@
  */
 import { Matiere } from './matiere';
 import { Niveau } from './niveau';
-import { FaireExercice } from './faireExercice';
 import { Question } from './question';
 import { Livre } from './livre';
 
@@ -27,6 +26,5 @@ export interface Exercice {
     niveauScolaire?: Niveau;
     livre?: Livre;
     questionsExercice?: Array<Question>;
-    faireExercices?: Array<FaireExercice>;
 }
 

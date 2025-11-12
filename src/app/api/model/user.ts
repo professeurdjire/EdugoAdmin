@@ -22,11 +22,11 @@ export interface User {
     estActive?: boolean;
     photoProfil?: string;
     enabled?: boolean;
-    password?: string;
     username?: string;
+    password?: string;
     authorities?: Array<GrantedAuthority>;
-    accountNonExpired?: boolean;
     credentialsNonExpired?: boolean;
+    accountNonExpired?: boolean;
     accountNonLocked?: boolean;
 }
 export namespace User {

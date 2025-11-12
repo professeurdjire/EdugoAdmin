@@ -7,16 +7,10 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { Classe } from './classe';
-import { Livre } from './livre';
-import { Challenge } from './challenge';
 
 
 export interface Niveau { 
     id?: number;
     nom?: string;
-    classes?: Array<Classe>;
-    livres?: Array<Livre>;
-    challenges?: Array<Challenge>;
 }
 

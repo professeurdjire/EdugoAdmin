@@ -21,8 +21,8 @@ export class AppInitService {
       // MAIS : si le mode bypass est activé, on ne fait rien ici
       if (environment.devToken && !environment.bypassAuth) {
         console.log('🔑 Utilisation du token de développement fourni');
-        sessionStorage.setItem('auth_token', environment.devToken);
-        sessionStorage.setItem('auth_refresh_token', 'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbkBlZHVnby5jb20iLCJpYXQiOjE3NjI2NzI5MTksImV4cCI6MTc2MzI3NzcxOX0.hBKOOOZj6_8f-8BRnfX6_4PDKIu8GCKIrVnH105XsNM');
+        localStorage.setItem('auth_token', environment.devToken);
+        localStorage.setItem('auth_refresh_token', 'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbkBlZHVnby5jb20iLCJpYXQiOjE3NjI2NzI5MTksImV4cCI6MTc2MzI3NzcxOX0.hBKOOOZj6_8f-8BRnfX6_4PDKIu8GCKIrVnH105XsNM');
         
         // Créer un utilisateur mock pour le développement
         const devUser = {
@@ -34,7 +34,7 @@ export class AppInitService {
           estActive: true,
           dateCreation: new Date().toISOString()
         };
-        sessionStorage.setItem('user_data', JSON.stringify(devUser));
+        localStorage.setItem('user_data', JSON.stringify(devUser));
         
         // Mettre à jour le BehaviorSubject de l'utilisateur
         (this.authService as any).currentUserSubject.next(devUser);
@@ -50,8 +50,8 @@ export class AppInitService {
       console.log('🔄 Initialisation: Suppression du token existant et renouvellement...');
       
       // Supprimer le token existant pour forcer un nouveau login
-      sessionStorage.removeItem('auth_token');
-      sessionStorage.removeItem('auth_refresh_token');
+      localStorage.removeItem('auth_token');
+      localStorage.removeItem('auth_refresh_token');
 
       // Try to login automatically with default credentials
       const credentials = environment.defaultCredentials;

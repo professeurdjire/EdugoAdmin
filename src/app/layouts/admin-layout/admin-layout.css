@@ -1,26 +1,16 @@
 .admin-layout {
   display: flex;
-  margin-top: 60px; /* Hauteur de la topbar */
 }
 
-.main-content {
-  flex: 1;
-  padding: 20px;
-  margin-left: 190px; /* Largeur de la sidebar */
-  transition: margin-left 0.3s ease;
+/* Reserve space for sidebar width */
+.admin-layout .main-content {
+  margin-left: 190px; /* default sidebar width */
+  width: calc(100% - 190px);
+  transition: margin-left 0.2s ease, width 0.2s ease;
 }
 
-.admin-layout.sidebar-collapsed .main-content {
-  margin-left: 70px; /* Largeur de la sidebar réduite */
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-  .main-content {
-    margin-left: 180px; /* Largeur de la sidebar sur mobile */
-  }
-  
-  .admin-layout.sidebar-collapsed .main-content {
-    margin-left: 60px; /* Largeur de la sidebar réduite sur mobile */
-  }
+/* When collapsed */
+.admin-layout.collapsed .main-content {
+  margin-left: 60px; /* collapsed sidebar width */
+  width: calc(100% - 60px);
 }

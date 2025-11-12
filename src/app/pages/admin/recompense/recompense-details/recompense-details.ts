@@ -18,6 +18,13 @@ export class RecompenseDetails implements OnInit {
   loading: boolean = false;
   error: string | null = null;
   badgeId: number | null = null;
+  badges: BadgeResponse[] = [];
+
+  // Basic statistics (placeholder logic based on badges list)
+  totalBadges = 0;
+  totalParticipantsActifs = 0;
+  totalExercisesCompletes = 0;
+  totalPointsGagnes = 0;
 
   constructor(
     private route: ActivatedRoute,
@@ -40,6 +47,27 @@ export class RecompenseDetails implements OnInit {
         this.loadBadgeDetails(this.badgeId);
       } else {
         this.error = "ID du badge non spécifié.";
+      }
+    });
+
+    // Load all badges for list/statistics
+    this.loadAllBadges();
+  }
+
+  loadAllBadges(): void {
+    this.badges = [];
+    this.badgesService.list().subscribe({
+      next: (list) => {
+        this.badges = list || [];
+        // Update basic stats
+        this.totalBadges = this.badges.length;
+        // Placeholder computations; replace with real metrics when API available
+        this.totalParticipantsActifs = this.totalBadges * 47;
+        this.totalExercisesCompletes = this.totalBadges * 1000;
+        this.totalPointsGagnes = this.totalBadges * 500;
+      },
+      error: (err) => {
+        console.error('Error loading badges:', err);
       }
     });
   }
@@ -75,7 +103,7 @@ export class RecompenseDetails implements OnInit {
 
   editBadge(): void {
     if (this.badgeId) {
-      this.router.navigate(['/admin/ajouterRecompense']);
+      this.router.navigate(['/admin/editerrecompense', this.badgeId]);
     }
   }
 }

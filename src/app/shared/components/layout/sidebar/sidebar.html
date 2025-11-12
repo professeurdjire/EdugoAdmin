@@ -1,49 +1,49 @@
 <!-- Sidebar -->
-<aside class="sidebar" [ngClass]="{'collapsed': isCollapsed}" role="navigation" aria-label="Menu principal">
+<aside class="sidebar" [class.collapsed]="isCollapsed" role="navigation" aria-label="Menu principal">
   <nav class="menu">
-    <a routerLink="/admin/dashboard" routerLinkActive="active" class="menu-item" [routerLinkActiveOptions]="{ exact: true }">
+    <a routerLink="/admin/dashboard" routerLinkActive="active" class="menu-item" [routerLinkActiveOptions]="{ exact: true }" [attr.title]="isCollapsed ? 'Dashboard' : null" [attr.aria-label]="'Dashboard'">
       <i class="fa-solid fa-gauge-high"></i>
-      <span [hidden]="isCollapsed">Dashboard</span>
+      <span class="label-text">Dashboard</span>
     </a>
-    <a routerLink="/admin/utilisateurs" routerLinkActive="active" class="menu-item">
+    <a routerLink="/admin/utilisateurs" routerLinkActive="active" class="menu-item" [attr.title]="isCollapsed ? 'Utilisateurs' : null" [attr.aria-label]="'Utilisateurs'">
       <i class="fa-solid fa-users"></i>
-      <span [hidden]="isCollapsed">Utilisateurs</span>
+      <span class="label-text">Utilisateurs</span>
     </a>
-    <a routerLink="/admin/contenus" routerLinkActive="active" class="menu-item">
+    <a routerLink="/admin/contenus" routerLinkActive="active" class="menu-item" [attr.title]="isCollapsed ? 'Contenu' : null" [attr.aria-label]="'Contenu'">
       <i class="fa-solid fa-layer-group"></i>
-      <span [hidden]="isCollapsed">Contenu</span>
+      <span class="label-text">Contenu</span>
     </a>
-    <a routerLink="/admin/livrelist" routerLinkActive="active" class="menu-item">
+    <a routerLink="/admin/livrelist" routerLinkActive="active" class="menu-item" [attr.title]="isCollapsed ? 'Livres' : null" [attr.aria-label]="'Livres'">
       <i class="fa-solid fa-book"></i>
-      <span [hidden]="isCollapsed">Livres</span>
+      <span class="label-text">Livres</span>
     </a>
-    <a routerLink="/admin/quizlist" routerLinkActive="active" class="menu-item">
+    <a routerLink="/admin/quizlist" routerLinkActive="active" class="menu-item" [attr.title]="isCollapsed ? 'Quiz' : null" [attr.aria-label]="'Quiz'">
       <i class="fa-solid fa-question-circle"></i>
-      <span [hidden]="isCollapsed">Quiz</span>
+      <span class="label-text">Quiz</span>
     </a>
-    <a routerLink="/admin/defilist" routerLinkActive="active" class="menu-item">
+    <a routerLink="/admin/defilist" routerLinkActive="active" class="menu-item" [attr.title]="isCollapsed ? 'Défis' : null" [attr.aria-label]="'Défis'">
       <i class="fa-solid fa-flag"></i>
-      <span [hidden]="isCollapsed">Défis</span>
+      <span class="label-text">Défis</span>
     </a>
-    <a routerLink="/admin/challengelist" routerLinkActive="active" class="menu-item">
+    <a routerLink="/admin/challengelist" routerLinkActive="active" class="menu-item" [attr.title]="isCollapsed ? 'Challenge' : null" [attr.aria-label]="'Challenge'">
       <i class="fa-solid fa-trophy"></i>
-      <span [hidden]="isCollapsed">Challenge</span>
+      <span class="label-text">Challenge</span>
     </a>
-    <a routerLink="/admin/exercicelist" routerLinkActive="active" class="menu-item">
+    <a routerLink="/admin/exercicelist" routerLinkActive="active" class="menu-item" [attr.title]="isCollapsed ? 'Exercices' : null" [attr.aria-label]="'Exercices'">
       <i class="fa-solid fa-dumbbell"></i>
-      <span [hidden]="isCollapsed">Exercices</span>
+      <span class="label-text">Exercices</span>
     </a>
-    <a routerLink="/admin/recompensedetails" routerLinkActive="active" class="menu-item">
+    <a routerLink="/admin/recompensedetails" routerLinkActive="active" class="menu-item" [attr.title]="isCollapsed ? 'Récompenses' : null" [attr.aria-label]="'Récompenses'">
       <i class="fa-solid fa-gift"></i>
-      <span [hidden]="isCollapsed">Récompenses</span>
+      <span class="label-text">Récompenses</span>
     </a>
-    <a routerLink="/admin/partenaire" routerLinkActive="active" class="menu-item">
+    <a routerLink="/admin/partenaire" routerLinkActive="active" class="menu-item" [attr.title]="isCollapsed ? 'Partenaires' : null" [attr.aria-label]="'Partenaires'">
       <i class="fa-solid fa-handshake"></i>
-      <span [hidden]="isCollapsed">Partenaires</span>
+      <span class="label-text">Partenaires</span>
     </a>
-    <a routerLink="/admin/paramatresList" routerLinkActive="active" class="menu-item">
+    <a routerLink="/admin/paramatresList" routerLinkActive="active" class="menu-item" [attr.title]="isCollapsed ? 'Paramètres' : null" [attr.aria-label]="'Paramètres'">
       <i class="fa-solid fa-sliders"></i>
-      <span [hidden]="isCollapsed">Paramètres</span>
+      <span class="label-text">Paramètres</span>
     </a>
   </nav>
 
@@ -51,7 +51,7 @@
   <div class="deconnexion">
       <button type="button" (click)="logout()" class="logout-btn">
         <i class="fa-solid fa-right-from-bracket"></i>
-        <span [hidden]="isCollapsed">Déconnexion</span>
+        <span>Déconnexion</span>
       </button>
   </div>
 

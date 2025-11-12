@@ -603,12 +603,12 @@ export class ExercicesService extends BaseService {
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public getExercicesByMatiere1(matiereId: number, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<Array<ExerciceResponse>>;
-    public getExercicesByMatiere1(matiereId: number, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<Array<ExerciceResponse>>>;
-    public getExercicesByMatiere1(matiereId: number, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<Array<ExerciceResponse>>>;
-    public getExercicesByMatiere1(matiereId: number, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+    public getExercicesByMatiere(matiereId: number, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<Array<ExerciceResponse>>;
+    public getExercicesByMatiere(matiereId: number, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<Array<ExerciceResponse>>>;
+    public getExercicesByMatiere(matiereId: number, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<Array<ExerciceResponse>>>;
+    public getExercicesByMatiere(matiereId: number, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
         if (matiereId === null || matiereId === undefined) {
-            throw new Error('Required parameter matiereId was null or undefined when calling getExercicesByMatiere1.');
+            throw new Error('Required parameter matiereId was null or undefined when calling getExercicesByMatiere.');
         }
 
         let localVarHeaders = this.defaultHeaders;

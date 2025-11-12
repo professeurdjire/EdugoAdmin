@@ -11,7 +11,6 @@ import { TypeQuestion } from './typeQuestion';
 import { Exercice } from './exercice';
 import { Quiz } from './quiz';
 import { ReponsePossible } from './reponsePossible';
-import { ReponseEleve } from './reponseEleve';
 import { Challenge } from './challenge';
 
 
@@ -26,6 +25,5 @@ export interface Question {
     exercice?: Exercice;
     type?: TypeQuestion;
     reponsesPossibles?: Array<ReponsePossible>;
-    reponsesEleves?: Array<ReponseEleve>;
 }
 

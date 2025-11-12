@@ -61,7 +61,7 @@ export class AuthInterceptor implements HttpInterceptor {
 			const isExpired = this.jwtHelper.isTokenExpired(token);
 			if (isExpired) {
 				console.log('Intercepteur: Token expiré détecté, reconnexion nécessaire');
-				sessionStorage.removeItem('auth_token');
+				localStorage.removeItem('auth_token');
 				return this.handleAutoLogin(req, next);
 			}
 			const decodedToken = this.jwtHelper.decodeToken(token);
@@ -69,7 +69,7 @@ export class AuthInterceptor implements HttpInterceptor {
 		} catch (error) {
 			console.error('Intercepteur: Erreur lors de la vérification du token:', error);
 			// Si le token est invalide, essayer de se reconnecter
-			sessionStorage.removeItem('auth_token');
+			localStorage.removeItem('auth_token');
 			return this.handleAutoLogin(req, next);
 		}
 
@@ -91,7 +91,7 @@ export class AuthInterceptor implements HttpInterceptor {
 					console.log('Intercepteur: Token utilisé:', token ? `${token.substring(0, 20)}...` : 'AUCUN');
 					console.log('Intercepteur: Réponse du serveur:', error.message || error.statusText);
 					// Supprimer le token invalide
-					sessionStorage.removeItem('auth_token');
+					localStorage.removeItem('auth_token');
 					
 					// Si le mode bypass est activé, réessayer sans authentification
 					if (environment.bypassAuth) {
@@ -186,7 +186,7 @@ export class AuthInterceptor implements HttpInterceptor {
 		console.log('Intercepteur: Erreur 403/401 détectée, suppression du token invalide et reconnexion pour:', req.url);
 		
 		// S'assurer que le token invalide est supprimé
-		sessionStorage.removeItem('auth_token');
+		localStorage.removeItem('auth_token');
 		
 		return this.auth.login(credentials.email, credentials.password).pipe(
 			switchMap((response) => {

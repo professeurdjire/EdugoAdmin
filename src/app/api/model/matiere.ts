@@ -13,6 +13,8 @@ import { Exercice } from './exercice';
 export interface Matiere { 
     id?: number;
     nom?: string;
+    dateCreation?: string;
+    dateModification?: string;
     exercice?: Array<Exercice>;
 }
 

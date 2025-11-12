@@ -81,11 +81,11 @@
           <h3>Statistiques</h3>
           <div class="detail-row">
             <span class="label">Nombre de questions:</span>
-            <span class="value">{{ exercice.questionsExercice?.length || 0 }}</span>
+            <span class="value">{{ $any(exercice)?.questionsExercice?.length || 0 }}</span>
           </div>
           <div class="detail-row">
             <span class="label">Nombre de réalisations:</span>
-            <span class="value">{{ exercice.faireExercices?.length || 0 }}</span>
+            <span class="value">{{ $any(exercice)?.faireExercices?.length || 0 }}</span>
           </div>
         </div>
       </div>

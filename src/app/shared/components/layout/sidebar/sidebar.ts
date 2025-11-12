@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import {CommonModule, NgIf} from '@angular/common';
 import {RouterLink, RouterLinkActive, Router} from '@angular/router';
 import { AuthService } from '../../../../services/api/auth.service';
+import { SidebarStateService } from './sidebar-state.service';
 
 @Component({
   selector: 'app-sidebar',
@@ -13,10 +14,8 @@ import { AuthService } from '../../../../services/api/auth.service';
 export class Sidebar {
   isCollapsed = false; // état du sidebar
 
-  constructor(private auth: AuthService, private router: Router) {}
-
-  toggleSidebar() {
-    this.isCollapsed = !this.isCollapsed;
+  constructor(private auth: AuthService, private router: Router, private sidebarState: SidebarStateService) {
+    this.sidebarState.collapsed$.subscribe(v => (this.isCollapsed = v));
   }
 
   logout() {

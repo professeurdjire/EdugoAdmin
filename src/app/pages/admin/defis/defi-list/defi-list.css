@@ -29,11 +29,10 @@
   flex: 1;
   /* layout offsets moved to global .main-content */
  
-  padding: 1rem;
+ 
   min-height: calc(100vh - 60px);
   display: flex;
   flex-direction: column;
-  gap: 1rem;
   background-color: #ECF0F1;
   overflow-x: hidden;
 }
@@ -206,6 +205,13 @@
   margin-left: auto;
 }
 
+.btn-primary,
+.add-btn,
+.filter-btn {
+  background-color: #a885d8;
+  color: #ffffff;
+}
+
 .filter-btn,
 .refresh-btn,
 .btn,
@@ -231,7 +237,6 @@
   letter-spacing: 0.5px;
   line-height: 1;
   white-space: nowrap;
-  background-color: #ffffff;
   color: #000000;
 }
 

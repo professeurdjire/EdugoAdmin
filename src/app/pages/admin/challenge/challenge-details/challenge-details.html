@@ -69,15 +69,15 @@
           <h3>Statistiques</h3>
           <div class="detail-row">
             <span class="label">Nombre de questions:</span>
-            <span class="value">{{ challenge.questionsChallenge?.length || 0 }}</span>
+            <span class="value">{{ $any(challenge)?.questionsChallenge?.length || 0 }}</span>
           </div>
           <div class="detail-row">
             <span class="label">Nombre de participations:</span>
-            <span class="value">{{ challenge.participations?.length || 0 }}</span>
+            <span class="value">{{ $any(challenge)?.participations?.length || 0 }}</span>
           </div>
           <div class="detail-row">
             <span class="label">Nombre de récompenses:</span>
-            <span class="value">{{ challenge.rewards?.length || 0 }}</span>
+            <span class="value">{{ $any(challenge)?.rewards?.length || 0 }}</span>
           </div>
         </div>
       </div>

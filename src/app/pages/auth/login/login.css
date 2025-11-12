@@ -36,43 +36,21 @@
 
 .logo {
   display: flex;
+  align-items: center;
+  justify-content: center;
+  display: flex;
   flex-direction: column;
   align-items: center;
   margin-bottom: clamp(10px, 3vw, 15px);
 }
 
-.logo-graphic {
-  position: relative;
-  width: clamp(50px, 8vw, 60px);
-  height: clamp(40px, 7vw, 50px);
-  margin-bottom: 5px;
+.logo-full {
+  height: 90px; /* ajuste selon ta maquette */
+  width: auto;
+  object-fit: contain;
+  cursor: pointer;
 }
 
-.logo-graphic img {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  max-width: 100%;
-  height: auto;
-}
-
-.logo-svg-1 { width: clamp(60px, 10vw, 70px); height: clamp(52px, 9vw, 62px); }
-.logo-svg-2 { width: clamp(70px, 12vw, 85px); height: clamp(47px, 8vw, 57px); }
-.logo-svg-3 { width: clamp(35px, 6vw, 40px); height: clamp(35px, 6vw, 40px); }
-
-.logo-text {
-  font-family: 'Roboto', sans-serif;
-  font-size: clamp(24px, 5vw, 32px);
-  font-weight: 500;
-  line-height: 1;
-  background: linear-gradient(90deg, #a885d8 25.96%, #333333 80.29%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  color: transparent;
-  letter-spacing: 0.2px;
-}
 
 .title {
   font-size: clamp(18px, 4vw, 24px);

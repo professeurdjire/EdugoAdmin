@@ -7,7 +7,6 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { Question } from './question';
 import { Livre } from './livre';
 
 
@@ -16,7 +15,6 @@ export interface Quiz {
     statut?: Quiz.StatutEnum;
     createdAt?: string;
     livre?: Livre;
-    questionsQuiz?: Array<Question>;
     nombreQuestions?: number;
 }
 export namespace Quiz {

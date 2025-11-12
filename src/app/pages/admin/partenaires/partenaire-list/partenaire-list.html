@@ -1,3 +1,23 @@
+<!-- Debug et états -->
+<div *ngIf="isLoading" class="loading-overlay">
+  <div class="loading-spinner">Chargement des partenaires...</div>
+</div>
+
+<div *ngIf="error" class="error-banner">
+  <div class="error-content">
+    <span class="error-text">{{ error }}</span>
+    <button class="btn btn-secondary btn-sm" (click)="loadPartenaires()">Réessayer</button>
+  </div>
+</div>
+
+<!-- Debug info 
+<div class="debug-info" *ngIf="!isLoading && !error">
+  Partenaires: {{ partenaires.length }} | 
+  Filtres: {{ filteredPartenaires.length }} | 
+  Page: {{ currentPage + 1 }}/{{ totalPages }} |
+  Total: {{ totalElements }}
+</div>   -->
+
 <div class="partenaire-management-content">
   <!-- En-tête de page -->
   <div class="page-header">

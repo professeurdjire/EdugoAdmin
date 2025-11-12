@@ -1,17 +1,19 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
-import { catchError, map } from 'rxjs/operators';
+import { catchError, map, tap } from 'rxjs/operators';
 import { Partenaire } from '../../models/partenaire.model';
 import { environment } from '../../../environments/environment';
 
 export interface PartenaireResponse {
-  data: any;
-  content: Partenaire[];
+  content: Partenaire[]; // S'assurer que content est un tableau de Partenaire
   totalElements: number;
   totalPages: number;
   size: number;
   number: number;
+  first: boolean;
+  last: boolean;
+  empty: boolean;
 }
 
 export interface ApiResponse<T> {
@@ -28,39 +30,77 @@ export class PartenaireService {
 
   constructor(private http: HttpClient) {}
 
-  // Get all partenaires with pagination and filters
-  getAll(
-    page: number = 0,
-    size: number = 10,
-    sortBy: string = 'nom',
-    sortDirection: string = 'asc',
-    searchTerm: string = '',
-    status: string = '',
-    type: string = ''
-  ): Observable<PartenaireResponse> {
-    let params = new HttpParams()
-      .set('page', page.toString())
-      .set('size', size.toString())
-      .set('sortBy', sortBy)
-      .set('sortDirection', sortDirection);
+  // // Get all partenaires with pagination and filters
+  // getAll(
+  //   page: number = 0,
+  //   size: number = 10,
+  //   sortBy: string = 'nom',
+  //   sortDirection: string = 'asc',
+  //   searchTerm: string = '',
+  //   status: string = '',
+  //   type: string = ''
+  // ): Observable<PartenaireResponse> {
+  //   let params = new HttpParams()
+  //     .set('page', page.toString())
+  //     .set('size', size.toString())
+  //     .set('sortBy', sortBy)
+  //     .set('sortDirection', sortDirection);
 
-    if (searchTerm) {
-      params = params.set('search', searchTerm);
-    }
+  //   if (searchTerm) {
+  //     params = params.set('search', searchTerm);
+  //   }
 
-    if (status) {
-      params = params.set('status', status);
-    }
+  //   if (status) {
+  //     params = params.set('status', status);
+  //   }
 
-    if (type) {
-      params = params.set('type', type);
-    }
+  //   if (type) {
+  //     params = params.set('type', type);
+  //   }
 
-    return this.http.get<PartenaireResponse>(this.baseUrl, { params })
-      .pipe(
-        catchError(this.handleError)
-      );
+  //   return this.http.get<PartenaireResponse>(this.baseUrl, { params })
+  //     .pipe(
+  //       catchError(this.handleError)
+  //     );
+  // }
+  // Dans PartenaireService - CORRIGER la méthode getAll
+getAll(
+  page: number = 0,
+  size: number = 10,
+  sortBy: string = 'nom',
+  sortDirection: string = 'asc',
+  searchTerm: string = '',
+  status: string = '',
+  type: string = ''
+): Observable<PartenaireResponse> {
+  let params = new HttpParams()
+    .set('page', page.toString())
+    .set('size', size.toString())
+    .set('sort', `${sortBy},${sortDirection}`); // Format standard pour Spring
+
+  if (searchTerm) {
+    params = params.set('search', searchTerm);
   }
+
+  if (status) {
+    params = params.set('statut', status); // Corriger le nom du paramètre
+  }
+
+  if (type) {
+    params = params.set('type', type);
+  }
+
+  console.log('Requête API Partenaires:', { 
+    url: this.baseUrl, 
+    params: params.toString() 
+  });
+
+  return this.http.get<PartenaireResponse>(this.baseUrl, { params })
+    .pipe(
+      tap(response => console.log('Réponse API Partenaires:', response)),
+      catchError(this.handleError)
+    );
+}
 
   // Get a single partenaire by ID
   getById(id: number): Observable<Partenaire> {

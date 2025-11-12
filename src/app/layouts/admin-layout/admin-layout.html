@@ -1,5 +1,5 @@
-<app-navebar (toggleSidebarEvent)="toggleSidebar()"></app-navebar>
-<div class="admin-layout" #adminLayout>
+<app-navebar></app-navebar>
+<div class="admin-layout" [class.collapsed]="isCollapsed">
   <app-sidebar></app-sidebar>
   <div class="main-content">
     <router-outlet></router-outlet>

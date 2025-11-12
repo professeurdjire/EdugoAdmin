@@ -372,12 +372,12 @@ export class LivresService extends BaseService {
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public getLivresByMatiere1(matiereId: number, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<Array<LivreResponse>>;
-    public getLivresByMatiere1(matiereId: number, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<Array<LivreResponse>>>;
-    public getLivresByMatiere1(matiereId: number, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<Array<LivreResponse>>>;
-    public getLivresByMatiere1(matiereId: number, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+    public getLivresByMatiere(matiereId: number, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<Array<LivreResponse>>;
+    public getLivresByMatiere(matiereId: number, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<Array<LivreResponse>>>;
+    public getLivresByMatiere(matiereId: number, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<Array<LivreResponse>>>;
+    public getLivresByMatiere(matiereId: number, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
         if (matiereId === null || matiereId === undefined) {
-            throw new Error('Required parameter matiereId was null or undefined when calling getLivresByMatiere1.');
+            throw new Error('Required parameter matiereId was null or undefined when calling getLivresByMatiere.');
         }
 
         let localVarHeaders = this.defaultHeaders;

@@ -1,3 +1,16 @@
+<!-- Actions -->
+<div class="actions-section">
+  <button class="btn btn-cancel" (click)="onAnnuler()" [disabled]="isLoading">
+    <span class="btn-icon">🗑️</span>
+    <span>Annuler</span>
+  </button>
+  <button class="btn btn-submit" 
+          (click)="onEnregistrerQuiz()"
+          [disabled]="!estFormulaireValide() || isLoading">
+    <span class="btn-icon">💾</span>
+    <span>{{ isLoading ? 'Création en cours...' : 'Enregistrer le quiz' }}</span>
+  </button>
+</div>
 <div class="form-main-container">
   <div class="ajout-quiz-container">
     <!-- Header -->

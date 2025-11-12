@@ -7,11 +7,8 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { Participation } from './participation';
 import { Niveau } from './niveau';
 import { Classe } from './classe';
-import { Question } from './question';
-import { Badge } from './badge';
 
 
 export interface Challenge { 
@@ -20,13 +17,11 @@ export interface Challenge {
     description?: string;
     dateDebut?: string;
     dateFin?: string;
+    points?: number;
     rewardMode?: string;
     typeChallenge?: Challenge.TypeChallengeEnum;
     niveau?: Niveau;
     classe?: Classe;
-    rewards?: Array<Badge>;
-    questionsChallenge?: Array<Question>;
-    participations?: Array<Participation>;
 }
 export namespace Challenge {
     export const TypeChallengeEnum = {

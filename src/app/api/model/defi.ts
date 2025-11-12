@@ -7,7 +7,6 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { EleveDefi } from './eleveDefi';
 import { Classe } from './classe';
 
 
@@ -21,6 +20,5 @@ export interface Defi {
     nbreParticipations?: number;
     typeDefi?: string;
     classe?: Classe;
-    eleveDefis?: Array<EleveDefi>;
 }
 
