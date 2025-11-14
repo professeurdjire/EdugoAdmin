@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AuthService } from '../../../../services/api/auth.service';
+import { ToastService } from '../../../../shared/ui/toast/toast.service';
+import { ConfirmService } from '../../../../shared/ui/confirm/confirm.service';
 
 @Component({
   selector: 'app-paramatres-list',
@@ -38,7 +40,9 @@ export class ParamatresList implements OnInit {
 
   constructor(
     private authService: AuthService,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private toast: ToastService,
+    private confirm: ConfirmService
   ) {
     // Initialisation du formulaire réactif
     this.settingsForm = this.fb.group({
@@ -128,11 +132,11 @@ export class ParamatresList implements OnInit {
         
         // Simulation de succès
         this.isSaving = false;
-        this.showSuccessMessage('Paramètres sauvegardés avec succès!');
+        this.toast.success('Paramètres sauvegardés avec succès!');
         
       }, 1500);
     } else {
-      this.showErrorMessage('Veuillez corriger les erreurs dans le formulaire.');
+      this.toast.warning('Veuillez corriger les erreurs dans le formulaire.');
     }
   }
 
@@ -141,10 +145,14 @@ export class ParamatresList implements OnInit {
    */
   onCancel(): void {
     if (this.settingsForm.dirty) {
-      const confirmReset = confirm('Voulez-vous vraiment annuler les modifications ? Les changements non sauvegardés seront perdus.');
-      if (confirmReset) {
-        this.resetForm();
-      }
+      this.confirm.confirm({
+        title: 'Annuler les modifications',
+        message: 'Voulez-vous vraiment annuler les modifications ? Les changements non sauvegardés seront perdus.',
+        confirmText: 'Annuler',
+        cancelText: 'Continuer'
+      }).then(ok => {
+        if (ok) this.resetForm();
+      });
     }
   }
 
@@ -182,8 +190,7 @@ export class ParamatresList implements OnInit {
    * Affiche un message de succès
    */
   private showSuccessMessage(message: string): void {
-    // Ici vous pourriez utiliser un service de notifications toast
-    alert(message); // Temporaire - à remplacer par un système de notifications
+    this.toast.success(message);
     console.log('Succès:', message);
   }
 
@@ -191,8 +198,7 @@ export class ParamatresList implements OnInit {
    * Affiche un message d'erreur
    */
   private showErrorMessage(message: string): void {
-    // Ici vous pourriez utiliser un service de notifications toast
-    alert(message); // Temporaire - à remplacer par un système de notifications
+    this.toast.error(message);
     console.error('Erreur:', message);
   }
 

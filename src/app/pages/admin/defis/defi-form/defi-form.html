@@ -2,7 +2,7 @@
   <div class="form-header">
     <h1 class="form-title">Ajouter un défi</h1>
     <a routerLink="/admin/defilist" class="back-btn">
-      <span class="back-icon">←</span>
+      <fa-icon [icon]="faArrowLeft"></fa-icon>
       <span>Retour</span>
     </a>
   </div>
@@ -23,10 +23,10 @@
         <div class="form-group">
           <label for="class-concerned">Classe concerné <span class="required-star">*</span></label>
           <div class="input-wrapper">
-            <input type="text" id="class-concerned"
-                   formControlName="classeConcernee"
-                   placeholder="Ex: Mathématiques 4 ème"
-                   class="form-input">
+            <select id="class-concerned" formControlName="classeConcernee" class="form-input">
+              <option value="" disabled>Sélectionner une classe</option>
+              <option *ngFor="let c of classes" [value]="c.id">{{ c.nom }}</option>
+            </select>
             <span class="input-icon dropdown-arrow-90">▼</span>
           </div>
         </div>

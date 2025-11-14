@@ -7,7 +7,7 @@ import { Niveau } from '../../../api/model/niveau';
 @Injectable({ providedIn: 'root' })
 export class NiveauxService {
   // Le backend a un context path /api, donc les URLs doivent être /api/api/...
-  private base = `${environment.apiUrl}/niveaux`;
+  private base = `${environment.apiUrl}/api/niveaux`;
 
   constructor(private http: HttpClient) {}
 

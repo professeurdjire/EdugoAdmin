@@ -25,8 +25,8 @@
       <h1 class="page-title">Gestion des Partenaires</h1>
       <p class="page-subtitle">Gérez les partenaires et institutions collaborant avec votre plateforme</p>
     </div>
-    <button class="btn btn-primary" routerLink="/admin/ajouterpartenaire" (click)="openAddModal()">
-      <i class="icon-add">+</i>
+    <button class="btn-add" routerLink="/admin/ajouterpartenaire" (click)="openAddModal()">
+      <i class="fa-solid fa-plus"></i>
       Ajouter un partenaire
     </button>
   </div>
@@ -82,8 +82,8 @@
 
       <!-- Actions des filtres -->
       <div class="filter-actions">
-        <button class="btn btn-secondary" (click)="resetFilters()">
-          <i class="icon-reset">🔄</i>
+        <button class="reset-btn" (click)="resetFilters()">
+          <fa-icon [icon]="faRedoAlt"></fa-icon>
           Réinitialiser
         </button>
       </div>
@@ -225,15 +225,15 @@
             </td>
             <td>
               <div class="action-buttons">
-                <button class="action-btn view" (click)="viewPartenaire(partenaire.id)" title="Voir les détails">
-                  <i class="icon-view">👁️</i>
-                </button>
-                <button class="action-btn edit" (click)="editPartenaire(partenaire.id)" title="Modifier">
-                  <i class="icon-edit">✏️</i>
-                </button>
-                <button class="action-btn delete" (click)="deletePartenaire(partenaire)" title="Supprimer">
-                  <i class="icon-delete">🗑️</i>
-                </button>
+                <span class="action-btn view-btn" (click)="viewPartenaire(partenaire.id)" title="Voir les détails">
+                  <fa-icon [icon]="faEye"></fa-icon>
+                </span>
+                <span class="action-btn edit-btn" (click)="editPartenaire(partenaire.id)" title="Modifier">
+                  <fa-icon [icon]="faPen"></fa-icon>
+                </span>
+                <span class="action-btn delete-btn" (click)="deletePartenaire(partenaire)" title="Supprimer">
+                  <fa-icon [icon]="faTrash"></fa-icon>
+                </span>
               </div>
             </td>
           </tr>
@@ -297,7 +297,7 @@
     <div class="modal-actions">
       <button class="btn btn-secondary" (click)="closeDeleteModal()">Annuler</button>
       <button class="btn btn-danger" (click)="confirmDelete()">
-        <i class="icon-delete">🗑️</i>
+        <fa-icon [icon]="faTrash"></fa-icon>
         Supprimer
       </button>
     </div>

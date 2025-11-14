@@ -123,7 +123,7 @@
           <div class="input-wrapper">
             <select id="matiere" formControlName="matiere" class="form-control">
               <option value="">Sélectionner une matière</option>
-              <option *ngFor="let matiere of matieres" [value]="matiere.nom">{{ matiere.nom }}</option>
+              <option *ngFor="let matiere of matieres" [value]="matiere.id">{{ matiere.nom }}</option>
             </select>
             <i class="dropdown-arrow">▼</i>
           </div>
@@ -140,7 +140,7 @@
           <div class="input-wrapper">
             <select id="niveau" formControlName="niveau" class="form-control">
               <option value="">Sélectionner un niveau</option>
-              <option *ngFor="let niveau of niveaux" [value]="niveau.nom">{{ niveau.nom }}</option>
+              <option *ngFor="let niveau of niveaux" [value]="niveau.id">{{ niveau.nom }}</option>
             </select>
             <i class="dropdown-arrow">▼</i>
           </div>
@@ -155,9 +155,7 @@
   <div class="input-wrapper">
     <select id="langue" formControlName="langue" class="form-control">
       <option value="">Sélectionner une langue</option>
-      <option *ngFor="let langue of langues" [value]="langue.id">
-        {{ langue.nom }} ({{ langue.codeIso }})
-      </option>
+      <option *ngFor="let langue of langues" [value]="langue.id">{{ langue.nom }} ({{ langue.codeIso }})</option>
     </select>
     <i class="dropdown-arrow">▼</i>
   </div>
@@ -302,10 +300,17 @@
         <div class="form-group">
           <label for="anneePublication" class="form-label">Année de publication</label>
           <div class="input-wrapper">
-            <select id="anneePublication" formControlName="anneePublication" class="form-control">
-              <option *ngFor="let annee of annees" [value]="annee.value">{{ annee.label }}</option>
-            </select>
-            <i class="dropdown-arrow">▼</i>
+            <input id="anneePublication"
+                   class="form-control"
+                   formControlName="anneePublication"
+                   list="anneesList"
+                   placeholder="Ex: 2024" />
+            <datalist id="anneesList">
+              <option *ngFor="let a of annees" [value]="a">{{ a }}</option>
+            </datalist>
+          </div>
+          <div class="error-message" *ngIf="showError('anneePublication')">
+            {{ getError('anneePublication') }}
           </div>
         </div>
       </div>

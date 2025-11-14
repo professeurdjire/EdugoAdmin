@@ -5,6 +5,10 @@ import { Router, RouterLink } from '@angular/router';
 import { ExercicesService } from '../../../../services/api/admin/exercices.service';
 import { Exercice } from '../../../../api/model/exercice';
 import { AuthService } from '../../../../services/api/auth.service';
+import { ConfirmService } from '../../../../shared/ui/confirm/confirm.service';
+import { ToastService } from '../../../../shared/ui/toast/toast.service';
+import { FaIconComponent } from '@fortawesome/angular-fontawesome';
+import { faFilter, faRedoAlt, faEye, faPen, faTrash } from '@fortawesome/free-solid-svg-icons';
 
 interface ExerciceDisplay {
   id: number;
@@ -18,11 +22,16 @@ interface ExerciceDisplay {
 @Component({
   selector: 'app-exercice-list',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink],
+  imports: [CommonModule, FormsModule, RouterLink, FaIconComponent],
   templateUrl: './exercice-list.html',
   styleUrls: ['./exercice-list.css']
 })
 export class ExerciceList implements OnInit {
+  faFilter = faFilter;
+  faRedoAlt = faRedoAlt;
+  faEye = faEye;
+  faPen = faPen;
+  faTrash = faTrash;
   exercices: ExerciceDisplay[] = [];
   filteredExercices: ExerciceDisplay[] = [];
   pagedExercices: ExerciceDisplay[] = [];
@@ -42,7 +51,9 @@ export class ExerciceList implements OnInit {
   constructor(
     private exercicesService: ExercicesService,
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private confirm: ConfirmService,
+    private toast: ToastService
   ) {}
 
   ngOnInit(): void {
@@ -152,7 +163,7 @@ export class ExerciceList implements OnInit {
   // Actions
   viewExercice(exercice: ExerciceDisplay) {
     // Navigate to exercice details page
-    this.router.navigate(['/admin/exercicedetails', exercice.id]);
+    this.router.navigate(['/admin/exerciceDetails', exercice.id]);
   }
 
   editExercice(exercice: ExerciceDisplay) {
@@ -161,20 +172,28 @@ export class ExerciceList implements OnInit {
   }
 
   deleteExercice(exercice: ExerciceDisplay) {
-    if (confirm('Êtes-vous sûr de vouloir supprimer cet exercice ?')) {
-      this.exercicesService.delete(exercice.id).subscribe({
-        next: () => {
-          // Remove from lists
-          this.exercices = this.exercices.filter(e => e.id !== exercice.id);
-          this.filteredExercices = this.filteredExercices.filter(e => e.id !== exercice.id);
-          this.totalFiltered = this.filteredExercices.length;
-          this.updatePagination();
-        },
-        error: (err) => {
-          console.error('Error deleting exercice:', err);
-          alert('Erreur lors de la suppression de l\'exercice');
-        }
+    this.confirm
+      .confirm({
+        title: 'Supprimer l\'exercice',
+        message: 'Êtes-vous sûr de vouloir supprimer cet exercice ? Cette action est irréversible.',
+        confirmText: 'Supprimer',
+        cancelText: 'Annuler'
+      })
+      .then((ok) => {
+        if (!ok) return;
+        this.exercicesService.delete(exercice.id).subscribe({
+          next: () => {
+            this.exercices = this.exercices.filter(e => e.id !== exercice.id);
+            this.filteredExercices = this.filteredExercices.filter(e => e.id !== exercice.id);
+            this.totalFiltered = this.filteredExercices.length;
+            this.updatePagination();
+            this.toast.success('Exercice supprimé avec succès');
+          },
+          error: (err) => {
+            console.error('Error deleting exercice:', err);
+            this.toast.error('Erreur lors de la suppression de l\'exercice');
+          }
+        });
       });
-    }
   }
 }

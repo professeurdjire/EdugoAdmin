@@ -2,9 +2,13 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
+import { FaIconComponent } from '@fortawesome/angular-fontawesome';
+import { faEye, faPen, faTrash, faFilter, faRedoAlt } from '@fortawesome/free-solid-svg-icons';
 import { QuizService } from '../../../../services/api/admin/quiz.service';
 import { Quiz } from '../../../../api/model/quiz';
 import { AuthService } from '../../../../services/api/auth.service';
+import { ConfirmService } from '../../../../shared/ui/confirm/confirm.service';
+import { ToastService } from '../../../../shared/ui/toast/toast.service';
 
 interface QuizDisplay {
   id: number;
@@ -12,16 +16,22 @@ interface QuizDisplay {
   createdAt: string;
   nombreQuestions: number;
   livre: string;
+  titre: string;
 }
 
 @Component({
   selector: 'app-quiz-list',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink],
+  imports: [CommonModule, FormsModule, RouterLink, FaIconComponent],
   templateUrl: './quiz-list.html',
   styleUrls: ['./quiz-list.css']
 })
 export class QuizList implements OnInit {
+  faEye = faEye;
+  faPen = faPen;
+  faTrash = faTrash;
+  faFilter = faFilter;
+  faRedoAlt = faRedoAlt;
   quizs: QuizDisplay[] = [];
   filteredQuizs: QuizDisplay[] = [];
   pagedQuizs: QuizDisplay[] = [];
@@ -41,7 +51,9 @@ export class QuizList implements OnInit {
   constructor(
     private quizService: QuizService,
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private confirm: ConfirmService,
+    private toast: ToastService
   ) {}
 
   ngOnInit(): void {
@@ -80,12 +92,25 @@ export class QuizList implements OnInit {
 
   // Transform API Quiz to display format
   transformQuiz(quiz: Quiz): QuizDisplay {
+    const now = new Date();
+    const created = quiz.createdAt ? new Date(quiz.createdAt) : null;
+    const createdDateStr = (created ?? now).toLocaleDateString('fr-FR');
+
+    const isToday = created
+      ? created.getFullYear() === now.getFullYear() &&
+        created.getMonth() === now.getMonth() &&
+        created.getDate() === now.getDate()
+      : true; // if missing, consider as new
+
+    const statutDisplay = isToday ? 'NOUVEAU' : (quiz.statut || 'Inconnu');
+
     return {
       id: quiz.id || 0,
-      statut: quiz.statut || 'Inconnu',
-      createdAt: quiz.createdAt ? new Date(quiz.createdAt).toLocaleDateString('fr-FR') : '',
+      statut: statutDisplay,
+      createdAt: createdDateStr,
       nombreQuestions: quiz.nombreQuestions || 0,
-      livre: quiz.livre?.titre || 'Non associé'
+      livre: quiz.livre?.titre || 'Non associé',
+      titre: (quiz as any).titre || 'Sans titre'
     };
   }
 
@@ -95,6 +120,7 @@ export class QuizList implements OnInit {
     this.filteredQuizs = this.quizs.filter(quiz => {
       const matchesSearch =
         !term ||
+        quiz.titre.toLowerCase().includes(term) ||
         quiz.livre.toLowerCase().includes(term) ||
         quiz.statut.toLowerCase().includes(term);
 
@@ -154,20 +180,28 @@ export class QuizList implements OnInit {
   }
 
   deleteQuiz(quiz: QuizDisplay) {
-    if (confirm('Êtes-vous sûr de vouloir supprimer ce quiz ?')) {
-      this.quizService.delete(quiz.id).subscribe({
-        next: () => {
-          // Remove from lists
-          this.quizs = this.quizs.filter(q => q.id !== quiz.id);
-          this.filteredQuizs = this.filteredQuizs.filter(q => q.id !== quiz.id);
-          this.totalFiltered = this.filteredQuizs.length;
-          this.updatePagination();
-        },
-        error: (err) => {
-          console.error('Error deleting quiz:', err);
-          alert('Erreur lors de la suppression du quiz');
-        }
+    this.confirm
+      .confirm({
+        title: 'Supprimer le quiz',
+        message: 'Êtes-vous sûr de vouloir supprimer ce quiz ? Cette action est irréversible.',
+        confirmText: 'Supprimer',
+        cancelText: 'Annuler'
+      })
+      .then((ok) => {
+        if (!ok) return;
+        this.quizService.delete(quiz.id).subscribe({
+          next: () => {
+            this.quizs = this.quizs.filter(q => q.id !== quiz.id);
+            this.filteredQuizs = this.filteredQuizs.filter(q => q.id !== quiz.id);
+            this.totalFiltered = this.filteredQuizs.length;
+            this.updatePagination();
+            this.toast.success('Quiz supprimé avec succès');
+          },
+          error: (err) => {
+            console.error('Error deleting quiz:', err);
+            this.toast.error('Erreur lors de la suppression du quiz');
+          }
+        });
       });
-    }
   }
 }

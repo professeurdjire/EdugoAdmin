@@ -2,6 +2,14 @@ import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import {FormBuilder, FormGroup, FormArray, Validators, ReactiveFormsModule} from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
+import { ExercicesService as AdminExercicesService } from '../../../../services/api/admin/exercices.service';
+import { Exercice } from '../../../../api/model/exercice';
+import { ToastService } from '../../../../shared/ui/toast/toast.service';
+import { ConfirmService } from '../../../../shared/ui/confirm/confirm.service';
+import { QuestionsService, CreateQuestionRequest } from '../../../../services/api/questions.service';
+import { forkJoin } from 'rxjs';
+import { MatieresService } from '../../../../services/api/admin/matieres.service';
+import { Matiere } from '../../../../api/model/matiere';
 
 @Component({
   selector: 'app-exercice-form',
@@ -17,15 +25,42 @@ export class ExerciceForm implements OnInit {
   @ViewChild('imageInput') imageInput!: ElementRef;
 
   exerciceForm: FormGroup;
+  isLoading = false;
+  loadingTypes = false;
+  backendTypes: Array<{ id: number; libelle: string }> = [];
+  matieres: Matiere[] = [];
 
   constructor(
     private fb: FormBuilder,
-    private router: Router
+    private router: Router,
+    private exercicesService: AdminExercicesService,
+    private toast: ToastService,
+    private confirm: ConfirmService,
+    private questionsService: QuestionsService,
+    private matieresService: MatieresService
   ) {
     this.exerciceForm = this.createForm();
   }
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.loadingTypes = true;
+    this.questionsService.getTypes().subscribe({
+      next: (types) => {
+        this.backendTypes = types || [];
+        this.loadingTypes = false;
+      },
+      error: () => {
+        this.loadingTypes = false;
+        this.toast.error('Impossible de charger les types de questions');
+      }
+    });
+
+    // Charger les matières pour le select
+    this.matieresService.list().subscribe({
+      next: (d) => (this.matieres = d || []),
+      error: () => this.toast.error('Impossible de charger les matières')
+    });
+  }
 
   // Getter pour accéder facilement au FormArray des questions
   get questions(): FormArray {
@@ -39,7 +74,6 @@ export class ExerciceForm implements OnInit {
       matiereConcernee: ['', [Validators.required]],
       titre: ['', [Validators.required, Validators.minLength(3)]],
       description: [''],
-      dateAjout: ['', [Validators.required]],
 
       // Fichiers
       fichierPrincipal: [null],
@@ -114,23 +148,98 @@ export class ExerciceForm implements OnInit {
 
   // Soumission du formulaire
   onSubmit(): void {
-    if (this.exerciceForm.valid) {
-      const formData = this.exerciceForm.value;
-      console.log('Exercice à enregistrer:', formData);
-
-      // Simulation d'enregistrement
-      this.enregistrerExercice(formData);
-    } else {
+    if (!(this.exerciceForm.valid && this.validateQuestionsBySpec())) {
       this.marquerChampsCommeTouches();
+      return;
     }
+
+    const file: File | null = this.exerciceForm.get('fichierPrincipal')?.value;
+    const image: File | null = this.exerciceForm.get('imageExercice')?.value;
+
+    if (!(file instanceof File) || !(image instanceof File)) {
+      this.toast.error("Le fichier principal et l'image de l'exercice sont obligatoires.");
+      return;
+    }
+
+    const payload = this.prepareExerciceData();
+
+    this.isLoading = true;
+    this.exercicesService.createWithFiles(payload, file, image).subscribe({
+      next: (res) => {
+        const exerciceId = (res as any)?.id;
+        if (!exerciceId) {
+          this.isLoading = false;
+          this.toast.warning("Exercice créé mais identifiant introuvable pour créer les questions.");
+          this.router.navigate(['/admin/exerciceList']);
+          return;
+        }
+
+        const questionRequests: CreateQuestionRequest[] = (this.questions.controls as FormGroup[]).map((qfg) => {
+          const qv = qfg.value;
+          const type = this.mapFrontTypeToApi(String(qv.typeQuestion || '').toLowerCase());
+          if (type === 'VRAI_FAUX') {
+            const reponses = [
+              { libelle: 'VRAI', estCorrecte: String(qv.bonneReponse).toUpperCase() === 'VRAI' },
+              { libelle: 'FAUX', estCorrecte: String(qv.bonneReponse).toUpperCase() === 'FAUX' }
+            ];
+            return { exerciceId, enonce: qv.question, points: 1, type, reponses };
+          }
+          const options: { libelle: string; estCorrecte: boolean }[] = [];
+          const letters = ['A','B','C','D'];
+          letters.forEach((L) => {
+            const libelle = (qv[`reponse${L}`] || '').toString();
+            if (libelle && libelle.trim() !== '') {
+              options.push({ libelle, estCorrecte: String(qv.bonneReponse).toUpperCase() === L });
+            }
+          });
+          return { exerciceId, enonce: qv.question, points: 1, type, reponses: options };
+        });
+
+        forkJoin(questionRequests.map(req => this.questionsService.createQuestion(req))).subscribe({
+          next: () => {
+            this.isLoading = false;
+            this.toast.success('Exercice et questions créés avec succès !');
+            this.router.navigate(['/admin/exerciceList']);
+          },
+          error: (err) => {
+            this.isLoading = false;
+            console.error('Erreur création questions exercice:', err);
+            this.toast.error("Exercice créé mais erreur lors de la création des questions");
+            this.router.navigate(['/admin/exerciceList']);
+          }
+        });
+      },
+      error: (err) => {
+        this.isLoading = false;
+        console.error('Erreur lors de la création de l\'exercice:', err);
+        this.toast.error("Erreur lors de la création de l'exercice. Veuillez réessayer.");
+      }
+    });
+  }
+
+  private prepareExerciceData(): any {
+    const v = this.exerciceForm.value;
+    return {
+      titre: v.titre,
+      description: v.description,
+      active: true,
+      matiereId: +v.matiereConcernee
+    };
   }
 
   // Annulation
   onAnnuler(): void {
-    if (confirm('Voulez-vous vraiment annuler ? Toutes les modifications seront perdues.')) {
-      this.exerciceForm.reset();
-      this.router.navigate(['/admin/exerciceList']);
-    }
+    this.confirm.confirm({
+      title: 'Annuler',
+      message: 'Voulez-vous vraiment annuler ? Toutes les modifications seront perdues.',
+      confirmText: 'Annuler',
+      cancelText: 'Continuer'
+    }).then(ok => {
+      if (ok) {
+        this.exerciceForm.reset();
+        this.router.navigate(['/admin/exerciceList']);
+      }
+    });
   }
 
   // Marquer tous les champs comme "touched" pour afficher les erreurs
@@ -154,17 +263,7 @@ export class ExerciceForm implements OnInit {
     });
   }
 
-  // Simulation d'enregistrement
-  private enregistrerExercice(exercice: any): void {
-    // Ici, vous intégreriez votre service d'API
-    console.log('Enregistrement de l\'exercice:', exercice);
-
-    // Simulation de succès
-    setTimeout(() => {
-      alert('Exercice enregistré avec succès !');
-      this.router.navigate(['/admin/exerciceList']);
-    }, 1000);
-  }
+  
 
   // Méthodes utilitaires pour le template
   estChampInvalide(nomChamp: string): boolean {
@@ -200,5 +299,45 @@ export class ExerciceForm implements OnInit {
       return `Minimum ${control.errors?.['minlength'].requiredLength} caractères`;
     }
     return '';
+  }
+
+  private mapFrontTypeToApi(front: string): 'QCU' | 'QCM' | 'VRAI_FAUX' | 'APPARIEMENT' {
+    switch (front) {
+      case 'qcu':
+      case 'choix_unique':
+      case 'choix_multiple':
+        return 'QCU';
+      case 'qcm':
+      case 'multi_reponse':
+        return 'QCM';
+      case 'vrai_faux':
+        return 'VRAI_FAUX';
+      case 'appariement':
+        return 'APPARIEMENT';
+      default:
+        return 'QCU';
+    }
+  }
+
+  private validateQuestionsBySpec(): boolean {
+    return (this.questions.controls as FormGroup[]).every((qfg) => {
+      const v = qfg.value;
+      const type = this.mapFrontTypeToApi(String(v.typeQuestion || '').toLowerCase());
+      if (!v.question || String(v.question).trim() === '') return false;
+      if (type === 'VRAI_FAUX') {
+        return ['VRAI', 'FAUX'].includes(String(v.bonneReponse).toUpperCase());
+      }
+      const options = ['A','B','C','D']
+        .map(L => (v[`reponse${L}`] || '').toString())
+        .filter(txt => txt.trim() !== '');
+      if (options.length < 2) return false;
+      const correctLetter = String(v.bonneReponse || '').toUpperCase();
+      if (!['A','B','C','D'].includes(correctLetter)) return false;
+      if (type === 'APPARIEMENT') {
+        // UI not supporting pairs here, skip
+        return false;
+      }
+      return true;
+    });
   }
 }

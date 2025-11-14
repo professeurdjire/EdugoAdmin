@@ -23,6 +23,15 @@ export class ExercicesService {
     return this.http.post<Exercice>(this.base, payload);
   }
 
+  // Création multipart: JSON + fichiers
+  createWithFiles(exercice: any, document: File, image?: File): Observable<Exercice> {
+    const formData = new FormData();
+    formData.append('exercice', new Blob([JSON.stringify(exercice)], { type: 'application/json' }));
+    formData.append('document', document);
+    if (image) formData.append('image', image);
+    return this.http.post<Exercice>(this.base, formData);
+  }
+
   update(id: number, payload: Partial<Exercice>): Observable<Exercice> {
     return this.http.put<Exercice>(`${this.base}/${id}`, payload);
   }

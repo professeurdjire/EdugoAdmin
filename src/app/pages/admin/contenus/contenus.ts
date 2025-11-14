@@ -7,6 +7,8 @@ import { MatieresService } from '../../../services/api/admin/matieres.service';
 import { Niveau } from '../../../api/model/niveau';
 import { Classe } from '../../../api/model/classe';
 import { Matiere } from '../../../api/model/matiere';
+import { ToastService } from '../../../shared/ui/toast/toast.service';
+import { ConfirmService } from '../../../shared/ui/confirm/confirm.service';
 
 interface SubjectDisplay {
   id: number;
@@ -62,7 +64,9 @@ export class Contenus implements OnInit {
   constructor(
     private niveauxService: NiveauxService,
     private classesService: ClassesService,
-    private matieresService: MatieresService
+    private matieresService: MatieresService,
+    private toast: ToastService,
+    private confirm: ConfirmService
   ) {}
 
   ngOnInit() {
@@ -288,7 +292,7 @@ export class Contenus implements OnInit {
 
   saveContent() {
     if (!this.formData.name.trim()) {
-      alert('Veuillez remplir le nom');
+      this.toast.warning('Veuillez remplir le nom');
       return;
     }
 
@@ -322,10 +326,11 @@ export class Contenus implements OnInit {
             };
           }
           this.closeModal();
+          this.toast.success('Matière mise à jour avec succès');
         },
         error: (err) => {
           console.error('Erreur modification matière:', err);
-          alert('Erreur lors de la mise à jour de la matière');
+          this.toast.error('Erreur lors de la mise à jour de la matière');
         }
       });
     } else {
@@ -340,10 +345,11 @@ export class Contenus implements OnInit {
             studentsCount: 0
           });
           this.closeModal();
+          this.toast.success('Matière créée avec succès');
         },
         error: (err) => {
           console.error('Erreur création matière:', err);
-          alert('Erreur lors de la création de la matière');
+          this.toast.error('Erreur lors de la création de la matière');
         }
       });
     }
@@ -366,10 +372,11 @@ export class Contenus implements OnInit {
             };
           }
           this.closeModal();
+          this.toast.success('Niveau mis à jour avec succès');
         },
         error: (err) => {
           console.error('Erreur modification niveau:', err);
-          alert('Erreur lors de la mise à jour du niveau');
+          this.toast.error('Erreur lors de la mise à jour du niveau');
         }
       });
     } else {
@@ -384,10 +391,11 @@ export class Contenus implements OnInit {
             studentsCount: 0
           });
           this.closeModal();
+          this.toast.success('Niveau créé avec succès');
         },
         error: (err) => {
           console.error('Erreur création niveau:', err);
-          alert('Erreur lors de la création du niveau');
+          this.toast.error('Erreur lors de la création du niveau');
         }
       });
     }
@@ -396,7 +404,7 @@ export class Contenus implements OnInit {
   private saveClass() {
     // Trouver le niveau correspondant
     const niveau = this.levels.find(l => l.name === this.formData.level);
-    
+
     const payload = { 
       nom: this.formData.name.trim(),
       niveau: niveau ? { id: niveau.id } : undefined
@@ -416,10 +424,11 @@ export class Contenus implements OnInit {
             };
           }
           this.closeModal();
+          this.toast.success('Classe mise à jour avec succès');
         },
         error: (err) => {
           console.error('Erreur modification classe:', err);
-          alert('Erreur lors de la mise à jour de la classe');
+          this.toast.error('Erreur lors de la mise à jour de la classe');
         }
       });
     } else {
@@ -433,55 +442,65 @@ export class Contenus implements OnInit {
             studentsCount: 0
           });
           this.closeModal();
+          this.toast.success('Classe créée avec succès');
         },
         error: (err) => {
           console.error('Erreur création classe:', err);
-          alert('Erreur lors de la création de la classe');
+          this.toast.error('Erreur lors de la création de la classe');
         }
       });
     }
   }
 
   deleteItem(id: number) {
-    if (!confirm('Êtes-vous sûr de vouloir supprimer cet élément ?')) {
-      return;
-    }
-
-    switch(this.currentTab) {
-      case 'subjects':
-        this.matieresService.delete(id).subscribe({
-          next: () => {
-            this.subjects = this.subjects.filter(s => s.id !== id);
-          },
-          error: (err) => {
-            console.error('Erreur suppression matière:', err);
-            alert('Erreur lors de la suppression de la matière');
-          }
-        });
-        break;
-      case 'levels':
-        this.niveauxService.delete(id).subscribe({
-          next: () => {
-            this.levels = this.levels.filter(l => l.id !== id);
-          },
-          error: (err) => {
-            console.error('Erreur suppression niveau:', err);
-            alert('Erreur lors de la suppression du niveau');
-          }
-        });
-        break;
-      case 'classes':
-        this.classesService.delete(id).subscribe({
-          next: () => {
-            this.classes = this.classes.filter(c => c.id !== id);
-          },
-          error: (err) => {
-            console.error('Erreur suppression classe:', err);
-            alert('Erreur lors de la suppression de la classe');
-          }
-        });
-        break;
-    }
+    this.confirm
+      .confirm({
+        title: 'Supprimer',
+        message: 'Êtes-vous sûr de vouloir supprimer cet élément ? Cette action est irréversible.',
+        confirmText: 'Supprimer',
+        cancelText: 'Annuler'
+      })
+      .then((ok) => {
+        if (!ok) return;
+        switch(this.currentTab) {
+          case 'subjects':
+            this.matieresService.delete(id).subscribe({
+              next: () => {
+                this.subjects = this.subjects.filter(s => s.id !== id);
+                this.toast.success('Matière supprimée avec succès');
+              },
+              error: (err) => {
+                console.error('Erreur suppression matière:', err);
+                this.toast.error('Erreur lors de la suppression de la matière');
+              }
+            });
+            break;
+          case 'levels':
+            this.niveauxService.delete(id).subscribe({
+              next: () => {
+                this.levels = this.levels.filter(l => l.id !== id);
+                this.toast.success('Niveau supprimé avec succès');
+              },
+              error: (err) => {
+                console.error('Erreur suppression niveau:', err);
+                this.toast.error('Erreur lors de la suppression du niveau');
+              }
+            });
+            break;
+          case 'classes':
+            this.classesService.delete(id).subscribe({
+              next: () => {
+                this.classes = this.classes.filter(c => c.id !== id);
+                this.toast.success('Classe supprimée avec succès');
+              },
+              error: (err) => {
+                console.error('Erreur suppression classe:', err);
+                this.toast.error('Erreur lors de la suppression de la classe');
+              }
+            });
+            break;
+        }
+      });
   }
 
   get showSubjectFields(): boolean {

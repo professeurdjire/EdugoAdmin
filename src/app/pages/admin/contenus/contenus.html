@@ -13,8 +13,8 @@
 <div class="content-management">
   <div class="page-header">
     <h1 class="page-title">Gestion des Contenus</h1>
-    <button class="btn btn-primary" (click)="openAddModal()">
-      <span>+ Ajouter</span>
+    <button class="btn-add" (click)="openAddModal()">
+      <i class="fa-solid fa-plus"></i>&nbsp;Ajouter
     </button>
   </div>
 
@@ -54,7 +54,7 @@
         <div *ngIf="subjects.length === 0" class="empty-state">
           <div class="empty-state-icon">📚</div>
           <div class="empty-state-text">Aucune matière n'a été ajoutée</div>
-          <button class="btn btn-primary" (click)="openAddModal()">Ajouter une matière</button>
+          <button class="btn-add" (click)="openAddModal()"><i class="fa-solid fa-plus"></i>&nbsp;Ajouter une matière</button>
         </div>
 
         <div class="content-card" *ngFor="let subject of subjects">
@@ -104,7 +104,7 @@
         <div *ngIf="levels.length === 0" class="empty-state">
           <div class="empty-state-icon">🎓</div>
           <div class="empty-state-text">Aucun niveau n'a été ajouté</div>
-          <button class="btn btn-primary" (click)="openAddModal()">Ajouter un niveau</button>
+          <button class="btn-add" (click)="openAddModal()"><i class="fa-solid fa-plus"></i>&nbsp;Ajouter un niveau</button>
         </div>
 
         <div class="content-card" *ngFor="let level of levels">
@@ -153,7 +153,7 @@
         <div *ngIf="classes.length === 0" class="empty-state">
           <div class="empty-state-icon">👨‍🏫</div>
           <div class="empty-state-text">Aucune classe n'a été ajoutée</div>
-          <button class="btn btn-primary" (click)="openAddModal()">Ajouter une classe</button>
+          <button class="btn-add" (click)="openAddModal()"><i class="fa-solid fa-plus"></i>&nbsp;Ajouter une classe</button>
         </div>
 
         <div class="content-card" *ngFor="let classItem of classes">

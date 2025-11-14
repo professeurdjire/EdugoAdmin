@@ -1,7 +1,7 @@
 <div class="users-page-container">
   <div class="page-header">
     <h1 class="page-title">Livres</h1>
-    <a routerLink="/admin/ajouterlivre" class="add-btn">Ajouter un livre</a>
+    <a routerLink="/admin/ajouterlivre" class="btn-add"><i class="fa-solid fa-plus"></i>&nbsp;Ajouter un livre</a>
   </div>
 
   <!-- Message d'erreur -->
@@ -35,8 +35,14 @@
       </div>
 
       <div class="action-buttons">
-        <button class="filter-btn" (click)="applyFilters()">Filtrer</button>
-        <button class="reset-btn" (click)="resetFilters()">Réinitialiser</button>
+        <button class="filter-btn" (click)="applyFilters()">
+          <fa-icon [icon]="faFilter"></fa-icon>
+          Filtrer
+        </button>
+        <button class="reset-btn" (click)="resetFilters()">
+          <fa-icon [icon]="faRedoAlt"></fa-icon>
+          Réinitialiser
+        </button>
       </div>
     </section>
   </div>
@@ -72,9 +78,15 @@
             <td>{{ livre.langue }}</td>
             <td><span class="status-badge active-status">Actif</span></td>
             <td class="actions-cell">
-              <button class="action-icon-btn" (click)="viewLivre(livre)">👁️</button>
-              <button class="action-icon-btn" (click)="editLivre(livre)">✏️</button>
-              <button class="action-icon-btn" (click)="deleteLivre(livre)">🗑️</button>
+              <span class="action-btn view-btn" (click)="viewLivre(livre)">
+                <fa-icon [icon]="faEye"></fa-icon>
+              </span>
+              <span class="action-btn edit-btn" (click)="editLivre(livre)">
+                <fa-icon [icon]="faPen"></fa-icon>
+              </span>
+              <span class="action-btn delete-btn" (click)="deleteLivre(livre)">
+                <fa-icon [icon]="faTrash"></fa-icon>
+              </span>
             </td>
           </tr>
         </tbody>

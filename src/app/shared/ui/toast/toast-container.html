@@ -1,0 +1,12 @@
+<div class="toast-wrap">
+  <div *ngFor="let t of toasts" class="toast" [class.success]="t.type==='success'" [class.error]="t.type==='error'" [class.info]="t.type==='info'" [class.warning]="t.type==='warning'">
+    <div class="icon" aria-hidden="true">
+      <span *ngIf="t.type==='success'">✅</span>
+      <span *ngIf="t.type==='error'">❌</span>
+      <span *ngIf="t.type==='info'">ℹ️</span>
+      <span *ngIf="t.type==='warning'">⚠️</span>
+    </div>
+    <div class="text">{{ t.text }}</div>
+    <button type="button" class="close" (click)="dismiss(t.id)" aria-label="Fermer">✖</button>
+  </div>
+</div>

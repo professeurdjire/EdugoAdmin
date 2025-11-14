@@ -22,28 +22,6 @@
       </app-notifications-modal>
     </div>
 
-    <!-- Profil utilisateur avec dropdown -->
-    <!-- <div class="user-profile-wrapper">
-      <div class="user-profile" (click)="toggleProfile()" style="cursor: pointer;">
-        <div class="user-avatar-container">
-          <div class="user-avatar">{{getUserInitials()}}</div>
-        </div>
-        <div class="user-details">
-          <div class="user-fullname">{{user?.prenom}} {{user?.nom}}</div>
-          <div class="user-role">{{getRoleDisplayName()}}</div>
-        </div>
-        <div class="dropdown-arrow">
-          <i class="fa-solid fa-chevron-down" [class.rotated]="showProfile"></i>
-        </div>
-      </div>
-      
-      <app-user-profile-dropdown 
-        *ngIf="showProfile"
-        [user]="user"
-        (close)="showProfile = false"
-        (action)="handleProfileAction($event)">
-      </app-user-profile-dropdown>
-    </div> -->
     <!-- Dans votre header -->
 <div class="user-profile-wrapper">
   <div class="user-profile" (click)="toggleProfile()" style="cursor: pointer;">

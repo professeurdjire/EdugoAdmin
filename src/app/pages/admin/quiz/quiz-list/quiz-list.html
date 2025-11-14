@@ -2,7 +2,7 @@
   <div class="users-page-container">
     <div class="page-header">
       <h1 class="page-title">Quiz</h1>
-      <a routerLink="/admin/ajouterQuiz" class="add-btn">Ajouter un quiz</a>
+      <a routerLink="/admin/ajouterQuiz" class="btn-add"><i class="fa-solid fa-plus"></i>&nbsp;Ajouter un quiz</a>
     </div>
 
     <!-- Message d'erreur -->
@@ -31,8 +31,14 @@
         </select>
       </div>
       <div class="action-buttons">
-        <button class="filter-btn" (click)="applyFilters()">Filtrer</button>
-        <button class="reset-btn" (click)="resetFilters()">Réinitialiser</button>
+        <button class="filter-btn" (click)="applyFilters()">
+          <fa-icon [icon]="faFilter"></fa-icon>
+          Filtrer
+        </button>
+        <button class="reset-btn" (click)="resetFilters()">
+          <fa-icon [icon]="faRedoAlt"></fa-icon>
+          Réinitialiser
+        </button>
       </div>
     </section>
 
@@ -55,19 +61,25 @@
           </thead>
           <tbody>
             <tr *ngFor="let quiz of pagedQuizs">
-              <td>{{ quiz.statut }}</td>
+              <td>{{ quiz.titre }}</td>
               <td>{{ quiz.livre }}</td>
               <td>{{ quiz.createdAt }}</td>
               <td>{{ quiz.nombreQuestions }}</td>
               <td>
-                <span class="status-badge" [class.active-status]="quiz.statut === 'ACTIF'">
-                  {{ quiz.statut === 'ACTIF' ? 'Actif' : quiz.statut === 'INACTIF' ? 'Inactif' : 'Brouillon' }}
+                <span class="status-badge" [class.active-status]="quiz.statut === 'ACTIF'" [class.new-status]="quiz.statut === 'NOUVEAU'">
+                  {{ quiz.statut === 'ACTIF' ? 'Actif' : quiz.statut === 'INACTIF' ? 'Inactif' : quiz.statut === 'NOUVEAU' ? 'Nouveau' : 'Brouillon' }}
                 </span>
               </td>
               <td class="actions-cell">
-                <button class="action-icon-btn" (click)="viewQuiz(quiz)">👁️</button>
-                <button class="action-icon-btn" (click)="editQuiz(quiz)">✏️</button>
-                <button class="action-icon-btn" (click)="deleteQuiz(quiz)">🗑️</button>
+                <span class="action-btn view-btn" (click)="viewQuiz(quiz)">
+                  <fa-icon [icon]="faEye"></fa-icon>
+                </span>
+                <span class="action-btn edit-btn" (click)="editQuiz(quiz)">
+                  <fa-icon [icon]="faPen"></fa-icon>
+                </span>
+                <span class="action-btn delete-btn" (click)="deleteQuiz(quiz)">
+                  <fa-icon [icon]="faTrash"></fa-icon>
+                </span>
               </td>
             </tr>
           </tbody>

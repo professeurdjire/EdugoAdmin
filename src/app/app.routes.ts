@@ -15,7 +15,6 @@ import { ParamatresList } from './pages/admin/parametre/paramatres-list/paramatr
 import { ParamatresForm } from './pages/admin/parametre/paramatres-form/paramatres-form';
 import { QuizForm } from './pages/admin/quiz/quiz-form/quiz-form';
 import { RecompenseForm } from './pages/admin/recompense/recompense-form/recompense-form';
-import { RecompenseDetails } from './pages/admin/recompense/recompense-details/recompense-details';
 import { RecompenseList } from './pages/admin/recompense/recompense-list/recompense-list';
 import {UtilisateurList} from './pages/admin/utilisateurs/utilisateur-list/utilisateur-list';
 import {UtilisateurForm} from './pages/admin/utilisateurs/utilisateur-form/utilisateur-form';
@@ -37,7 +36,6 @@ import { PartenaireForm } from './pages/admin/partenaires/partenaire-form/parten
 import { Contenus } from './pages/admin/contenus/contenus';
 import { NotificationsModalComponent } from './pages/admin/notifications/notifications';
 import { UserProfileDropdownComponent } from './pages/admin/user-profile/user-profile';
-import { RewardsManagementComponent } from './pages/admin/recompense/gerer-recompense/gerer-recompense';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'auth/login', pathMatch: 'full' },
@@ -68,14 +66,17 @@ export const routes: Routes = [
       { path: 'challengeDetails/:id', component: ChallengeDetails },
       { path: 'challengelist', component: ChallengeList },
       { path: 'ajouterdefi', component: DefiForm },
+      { path: 'ajouterdefi/:id', component: DefiForm },
       { path: 'defidetails', component: DefiDetails},
       { path: 'defiDetails/:id', component: DefiDetails},
       { path: 'defilist', component: DefiList },
       { path: 'ajouterexercice', component: ExerciceForm },
+      { path: 'ajouterexercice/:id', component: ExerciceForm },
       { path: 'exercicedetails', component: ExerciceDetails},
       { path: 'exerciceDetails/:id', component: ExerciceDetails},
       { path: 'exercicelist', component: ExerciceList },
       { path: 'ajouterlivre', component: LivreForm },
+      { path: 'ajouterlivre/:id', component: LivreForm },
       { path: 'livredetails', component: LivreDetails },
       { path: 'livreDetails/:id', component: LivreDetails },
       { path: 'livrelist', component: LivreList },
@@ -85,15 +86,14 @@ export const routes: Routes = [
        { path: 'paramatresList', component: ParamatresList },
       { path: 'paramatresForm', component: ParamatresForm },
       { path: 'ajouterQuiz', component: QuizForm },
+      { path: 'ajouterQuiz/:id', component: QuizForm },
       { path: 'quizdetails', component: QuizDetails },
       { path: 'quizDetails/:id', component: QuizDetails },
       { path: 'quizlist', component: QuizList },
       //{ path: ':id/questions', component: QuestionManagement}
-      { path: 'recompenseList', component: RecompenseList },
+      { path: 'recompenselist', component: RecompenseList },
       { path: 'ajouterrecompense', component: RecompenseForm },
       { path: 'editerrecompense/:id', component: RecompenseForm },
-      { path: 'recompensedetails', component: RecompenseDetails },
-      { path: 'recompenseDetails/:id', component: RecompenseDetails },
       { path: 'utilisateurs', component: UtilisateurList },
       { path: 'ajouterUtilisateur', component: UtilisateurForm },
       { path: 'editerUtilisateur/:id', component: UtilisateurForm },
@@ -101,8 +101,8 @@ export const routes: Routes = [
        { path: 'partenaire', component: PartenaireList },
         { path: 'notifications', component: NotificationsModalComponent },
         { path: 'ajouterpartenaire', component: PartenaireForm },
+        { path: 'ajouterpartenaire/:id', component: PartenaireForm },
         { path: 'user-profile', component: UserProfileDropdownComponent },
-          { path: 'gererecompense', component:  RewardsManagementComponent}
     ]
   },
   {

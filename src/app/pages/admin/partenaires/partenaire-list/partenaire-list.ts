@@ -2,17 +2,25 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
+import { FaIconComponent } from '@fortawesome/angular-fontawesome';
+import { faEye, faPen, faTrash, faFilter, faRedoAlt } from '@fortawesome/free-solid-svg-icons';
+
 import { Partenaire } from '../../../../models/partenaire.model';
 import { PartenaireService } from '../../../../services/api/partenaire.service';
 
 @Component({
   selector: 'app-partenaire-list',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink],
+  imports: [CommonModule, FormsModule, RouterLink, FaIconComponent],
   templateUrl: './partenaire-list.html',
   styleUrls: ['./partenaire-list.css']
 })
 export class PartenaireList implements OnInit {
+  faEye = faEye;
+  faPen = faPen;
+  faTrash = faTrash;
+  faFilter = faFilter;
+  faRedoAlt = faRedoAlt;
   partenaires: Partenaire[] = [];
   filteredPartenaires: Partenaire[] = [];
   selectedIds: number[] = [];

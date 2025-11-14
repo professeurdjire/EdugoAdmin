@@ -2,11 +2,14 @@ import {Component, OnInit} from '@angular/core';
 import {FormsModule} from '@angular/forms';
 import {FaIconComponent} from '@fortawesome/angular-fontawesome';
 import {CommonModule, Location} from '@angular/common';
-import {faArrowLeft, faEye, faFilter, faPenToSquare, faRedoAlt} from '@fortawesome/free-solid-svg-icons';
+import {faArrowLeft, faEye, faFilter, faPen, faRedoAlt, faTrash} from '@fortawesome/free-solid-svg-icons';
+
 import { UsersService } from '../../../../services/api/admin/users.service';
 import { User } from '../../../../api/model/user';
 import { AuthService } from '../../../../services/api/auth.service';
 import { Router } from '@angular/router';
+import { ConfirmService } from '../../../../shared/ui/confirm/confirm.service';
+import { ToastService } from '../../../../shared/ui/toast/toast.service';
 
 // Updated interface to match API model
 interface UserDisplay {
@@ -39,11 +42,13 @@ export class UtilisateurList implements OnInit{
     private location: Location,
     private usersService: UsersService,
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private confirm: ConfirmService,
+    private toast: ToastService
   ) {}
 
   // Icônes FontAwesome
-  faPen = faPenToSquare;
+  faPen = faPen;
 
   // Données utilisateurs (simule une future API)
   users: UserDisplay[] = [];
@@ -202,7 +207,7 @@ export class UtilisateurList implements OnInit{
   // Actions
   viewUser(user: UserDisplay) {
     // Navigate to user details page
-    this.router.navigate(['/admin/Utilisateur', user.id]);
+    this.router.navigate(['/admin/editerUtilisateur', user.id]);
   }
 
   editUser(user: UserDisplay) {
@@ -210,6 +215,31 @@ export class UtilisateurList implements OnInit{
     this.router.navigate(['/admin/editerUtilisateur', user.id]);
   }
   
+  deleteUser(user: UserDisplay) {
+    this.confirm
+      .confirm({
+        title: 'Supprimer l\'utilisateur',
+        message: `Êtes-vous sûr de vouloir supprimer l'utilisateur ${user.firstName} ${user.lastName} ? Cette action est irréversible.`,
+        confirmText: 'Supprimer',
+        cancelText: 'Annuler'
+      })
+      .then((ok) => {
+        if (!ok) return;
+        this.usersService.delete(user.id).subscribe({
+          next: () => {
+            this.users = this.users.filter(u => u.id !== user.id);
+            this.filteredUsers = this.filteredUsers.filter(u => u.id !== user.id);
+            this.totalFiltered = this.filteredUsers.length;
+            this.updatePagination();
+            this.toast.success('Utilisateur supprimé avec succès');
+          },
+          error: (err) => {
+            console.error('Error deleting user:', err);
+            this.toast.error('Erreur lors de la suppression de l\'utilisateur');
+          }
+        });
+      });
+  }
   protected readonly faEye = faEye;
   protected readonly faFilter = faFilter;
   protected readonly faRedoAlt = faRedoAlt;

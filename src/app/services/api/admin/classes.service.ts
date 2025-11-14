@@ -7,7 +7,7 @@ import { Classe } from '../../../api/model/classe';
 @Injectable({ providedIn: 'root' })
 export class ClassesService {
   // Le backend a un context path /api, donc les URLs doivent être /api/api/...
-  private base = `${environment.apiUrl}/classes`;
+  private base = `${environment.apiUrl}/api/classes`;
 
   constructor(private http: HttpClient) {}
 

@@ -4,15 +4,18 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { DefisService } from '../../../../services/api/admin/defis.service';
 import { Defi } from '../../../../api/model/defi';
 import { AuthService } from '../../../../services/api/auth.service';
+import { FaIconComponent } from '@fortawesome/angular-fontawesome';
+import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-defi-details',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FaIconComponent],
   templateUrl: './defi-details.html',
   styleUrls: ['./defi-details.css'],
 })
 export class DefiDetails implements OnInit {
+  faArrowLeft = faArrowLeft;
   defi: Defi | null = null;
   loading: boolean = false;
   error: string | null = null;

@@ -7,9 +7,12 @@ import { MatieresService } from '../../../../services/api/admin/matieres.service
 import { NiveauxService } from '../../../../services/api/admin/niveaux.service';
 import { LanguesService } from '../../../../services/api/admin/langues.service';
 import { Livre } from '../../../../api/model/livre';
+import { ToastService } from '../../../../shared/ui/toast/toast.service';
+import { ConfirmService } from '../../../../shared/ui/confirm/confirm.service';
 import { Matiere } from '../../../../api/model/matiere';
 import { Niveau } from '../../../../api/model/niveau';
 import { Langue } from '../../../../api/model/langue'; // NOUVEAU MODÈLE
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-livre-form',
@@ -32,13 +35,8 @@ export class LivreForm {
   matieres: Matiere[] = [];
   niveaux: Niveau[] = [];
   langues: Langue[] = []; // MAINTENANT chargé depuis l'API
-  annees = [
-    { value: '2024', label: '2024' },
-    { value: '2023', label: '2023' },
-    { value: '2022', label: '2022' },
-    { value: '2021', label: '2021' },
-    { value: '2020', label: '2020' }
-  ];
+  annees: number[] = [];
+  currentYear = new Date().getFullYear();
 
   constructor(
     private fb: FormBuilder,
@@ -47,12 +45,17 @@ export class LivreForm {
     private livresService: LivresService,
     private matieresService: MatieresService,
     private niveauxService: NiveauxService,
-    private languesService: LanguesService // NOUVEAU SERVICE INJECTÉ
+    private languesService: LanguesService,
+    private toast: ToastService, // NOUVEAU SERVICE INJECTÉ
+    private confirm: ConfirmService
   ) {
     this.livreForm = this.createForm();
   }
 
   ngOnInit(): void {
+    // Générer une liste d'années dynamiquement (ex: 1970 -> année courante)
+    const start = 1970;
+    this.annees = Array.from({ length: this.currentYear - start + 1 }, (_, i) => this.currentYear - i);
     this.loadReferenceData();
     this.checkEditMode();
   }
@@ -130,7 +133,7 @@ export class LivreForm {
       error: (err) => {
         console.error('Erreur chargement livre:', err);
         this.loading = false;
-        alert('Erreur lors du chargement du livre');
+        this.toast.error('Erreur lors du chargement du livre');
       }
     });
   }
@@ -151,7 +154,7 @@ export class LivreForm {
       interactif: [false],
       telechargementHorsLigne: [false],
       motsCles: [''],
-      anneePublication: ['2024']
+      anneePublication: [String(this.currentYear), [Validators.required, Validators.pattern(/^(19|20)\d{2}$/)]]
     });
   }
 
@@ -193,11 +196,17 @@ export class LivreForm {
   }
 
   onRetour(): void {
-    this.router.navigate(['/admin/livreList']);
+    this.router.navigate(['/admin/livrelist']);
   }
 
   onAnnuler(): void {
-    if (confirm('Voulez-vous vraiment annuler ? Toutes les modifications seront perdues.')) {
+    this.confirm.confirm({
+      title: 'Annuler',
+      message: 'Voulez-vous vraiment annuler ? Toutes les modifications seront perdues.',
+      confirmText: 'Annuler',
+      cancelText: 'Continuer'
+    }).then((ok) => {
+      if (!ok) return;
       if (this.isEditMode && this.livreId) {
         this.loadLivreData(this.livreId);
       } else {
@@ -209,7 +218,7 @@ export class LivreForm {
           telechargementHorsLigne: false
         });
       }
-    }
+    });
   }
 
   // Obtenir la langue par défaut (première langue de la liste)
@@ -219,25 +228,20 @@ export class LivreForm {
 
   // MÉTHODE : Créer le livre d'abord, puis uploader les fichiers
   private createLivreFirstThenUploadFiles(): void {
+    const fichierPrincipal = this.livreForm.get('fichierPrincipal')?.value as File | null;
+    const imageCouverture = this.livreForm.get('imageCouverture')?.value as File | null;
     const livreData = this.prepareFormData();
-    
-    if (this.isEditMode && this.livreId) {
-      // Mode édition
-      this.updateLivre(this.livreId, livreData).then((livre) => {
-        this.uploadFiles(livre.id!);
-      }).catch((err) => {
-        console.error('Erreur lors de la mise à jour du livre:', err);
-        this.isSubmitting = false;
-      });
-    } else {
-      // Mode création
-      this.createLivre(livreData).then((livre) => {
-        this.uploadFiles(livre.id!);
-      }).catch((err) => {
-        console.error('Erreur lors de la création du livre:', err);
-        this.isSubmitting = false;
-      });
+
+    if (!this.isEditMode) {
+      this.createLivre(livreData, fichierPrincipal!, imageCouverture!)
+        .then(() => this.confirmRedirectToList('Le livre a été ajouté avec succès.'))
+        .catch((err) => this.displayBackendErrors(err));
+      return;
     }
+
+    this.updateLivre(this.livreId!, livreData, fichierPrincipal || undefined, imageCouverture || undefined)
+      .then(() => this.confirmRedirectToList('Le livre a été mis à jour avec succès.'))
+      .catch((err) => this.displayBackendErrors(err));
   }
 
   // MÉTHODE : Uploader les fichiers après création du livre
@@ -248,27 +252,25 @@ export class LivreForm {
     const uploadPromises = [];
 
     if (fichierPrincipal instanceof File) {
-      uploadPromises.push(this.livresService.uploadFichier(livreId, fichierPrincipal).toPromise());
+      uploadPromises.push(firstValueFrom(this.livresService.uploadFichier(livreId, fichierPrincipal)));
     }
 
     if (imageCouverture instanceof File) {
-      uploadPromises.push(this.livresService.uploadImage(livreId, imageCouverture).toPromise());
+      uploadPromises.push(firstValueFrom(this.livresService.uploadImage(livreId, imageCouverture)));
     }
 
     if (uploadPromises.length > 0) {
       Promise.all(uploadPromises)
         .then(() => {
-          alert('Livre et fichiers uploadés avec succès !');
-          this.router.navigate(['/admin/livreList']);
+          this.confirmRedirectToList('Le livre a été ajouté avec succès.');
         })
         .catch((err) => {
           console.error('Erreur upload fichiers:', err);
-          alert('Livre créé mais erreur lors de l\'upload des fichiers');
-          this.router.navigate(['/admin/livreList']);
+          this.toast.error("Livre créé mais erreur lors de l'upload des fichiers");
+          // Rester sur place pour permettre une nouvelle tentative ou retour manuel
         });
     } else {
-      alert('Livre créé avec succès !');
-      this.router.navigate(['/admin/livreList']);
+      this.confirmRedirectToList('Le livre a été ajouté avec succès.');
     }
   }
 
@@ -279,23 +281,37 @@ export class LivreForm {
     if (this.livreForm.valid && !this.isSubmitting) {
       this.isSubmitting = true;
       
-      const hasFiles = this.livreForm.get('fichierPrincipal')?.value || 
-                       this.livreForm.get('imageCouverture')?.value;
+      const fichier = this.livreForm.get('fichierPrincipal')?.value;
+      const image = this.livreForm.get('imageCouverture')?.value;
+      const hasFiles = fichier || image;
 
-      if (hasFiles) {
-        // APPROCHE 1: Créer d'abord le livre, puis uploader les fichiers
-        this.createLivreFirstThenUploadFiles();
-      } else {
-        // APPROCHE 2: Utiliser JSON standard sans fichiers
-        const livreData = this.prepareFormData();
-        if (this.isEditMode && this.livreId) {
-          this.updateLivre(this.livreId, livreData);
-        } else {
-          this.createLivre(livreData);
+      // CRÉATION: fichier principal ET image requis
+      if (!this.isEditMode) {
+        if (!(fichier instanceof File) || !(image instanceof File)) {
+          this.isSubmitting = false;
+          this.toast.error("Le fichier principal (PDF/EPUB) et l'image de couverture sont obligatoires pour créer un livre.");
+          return;
         }
+        // Créer puis uploader
+        this.createLivreFirstThenUploadFiles();
+        return;
+      }
+
+      // MISE À JOUR: fichiers optionnels, on accepte la mise à jour des métadonnées seule
+      if (hasFiles) {
+        this.createLivreFirstThenUploadFiles();
+        return;
+      }
+
+      // Mise à jour sans fichiers
+      const livreData = this.prepareFormData();
+      if (this.isEditMode && this.livreId) {
+        this.updateLivre(this.livreId, livreData)
+          .then(() => this.confirmRedirectToList('Le livre a été mis à jour avec succès.'))
+          .catch((err) => this.displayBackendErrors(err));
       }
     } else {
-      alert('Veuillez corriger les erreurs dans le formulaire.');
+      this.toast.warning('Veuillez corriger les erreurs dans le formulaire.');
     }
   }
 
@@ -306,65 +322,75 @@ export class LivreForm {
     const langueId = +formValue.langue;
     const langueSelectionnee = this.langues.find(l => l.id === langueId);
     
-    console.log('Données préparées:', {
+    console.log('Données préparées (DTO):', {
       titre: formValue.titre,
-      langueSelectionnee: langueSelectionnee,
-      langueId: langueId
+      langueId: langueId,
+      matiereId: +formValue.matiere,
+      niveauId: +formValue.niveau,
+      anneePublication: +formValue.anneePublication
     });
     
+    // Adapter aux champs attendus par le DTO backend (LivreRequest)
     return {
       titre: formValue.titre,
       auteur: formValue.auteur,
       isbn: formValue.isbn,
       editeur: formValue.editeur,
       description: formValue.description,
-      matiere: { id: +formValue.matiere },
-      niveau: { id: +formValue.niveau },
-      langue: langueSelectionnee || { id: langueId }, // Envoyer l'objet langue complet ou au moins l'ID
       anneePublication: +formValue.anneePublication,
       lectureAuto: formValue.lectureAuto,
       interactif: formValue.interactif,
+      // Champs d'association sous forme d'IDs (flat)
+      matiereId: +formValue.matiere,
+      niveauId: +formValue.niveau,
+      langueId: langueSelectionnee?.id ?? langueId,
+      // Facultatifs dans le DTO, non gérés par le formulaire pour l'instant
+      // totalPages, imageCouverture, classeId seront ignorés s'ils ne sont pas fournis
     };
   }
 
-  // Modifier createLivre et updateLivre pour retourner des Promises
-  createLivre(livreData: any): Promise<Livre> {
-    return new Promise((resolve, reject) => {
-      console.log('Création livre avec données:', livreData);
-      this.livresService.create(livreData).subscribe({
-        next: (livre: Livre) => {
-          console.log('Livre créé:', livre);
-          this.isSubmitting = false;
-          resolve(livre);
-        },
-        error: (err) => {
-          console.error('Erreur création livre:', err);
-          this.isSubmitting = false;
-          alert('Erreur lors de la création du livre');
-          reject(err);
-        }
-      });
-    });
-  }
+// Modifier createLivre pour gérer multipart/form-data et retourner une Promise
+createLivre(livreData: any, document: File, image?: File): Promise<Livre> {
+  return new Promise((resolve, reject) => {
+    console.log('Création livre avec données:', livreData);
 
-  updateLivre(id: number, livreData: any): Promise<Livre> {
-    return new Promise((resolve, reject) => {
-      console.log('Mise à jour livre avec données:', livreData);
-      this.livresService.update(id, livreData).subscribe({
-        next: (livre: Livre) => {
-          console.log('Livre mis à jour:', livre);
-          this.isSubmitting = false;
-          resolve(livre);
-        },
-        error: (err) => {
-          console.error('Erreur mise à jour livre:', err);
-          this.isSubmitting = false;
-          alert('Erreur lors de la mise à jour du livre');
-          reject(err);
-        }
-      });
+    this.livresService.create(livreData, document, image).subscribe({
+      next: (livre: Livre) => {
+        console.log('Livre créé:', livre);
+        this.isSubmitting = false;
+        resolve(livre);
+      },
+      error: (err) => {
+        console.error('Erreur création livre:', err);
+        this.isSubmitting = false;
+        this.displayBackendErrors(err);
+        reject(err);
+      }
     });
-  }
+  });
+}
+
+
+ updateLivre(id: number, livreData: any, document?: File, image?: File): Promise<Livre> {
+  return new Promise((resolve, reject) => {
+    console.log('Mise à jour livre avec données:', livreData);
+
+    this.livresService.updateWithFiles(id, livreData, document, image).subscribe({
+      next: (livre: Livre) => {
+        console.log('Livre mis à jour:', livre);
+        this.isSubmitting = false;
+        resolve(livre);
+      },
+      error: (err) => {
+        console.error('Erreur mise à jour livre:', err);
+        this.isSubmitting = false;
+        this.displayBackendErrors(err);
+        reject(err);
+      }
+    });
+  });
+}
+
 
   onFileSelected(event: any, type: 'file' | 'image'): void {
     const file = event.target.files[0];
@@ -372,7 +398,7 @@ export class LivreForm {
       const maxSize = type === 'file' ? 50 * 1024 * 1024 : 10 * 1024 * 1024;
       
       if (file.size > maxSize) {
-        alert(`Le fichier est trop volumineux. Taille max: ${type === 'file' ? '50MB' : '10MB'}`);
+        this.toast.warning(`Le fichier est trop volumineux. Taille max: ${type === 'file' ? '50MB' : '10MB'}`);
         return;
       }
 
@@ -440,5 +466,41 @@ export class LivreForm {
       const control = formGroup.get(key);
       control?.markAsTouched();
     });
+  }
+
+  private confirmRedirectToList(message: string) {
+    this.confirm
+      .confirm({
+        title: 'Livre créé',
+        message,
+        confirmText: 'Aller à la liste',
+        cancelText: 'Rester ici'
+      })
+      .then((ok) => {
+        if (ok) {
+          this.router.navigate(['/admin/livrelist']);
+        }
+      });
+  }
+
+  private displayBackendErrors(err: any) {
+    const errors: string[] = [];
+    const e = err?.error;
+    if (e) {
+      if (Array.isArray(e.errors)) {
+        e.errors.forEach((it: any) => {
+          const msg = it?.message || it?.defaultMessage || it?.error || JSON.stringify(it);
+          if (msg) errors.push(msg);
+        });
+      }
+      if (typeof e.message === 'string') {
+        errors.push(e.message);
+      }
+    }
+    if (errors.length === 0) {
+      errors.push('Une erreur est survenue lors du traitement de votre demande.');
+    }
+    // Afficher chaque erreur
+    errors.slice(0, 5).forEach(m => this.toast.error(m));
   }
 }

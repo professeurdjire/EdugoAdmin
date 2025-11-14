@@ -5,6 +5,10 @@ import { Router, RouterLink } from '@angular/router';
 import { LivresService } from '../../../../services/api/admin/livres.service';
 import { Livre } from '../../../../api/model/livre';
 import { AuthService } from '../../../../services/api/auth.service';
+import { ConfirmService } from '../../../../shared/ui/confirm/confirm.service';
+import { ToastService } from '../../../../shared/ui/toast/toast.service';
+import { FaIconComponent } from '@fortawesome/angular-fontawesome';
+import { faEye, faPen, faTrash, faFilter, faRedoAlt } from '@fortawesome/free-solid-svg-icons';
 
 interface LivreDisplay {
   id: number;
@@ -18,11 +22,16 @@ interface LivreDisplay {
 @Component({
   selector: 'app-livre-list',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink],
+  imports: [CommonModule, FormsModule, RouterLink, FaIconComponent],
   templateUrl: './livre-list.html',
   styleUrls: ['./livre-list.css']
 })
 export class LivreList implements OnInit {
+  faEye = faEye;
+  faPen = faPen;
+  faTrash = faTrash;
+  faFilter = faFilter;
+  faRedoAlt = faRedoAlt;
   livres: LivreDisplay[] = [];
   filteredLivres: LivreDisplay[] = [];
   pagedLivres: LivreDisplay[] = [];
@@ -42,7 +51,9 @@ export class LivreList implements OnInit {
   constructor(
     private livresService: LivresService,
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private confirm: ConfirmService,
+    private toast: ToastService
   ) {}
 
   ngOnInit(): void {
@@ -161,20 +172,28 @@ export class LivreList implements OnInit {
   }
 
   deleteLivre(livre: LivreDisplay) {
-    if (confirm('Êtes-vous sûr de vouloir supprimer ce livre ?')) {
-      this.livresService.delete(livre.id).subscribe({
-        next: () => {
-          // Remove from lists
-          this.livres = this.livres.filter(l => l.id !== livre.id);
-          this.filteredLivres = this.filteredLivres.filter(l => l.id !== livre.id);
-          this.totalFiltered = this.filteredLivres.length;
-          this.updatePagination();
-        },
-        error: (err) => {
-          console.error('Error deleting livre:', err);
-          alert('Erreur lors de la suppression du livre');
-        }
+    this.confirm
+      .confirm({
+        title: 'Supprimer le livre',
+        message: 'Êtes-vous sûr de vouloir supprimer ce livre ? Cette action est irréversible.',
+        confirmText: 'Supprimer',
+        cancelText: 'Annuler'
+      })
+      .then((ok) => {
+        if (!ok) return;
+        this.livresService.delete(livre.id).subscribe({
+          next: () => {
+            this.livres = this.livres.filter(l => l.id !== livre.id);
+            this.filteredLivres = this.filteredLivres.filter(l => l.id !== livre.id);
+            this.totalFiltered = this.filteredLivres.length;
+            this.updatePagination();
+            this.toast.success('Livre supprimé avec succès');
+          },
+          error: (err) => {
+            console.error('Error deleting livre:', err);
+            this.toast.error('Erreur lors de la suppression du livre');
+          }
+        });
       });
-    }
   }
 }

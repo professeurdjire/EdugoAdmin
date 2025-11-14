@@ -1,7 +1,7 @@
 <div class="users-page-container">
   <div class="page-header">
     <h1 class="page-title">Exercices</h1>
-    <a routerLink="/admin/ajouterexercice" class="add-btn">Ajouter un exercice</a>
+    <a routerLink="/admin/ajouterexercice" class="btn-add"><i class="fa-solid fa-plus"></i>&nbsp;Ajouter un exercice</a>
   </div>
 
   <!-- Message d'erreur -->
@@ -31,9 +31,15 @@
       </select>
     </div>
     <div class="action-buttons">
-      <button class="filter-btn" (click)="applyFilters()">Filtrer</button>
-      <button class="reset-btn" (click)="resetFilters()">Réinitialiser</button>
-    </div>
+        <button class="filter-btn" (click)="applyFilters()">
+          <fa-icon [icon]="faFilter"></fa-icon>
+          Filtrer
+        </button>
+        <button class="reset-btn" (click)="resetFilters()">
+          <fa-icon [icon]="faRedoAlt"></fa-icon>
+          Réinitialiser
+        </button>
+      </div>
   </section>
 
   <div class="table-header-info" *ngIf="!loading && !error">
@@ -71,9 +77,15 @@
             <td>{{ exercice.matiere }}</td>
             <td>{{ exercice.dateCreation }}</td>
             <td class="actions-cell">
-              <button class="btn-action-icon btn-view" (click)="viewExercice(exercice)"><span class="icon">👁️</span></button>
-              <button class="btn-action-icon btn-edit" (click)="editExercice(exercice)"><span class="icon">✏️</span></button>
-              <button class="btn-action-icon btn-delete" (click)="deleteExercice(exercice)"><span class="icon">🗑️</span></button>
+              <span class="action-btn view-btn" (click)="viewExercice(exercice)">
+                <fa-icon [icon]="faEye"></fa-icon>
+              </span>
+              <span class="action-btn edit-btn" (click)="editExercice(exercice)">
+                <fa-icon [icon]="faPen"></fa-icon>
+              </span>
+              <span class="action-btn delete-btn" (click)="deleteExercice(exercice)">
+                <fa-icon [icon]="faTrash"></fa-icon>
+              </span>
             </td>
           </tr>
         </tbody>

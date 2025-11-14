@@ -4,6 +4,12 @@ import { FormsModule } from '@angular/forms';
 import { RouterLink, Router } from '@angular/router';
 import { QuizzesService } from '../../../../api/api/quizzes.service';
 import { Quiz as ApiQuiz } from '../../../../api/model/quiz';
+import { ToastService } from '../../../../shared/ui/toast/toast.service';
+import { ConfirmService } from '../../../../shared/ui/confirm/confirm.service';
+import { QuestionsService, CreateQuestionRequest } from '../../../../services/api/questions.service';
+import { forkJoin } from 'rxjs';
+import { LivresService } from '../../../../services/api/admin/livres.service';
+import { Livre } from '../../../../api/model/livre';
 
 interface Reponse {
   lettre: string;
@@ -67,13 +73,13 @@ export class QuizForm {
   };
 
   typesQuestions = [
-    { value: 'choix_multiple', icon: '📝', label: 'Choix multiple' },
-    { value: 'multi_reponse', icon: '✅', label: 'Multi-réponse' },
-    { value: 'vrai_faux', icon: '✔️', label: 'Vrai / Faux' },
-    { value: 'reponse_courte', icon: '✍️', label: 'Réponse courte' },
-    { value: 'reponse_longue', icon: '🧾', label: 'Réponse longue' },
-    { value: 'appariement', icon: '🔗', label: 'Appariement' },
-    { value: 'ordre', icon: '🔢', label: 'Ordre' }
+    { value: 'choix_multiple', icon: '', label: 'Choix multiple' },
+    { value: 'multi_reponse', icon: '', label: 'Multi-rponse' },
+    { value: 'vrai_faux', icon: '', label: 'Vrai / Faux' },
+    { value: 'reponse_courte', icon: '', label: 'Rponse courte' },
+    { value: 'reponse_longue', icon: '', label: 'Rponse longue' },
+    { value: 'appariement', icon: '', label: 'Appariement' },
+    { value: 'ordre', icon: '', label: 'Ordre' }
   ];
 
   niveauxDifficulte = [
@@ -83,20 +89,62 @@ export class QuizForm {
   ];
 
   isLoading = false;
+  loadingTypes = false;
+  backendTypes: Array<{ id: number; libelle: string }> = [];
+  livres: Livre[] = [];
+  selectedLivreId: number | null = null;
 
   constructor(
     private quizzesService: QuizzesService,
-    private router: Router
+    private router: Router,
+    private toast: ToastService,
+    private confirm: ConfirmService,
+    private questionsService: QuestionsService,
+    private livresService: LivresService
   ) {}
+
+  ngOnInit() {
+    this.loadingTypes = true;
+    this.questionsService.getTypes().subscribe({
+      next: (types) => {
+        this.backendTypes = types || [];
+        this.loadingTypes = false;
+      },
+      error: () => {
+        this.loadingTypes = false;
+        this.toast.error('Impossible de charger les types de questions');
+      }
+    });
+
+    // Charger les livres depuis le backend pour le select
+    this.livresService.list().subscribe({
+      next: (data) => {
+        this.livres = data || [];
+        if (this.livres.length > 0) {
+          this.selectedLivreId = this.livres[0].id || null;
+        }
+      },
+      error: () => {
+        this.toast.error('Impossible de charger la liste des livres');
+      }
+    });
+  }
 
   onRetour() {
     history.back();
   }
 
   onAnnuler() {
-    if (confirm('Voulez-vous vraiment annuler ? Toutes les modifications seront perdues.')) {
-      this.resetQuiz();
-    }
+    this.confirm
+      .confirm({
+        title: 'Annuler',
+        message: 'Voulez-vous vraiment annuler ? Toutes les modifications seront perdues.',
+        confirmText: 'Annuler',
+        cancelText: 'Continuer'
+      })
+      .then((ok) => {
+        if (ok) this.resetQuiz();
+      });
   }
 
   resetQuiz() {
@@ -263,7 +311,7 @@ export class QuizForm {
 
   estFormulaireValide(): boolean {
     if (!this.quiz.titre || this.quiz.titre.trim() === '') return false;
-    if (!this.quiz.livreAssocie || this.quiz.livreAssocie.trim() === '') return false;
+    if (!this.selectedLivreId) return false;
     if (!this.quiz.questions || this.quiz.questions.length === 0) return false;
     
     // Validation des questions
@@ -272,35 +320,46 @@ export class QuizForm {
       if (!q.points || q.points < 1) return false;
       
       // Validation selon le type de question
-      switch (q.type) {
-        case 'choix_multiple':
-        case 'multi_reponse':
-        case 'vrai_faux':
-        case 'ordre':
-          return q.reponses && q.reponses.length >= 2 && 
-                 q.reponses.some(r => r.correcte) &&
-                 q.reponses.every(r => r.texte.trim() !== '');
-        
-        case 'reponse_courte':
-        case 'reponse_longue':
-          return q.bonneReponse && q.bonneReponse.trim() !== '';
-        
-        case 'appariement':
-          return q.pairesAppariement && q.pairesAppariement.length >= 2 &&
-                 q.pairesAppariement.every(p => 
-                   p.elementGauche.trim() !== '' && p.elementDroit.trim() !== ''
-                 );
-        
-        default:
-          return true;
-      }
+      return this.validateQuestionBySpec(q);
     });
+  }
+
+  private validateQuestionBySpec(q: Question): boolean {
+    const type = this.mapFrontTypeToApi(q.type);
+    if (type === 'QCU') {
+      return !!q.reponses && q.reponses.length >= 2 && q.reponses.filter(r => !!r.correcte).length === 1 && q.reponses.every(r => r.texte.trim() !== '');
+    }
+    if (type === 'QCM') {
+      return !!q.reponses && q.reponses.length >= 2 && q.reponses.filter(r => !!r.correcte).length >= 1 && q.reponses.every(r => r.texte.trim() !== '');
+    }
+    if (type === 'VRAI_FAUX') {
+      return !!q.reponses && q.reponses.length === 2 && q.reponses.filter(r => !!r.correcte).length === 1;
+    }
+    if (type === 'APPARIEMENT') {
+      return !!q.pairesAppariement && q.pairesAppariement.length >= 2 && q.pairesAppariement.every(p => p.elementGauche.trim() !== '' && p.elementDroit.trim() !== '');
+    }
+    return true;
+  }
+
+  private mapFrontTypeToApi(front: string): 'QCU' | 'QCM' | 'VRAI_FAUX' | 'APPARIEMENT' {
+    switch (front) {
+      case 'choix_multiple':
+        return 'QCU';
+      case 'multi_reponse':
+        return 'QCM';
+      case 'vrai_faux':
+        return 'VRAI_FAUX';
+      case 'appariement':
+        return 'APPARIEMENT';
+      default:
+        return 'QCU';
+    }
   }
 
   // Enregistrement du quiz
   onEnregistrerQuiz() {
     if (!this.estFormulaireValide()) {
-      alert('Veuillez remplir tous les champs obligatoires et vérifier que chaque question est correctement configurée.');
+      this.toast.warning('Veuillez remplir tous les champs obligatoires et vrifier les questions.');
       return;
     }
 
@@ -312,7 +371,10 @@ export class QuizForm {
       description: this.quiz.description,
       duree: this.quiz.duree,
       difficulte: this.quiz.difficulte,
-      livreAssocie: this.quiz.livreAssocie,
+      // ID du livre requis par le backend
+      livreId: this.selectedLivreId!,
+      // Optionnel: nom du livre pour affichage côté front/back si toléré
+      livreAssocie: (this.livres.find(l => l.id === this.selectedLivreId)?.titre) || this.quiz.livreAssocie,
       statut: ApiQuiz.StatutEnum.Brouillon,
       nombreQuestions: this.quiz.questions.length,
       questions: this.quiz.questions.map(q => ({
@@ -326,17 +388,56 @@ export class QuizForm {
       }))
     };
 
-    this.quizzesService.createQuiz(payload).subscribe({
+    this.quizzesService.createQuiz(payload as any).subscribe({
       next: (res) => {
-        this.isLoading = false;
-        console.log('Quiz créé avec succès:', res);
-        alert('Quiz créé avec succès !');
-        this.router.navigate(['/admin/quizlist']);
+        const quizId = (res as any)?.id;
+        if (!quizId) {
+          this.isLoading = false;
+          this.toast.warning('Quiz créé mais identifiant introuvable pour créer les questions.');
+          this.router.navigate(['/admin/quizlist']);
+          return;
+        }
+
+        // Construire les payloads Questions pour POST /api/questions
+        const questionRequests: CreateQuestionRequest[] = this.quiz.questions.map(q => {
+          const apiType = this.mapFrontTypeToApi(q.type);
+
+          if (apiType === 'APPARIEMENT') {
+            const reponses = (q.pairesAppariement || []).map(p => ({ libelle: `${p.elementGauche} - ${p.elementDroit}`, estCorrecte: true }));
+            return { quizId, enonce: q.question, points: q.points || 1, type: apiType, reponses };
+          }
+
+          if (apiType === 'VRAI_FAUX') {
+            const reponses = [
+              { libelle: 'VRAI', estCorrecte: q.reponses?.find(r => r.texte.toUpperCase() === 'VRAI')?.correcte === true },
+              { libelle: 'FAUX', estCorrecte: q.reponses?.find(r => r.texte.toUpperCase() === 'FAUX')?.correcte === true }
+            ];
+            return { quizId, enonce: q.question, points: q.points || 1, type: apiType, reponses };
+          }
+
+          const reponses = (q.reponses || []).map(r => ({ libelle: r.texte, estCorrecte: !!r.correcte }));
+          return { quizId, enonce: q.question, points: q.points || 1, type: apiType, reponses };
+        });
+
+        // Appeler le POST pour chaque question
+        forkJoin(questionRequests.map(req => this.questionsService.createQuestion(req))).subscribe({
+          next: () => {
+            this.isLoading = false;
+            this.toast.success('Quiz et questions créés avec succès !');
+            this.router.navigate(['/admin/quizlist']);
+          },
+          error: (err) => {
+            this.isLoading = false;
+            console.error('Erreur lors de la création des questions:', err);
+            this.toast.error('Quiz créé mais erreur lors de la création des questions');
+            this.router.navigate(['/admin/quizlist']);
+          }
+        });
       },
       error: (err) => {
         this.isLoading = false;
-        console.error('Erreur lors de la création du quiz:', err);
-        alert('Erreur lors de la création du quiz. Veuillez réessayer.');
+        console.error('Erreur lors de la cration du quiz:', err);
+        this.toast.error('Erreur lors de la cration du quiz. Veuillez ressayer.');
       }
     });
   }

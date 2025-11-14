@@ -37,12 +37,38 @@ export class LivresService {
       catchError(this.handleError)
     );
   }
+create(livre: Partial<Livre>, document: File, image?: File): Observable<Livre> {
+  const formData = new FormData();
 
-  create(payload: Partial<Livre>): Observable<Livre> { 
-    return this.http.post<Livre>(this.base, payload).pipe(
-      catchError(this.handleError)
-    );
+  // JSON du livre en tant que partie 'livre'
+  formData.append(
+    'livre',
+    new Blob([JSON.stringify(livre)], { type: 'application/json' })
+  );
+
+  // Fichier principal
+  formData.append('document', document);
+
+  // Image optionnelle
+  if (image) {
+    formData.append('image', image);
   }
+
+  // Angular gère automatiquement Content-Type multipart/form-data
+  return this.http.post<Livre>(this.base, formData).pipe(
+    catchError(this.handleError)
+  );
+}
+
+
+updateWithFiles(id: number, livreData: any, document?: File, image?: File): Observable<Livre> {
+  const formData = new FormData();
+  formData.append('livre', new Blob([JSON.stringify(livreData)], { type: 'application/json' }));
+  if (document) formData.append('document', document);
+  if (image) formData.append('image', image);
+  return this.http.put<Livre>(`${this.base}/${id}`, formData);
+}
+
 
   update(id: number, payload: Partial<Livre>): Observable<Livre> { 
     return this.http.put<Livre>(`${this.base}/${id}`, payload).pipe(

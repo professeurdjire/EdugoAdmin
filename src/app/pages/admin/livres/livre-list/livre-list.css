@@ -34,7 +34,6 @@ body, html {
 
 a {
   text-decoration: none;
-  color: inherit;
 }
 
 ul {
@@ -550,10 +549,8 @@ tbody tr:hover {
 }
 
 .book-author {
-  font-size: 0.7rem;
-  color: #808080;
-  margin: 0.125rem 0 0 0;
-  line-height: 1.2;
+  font-size: 0.65rem;
+  color: #000000;
 }
 
 /* Badges et status */

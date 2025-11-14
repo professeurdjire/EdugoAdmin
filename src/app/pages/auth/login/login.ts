@@ -3,7 +3,8 @@ import { FormBuilder, FormGroup, FormControl, FormsModule, ReactiveFormsModule, 
 import { Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../../../services/api/auth.service';
-import { NotificationService } from '../../../services/utils/notification.service';
+import { ToastService } from '../../../shared/ui/toast/toast.service';
+import { ToastContainer } from '../../../shared/ui/toast/toast-container';
 
 @Component({
   selector: 'app-login',
@@ -13,7 +14,8 @@ import { NotificationService } from '../../../services/utils/notification.servic
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
-    RouterModule
+    RouterModule,
+    ToastContainer
   ],
   styleUrls: ['./login.css']
 })
@@ -25,7 +27,7 @@ export class Login {
     private fb: FormBuilder,
     private auth: AuthService,
     private router: Router,
-    private notify: NotificationService
+    private toast: ToastService
   ) {
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
@@ -47,12 +49,12 @@ export class Login {
     const { email, password } = this.loginForm.value;
     this.auth.login(email, password).subscribe({
       next: () => {
-        this.notify.showSuccess('Connexion réussie');
+        this.toast.success('Connexion réussie');
         this.router.navigate(['/admin/dashboard']);
       },
       error: (err) => {
         const message = err?.error?.message || 'Échec de la connexion. Vérifiez vos identifiants.';
-        this.notify.showError(message);
+        this.toast.error(message);
         this.loading = false;
       },
       complete: () => { this.loading = false; }

@@ -680,6 +680,10 @@ tbody tr:hover {
 .actions-cell {
   text-align: center;
   white-space: nowrap;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
 }
 
 .action-icon-btn {
@@ -762,3 +766,189 @@ tbody tr:hover {
 }
 
 /* Responsive for brevity omitted */
+
+/* 🎯 STYLE GLOBAL POUR TOUS LES BOUTONS "AJOUTER" */
+.btn-add {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  /* couleurs primaires */
+  background: #A885D8;
+  color: #fff;
+
+  /* tailles */
+  min-width: 160px;
+  height: 40px;
+  padding: 10px 14px;
+  
+  /* arrondis + ombre */
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+
+  /* texte */
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+
+  /* animations */
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+
+  /* reset */
+  border: none;
+  cursor: pointer;
+  overflow: hidden;
+  gap: 8px;
+}
+
+/* effet hover */
+.btn-add:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* effet clic */
+.btn-add:active {
+  transform: scale(0.97);
+}
+
+/* === Global Back Button Styles === */
+.back-btn,
+.back-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.375rem;
+
+  height: 2rem;
+  padding: 0.35rem 0.6rem;
+
+  background-color: #a885d8;
+  color: #ffffff;
+
+  border: none;
+  border-radius: 6px;
+
+  font-size: 0.78rem;
+  font-weight: 600;
+
+  cursor: pointer;
+  text-decoration: none;
+
+  transition: all 0.2s ease;
+}
+
+/* Variante lorsqu'il est dans un header de formulaire */
+.form-header .back-btn,
+.form-header .back-button {
+  margin-left: auto;
+  flex: 0 0 auto;
+  position: relative;
+  z-index: 2;
+  margin-bottom: 0.75rem;
+}
+
+/* Effet hover */
+.back-btn:hover,
+.back-button:hover {
+  background-color: #7c4dff;
+}
+
+/* === Global Filter/Reset Buttons === */
+.filter-btn,
+.reset-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+
+  height: 34px;
+  padding: 0 12px;
+  min-width: 110px;
+
+  background: #A885D8;
+  color: #ffffff;
+
+  border: none;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+
+  cursor: pointer;
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+
+.filter-btn:hover,
+.reset-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.12);
+}
+
+.filter-btn:active,
+.reset-btn:active {
+  transform: scale(0.98);
+}
+
+/* Ensure icons inside keep spacing */
+.filter-btn .fa,
+.filter-btn .fa-solid,
+  .filter-btn fa-icon,
+  .reset-btn .fa,
+  .reset-btn .fa-solid,
+  .reset-btn fa-icon {
+    margin-right: 6px;
+  }
+
+/* === Scoped Action Icon Buttons (View/Edit/Delete) — avoid overriding dashboard quick actions === */
+.actions-cell .action-btn,
+.users-table-section .action-btn,
+.table-section .action-btn {
+  width: 28px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: 0.2s ease-in-out;
+  font-size: 12px;
+}
+
+.actions-cell .view-btn,
+.users-table-section .view-btn,
+.table-section .view-btn {
+  background: rgba(25, 90, 157, 0.15);
+  color: rgb(25, 90, 157);
+}
+.actions-cell .view-btn:hover,
+.users-table-section .view-btn:hover,
+.table-section .view-btn:hover {
+  background: rgba(25, 90, 157, 0.2);
+}
+
+.actions-cell .edit-btn,
+.users-table-section .edit-btn,
+.table-section .edit-btn {
+  background: rgba(168, 133, 216, 0.15);
+  color: rgb(168, 133, 216);
+}
+.actions-cell .edit-btn:hover,
+.users-table-section .edit-btn:hover,
+.table-section .edit-btn:hover {
+  background: rgba(168, 133, 216, 0.25);
+}
+
+.actions-cell .delete-btn,
+.users-table-section .delete-btn,
+.table-section .delete-btn {
+  background: rgba(255, 0, 0, 0.15);
+  color: rgb(180, 0, 0);
+}
+.actions-cell .delete-btn:hover,
+.users-table-section .delete-btn:hover,
+.table-section .delete-btn:hover {
+  background: rgba(255, 0, 0, 0.25);
+}

@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { ToastService } from '../../../shared/ui/toast/toast.service';
 import { Router, RouterOutlet } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 
@@ -12,7 +13,7 @@ import { FormsModule } from '@angular/forms';
 export class NotFound {
   searchQuery: string = '';
 
-  constructor(private router: Router) {}
+  constructor(private router: Router, private toast: ToastService) {}
 
   goBack(): void {
     window.history.back();
@@ -23,14 +24,12 @@ export class NotFound {
   }
 
   contactSupport(): void {
-    // In a real application, this would open a contact form or email client
-    alert('Veuillez contacter le support à support@edugo.ml');
+    this.toast.info('Veuillez contacter le support à support@edugo.ml');
   }
 
   onSearch(): void {
     if (this.searchQuery.trim()) {
-      // In a real application, this would perform a search
-      alert(`Recherche pour: ${this.searchQuery}`);
+      this.toast.info(`Recherche pour: ${this.searchQuery}`);
       this.searchQuery = '';
     }
   }

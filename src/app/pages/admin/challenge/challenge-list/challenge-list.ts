@@ -2,9 +2,13 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
+import { FaIconComponent } from '@fortawesome/angular-fontawesome';
+import { faEye, faPen, faTrash, faFilter, faRedoAlt } from '@fortawesome/free-solid-svg-icons';
 import { ChallengesService } from '../../../../services/api/admin/challenges.service';
 import { Challenge } from '../../../../api/model/challenge';
 import { AuthService } from '../../../../services/api/auth.service';
+import { ConfirmService } from '../../../../shared/ui/confirm/confirm.service';
+import { ToastService } from '../../../../shared/ui/toast/toast.service';
 
 interface ChallengeDisplay {
   id: number;
@@ -18,11 +22,16 @@ interface ChallengeDisplay {
 @Component({
   selector: 'app-challenge-list',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink],
+  imports: [CommonModule, FormsModule, RouterLink, FaIconComponent],
   templateUrl: './challenge-list.html',
   styleUrls: ['./challenge-list.css']
 })
 export class ChallengeList implements OnInit {
+  faEye = faEye;
+  faPen = faPen;
+  faTrash = faTrash;
+  faFilter = faFilter;
+  faRedoAlt = faRedoAlt;
   challenges: ChallengeDisplay[] = [];
   filteredChallenges: ChallengeDisplay[] = [];
   pagedChallenges: ChallengeDisplay[] = [];
@@ -42,7 +51,9 @@ export class ChallengeList implements OnInit {
   constructor(
     private challengesService: ChallengesService,
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private confirm: ConfirmService,
+    private toast: ToastService
   ) {}
 
   ngOnInit(): void {
@@ -152,7 +163,7 @@ export class ChallengeList implements OnInit {
   // Actions
   viewChallenge(challenge: ChallengeDisplay) {
     // Navigate to challenge details page
-    this.router.navigate(['/admin/challengedetails', challenge.id]);
+    this.router.navigate(['/admin/challengeDetails', challenge.id]);
   }
 
   editChallenge(challenge: ChallengeDisplay) {
@@ -161,20 +172,28 @@ export class ChallengeList implements OnInit {
   }
 
   deleteChallenge(challenge: ChallengeDisplay) {
-    if (confirm('Êtes-vous sûr de vouloir supprimer ce challenge ?')) {
-      this.challengesService.delete(challenge.id).subscribe({
-        next: () => {
-          // Remove from lists
-          this.challenges = this.challenges.filter(c => c.id !== challenge.id);
-          this.filteredChallenges = this.filteredChallenges.filter(c => c.id !== challenge.id);
-          this.totalFiltered = this.filteredChallenges.length;
-          this.updatePagination();
-        },
-        error: (err) => {
-          console.error('Error deleting challenge:', err);
-          alert('Erreur lors de la suppression du challenge');
-        }
+    this.confirm
+      .confirm({
+        title: 'Supprimer le challenge',
+        message: 'Êtes-vous sûr de vouloir supprimer ce challenge ? Cette action est irréversible.',
+        confirmText: 'Supprimer',
+        cancelText: 'Annuler'
+      })
+      .then((ok) => {
+        if (!ok) return;
+        this.challengesService.delete(challenge.id).subscribe({
+          next: () => {
+            this.challenges = this.challenges.filter(c => c.id !== challenge.id);
+            this.filteredChallenges = this.filteredChallenges.filter(c => c.id !== challenge.id);
+            this.totalFiltered = this.filteredChallenges.length;
+            this.updatePagination();
+            this.toast.success('Challenge supprimé avec succès');
+          },
+          error: (err) => {
+            console.error('Error deleting challenge:', err);
+            this.toast.error('Erreur lors de la suppression du challenge');
+          }
+        });
       });
-    }
   }
 }

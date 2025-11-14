@@ -5,6 +5,10 @@ import { Router, RouterLink } from '@angular/router';
 import { DefisService } from '../../../../services/api/admin/defis.service';
 import { Defi } from '../../../../api/model/defi';
 import { AuthService } from '../../../../services/api/auth.service';
+import { ConfirmService } from '../../../../shared/ui/confirm/confirm.service';
+import { ToastService } from '../../../../shared/ui/toast/toast.service';
+import { FaIconComponent } from '@fortawesome/angular-fontawesome';
+import { faFilter, faRedoAlt, faEye, faPen, faTrash } from '@fortawesome/free-solid-svg-icons';
 
 interface DefiDisplay {
   id: number;
@@ -18,11 +22,16 @@ interface DefiDisplay {
 @Component({
   selector: 'app-defi-list',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink],
+  imports: [CommonModule, FormsModule, RouterLink, FaIconComponent],
   templateUrl: './defi-list.html',
   styleUrls: ['./defi-list.css']
 })
 export class DefiList implements OnInit {
+  faFilter = faFilter;
+  faRedoAlt = faRedoAlt;
+  faEye = faEye;
+  faPen = faPen;
+  faTrash = faTrash;
   defis: DefiDisplay[] = [];
   filteredDefis: DefiDisplay[] = [];
   pagedDefis: DefiDisplay[] = [];
@@ -42,7 +51,9 @@ export class DefiList implements OnInit {
   constructor(
     private defisService: DefisService,
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private confirm: ConfirmService,
+    private toast: ToastService
   ) {}
 
   ngOnInit(): void {
@@ -152,7 +163,7 @@ export class DefiList implements OnInit {
   // Actions
   viewDefi(defi: DefiDisplay) {
     // Navigate to defi details page
-    this.router.navigate(['/admin/defidetails', defi.id]);
+    this.router.navigate(['/admin/defiDetails', defi.id]);
   }
 
   editDefi(defi: DefiDisplay) {
@@ -161,20 +172,28 @@ export class DefiList implements OnInit {
   }
 
   deleteDefi(defi: DefiDisplay) {
-    if (confirm('Êtes-vous sûr de vouloir supprimer ce défi ?')) {
-      this.defisService.delete(defi.id).subscribe({
-        next: () => {
-          // Remove from lists
-          this.defis = this.defis.filter(d => d.id !== defi.id);
-          this.filteredDefis = this.filteredDefis.filter(d => d.id !== defi.id);
-          this.totalFiltered = this.filteredDefis.length;
-          this.updatePagination();
-        },
-        error: (err) => {
-          console.error('Error deleting defi:', err);
-          alert('Erreur lors de la suppression du défi');
-        }
+    this.confirm
+      .confirm({
+        title: 'Supprimer le défi',
+        message: 'Êtes-vous sûr de vouloir supprimer ce défi ? Cette action est irréversible.',
+        confirmText: 'Supprimer',
+        cancelText: 'Annuler'
+      })
+      .then((ok) => {
+        if (!ok) return;
+        this.defisService.delete(defi.id).subscribe({
+          next: () => {
+            this.defis = this.defis.filter(d => d.id !== defi.id);
+            this.filteredDefis = this.filteredDefis.filter(d => d.id !== defi.id);
+            this.totalFiltered = this.filteredDefis.length;
+            this.updatePagination();
+            this.toast.success('Défi supprimé avec succès');
+          },
+          error: (err) => {
+            console.error('Error deleting defi:', err);
+            this.toast.error('Erreur lors de la suppression du défi');
+          }
+        });
       });
-    }
   }
 }

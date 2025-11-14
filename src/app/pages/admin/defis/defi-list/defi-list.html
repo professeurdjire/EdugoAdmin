@@ -1,7 +1,7 @@
 <div class="users-page-container">
   <div class="page-header">
     <h1 class="page-title">Défis</h1>
-    <a routerLink="/admin/ajouterdefi" class="add-btn">Ajouter un défi</a>
+    <a routerLink="/admin/ajouterdefi" class="btn-add"><i class="fa-solid fa-plus"></i>&nbsp;Ajouter un défi</a>
   </div>
 
   <!-- Message d'erreur -->
@@ -32,8 +32,14 @@
         </select>
       </div>
       <div class="action-buttons">
-        <button class="filter-btn" (click)="applyFilters()">Filtrer</button>
-        <button class="reset-btn" (click)="resetFilters()">Réinitialiser</button>
+        <button class="filter-btn" (click)="applyFilters()">
+          <fa-icon [icon]="faFilter"></fa-icon>
+          Filtrer
+        </button>
+        <button class="reset-btn" (click)="resetFilters()">
+          <fa-icon [icon]="faRedoAlt"></fa-icon>
+          Réinitialiser
+        </button>
       </div>
     </section>
   </div>
@@ -68,9 +74,15 @@
             <td>{{ defi.pointDefi }} pts</td>
             <td><span class="status-badge active-status">Actif</span></td>
             <td class="actions-cell">
-              <button class="action-icon-btn" (click)="viewDefi(defi)">👁️</button>
-              <button class="action-icon-btn" (click)="editDefi(defi)">✏️</button>
-              <button class="action-icon-btn" (click)="deleteDefi(defi)">🗑️</button>
+              <span class="action-btn view-btn" (click)="viewDefi(defi)">
+                <fa-icon [icon]="faEye"></fa-icon>
+              </span>
+              <span class="action-btn edit-btn" (click)="editDefi(defi)">
+                <fa-icon [icon]="faPen"></fa-icon>
+              </span>
+              <span class="action-btn delete-btn" (click)="deleteDefi(defi)">
+                <fa-icon [icon]="faTrash"></fa-icon>
+              </span>
             </td>
           </tr>
         </tbody>

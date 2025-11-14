@@ -2,16 +2,31 @@ import { Component, OnInit } from '@angular/core';
 import {FormBuilder, FormGroup, FormArray, Validators, FormControl, ReactiveFormsModule} from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
+import { FaIconComponent } from '@fortawesome/angular-fontawesome';
+import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
+import { DefisService } from '../../../../services/api/admin/defis.service';
+import { Defi } from '../../../../api/model/defi';
+import { ToastService } from '../../../../shared/ui/toast/toast.service';
+import { ConfirmService } from '../../../../shared/ui/confirm/confirm.service';
+import { QuestionsService, CreateQuestionRequest } from '../../../../services/api/questions.service';
+import { forkJoin } from 'rxjs';
+import { ClassesService } from '../../../../services/api/admin/classes.service';
+import { Classe } from '../../../../api/model/classe';
 
 @Component({
   selector: 'app-defi-form',
   standalone:true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, FaIconComponent],
   templateUrl: './defi-form.html',
   styleUrls: ['./defi-form.css'],
 })
 export class DefiForm implements OnInit {
+  faArrowLeft = faArrowLeft;
   defiForm: FormGroup;
+  isLoading = false;
+  loadingTypes = false;
+  backendTypes: Array<{ id: number; libelle: string }> = [];
+  classes: Classe[] = [];
 
   typesQuestions = [
     { value: 'choix_multiple', label: 'Choix multiple', icon: '📝' },
@@ -31,12 +46,35 @@ export class DefiForm implements OnInit {
 
   constructor(
     private fb: FormBuilder,
-    private router: Router
+    private router: Router,
+    private defisService: DefisService,
+    private toast: ToastService,
+    private confirm: ConfirmService,
+    private questionsService: QuestionsService,
+    private classesService: ClassesService
   ) {
     this.defiForm = this.createForm();
   }
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.loadingTypes = true;
+    this.questionsService.getTypes().subscribe({
+      next: (types) => {
+        this.backendTypes = types || [];
+        this.loadingTypes = false;
+      },
+      error: () => {
+        this.loadingTypes = false;
+        this.toast.error('Impossible de charger les types de questions');
+      }
+    });
+
+    // Charger les classes pour le select
+    this.classesService.list().subscribe({
+      next: (d) => (this.classes = d || []),
+      error: () => this.toast.error('Impossible de charger les classes')
+    });
+  }
 
   // Getter pour accéder facilement au FormArray des questions
   get questions(): FormArray {
@@ -162,10 +200,67 @@ export class DefiForm implements OnInit {
 
   // Soumission du formulaire
   onSubmit(): void {
-    if (this.defiForm.valid) {
+    if (this.defiForm.valid && this.validateQuestionsBySpec()) {
       const formData = this.defiForm.value;
-      console.log('Défi à enregistrer:', formData);
-      this.enregistrerDefi(formData);
+      const payload: Partial<Defi> = {
+        titre: formData.titre,
+        ennonce: formData.description,
+        dateAjout: formData.dateAjout,
+        typeDefi: formData.typeDefis,
+        pointDefi: this.totalPoints(),
+        classe: formData.classeConcernee ? { id: +formData.classeConcernee } : undefined
+      };
+
+      this.isLoading = true;
+      this.defisService.create(payload).subscribe({
+        next: (res) => {
+          const defiId = (res as any)?.id;
+          if (!defiId) {
+            this.isLoading = false;
+            this.toast.warning('Défi créé mais identifiant introuvable pour créer les questions.');
+            this.router.navigate(['/admin/defiList']);
+            return;
+          }
+
+          const questionRequests: CreateQuestionRequest[] = this.questions.controls.map((ctrl: any) => {
+            const v = ctrl.value;
+            const type = this.mapFrontTypeToApi(String(v.typeQuestion || '').toLowerCase());
+            if (type === 'APPARIEMENT') {
+              const paires = (v.pairesAppariement || []) as Array<{elementGauche:string;elementDroit:string}>;
+              const reponses = paires.map(p => ({ libelle: `${p.elementGauche} - ${p.elementDroit}`, estCorrecte: true }));
+              return { defiId, enonce: v.question, points: v.points || 1, type, reponses };
+            }
+            if (type === 'VRAI_FAUX') {
+              const reponses = [
+                { libelle: 'VRAI', estCorrecte: (v.reponses || []).some((r:any)=> String(r.texte).toUpperCase()==='VRAI' && r.correcte) },
+                { libelle: 'FAUX', estCorrecte: (v.reponses || []).some((r:any)=> String(r.texte).toUpperCase()==='FAUX' && r.correcte) }
+              ];
+              return { defiId, enonce: v.question, points: v.points || 1, type, reponses };
+            }
+            const reponses = (v.reponses || []).map((r:any) => ({ libelle: r.texte, estCorrecte: !!r.correcte }));
+            return { defiId, enonce: v.question, points: v.points || 1, type, reponses };
+          });
+
+          forkJoin(questionRequests.map(req => this.questionsService.createQuestion(req))).subscribe({
+            next: () => {
+              this.isLoading = false;
+              this.toast.success('Défi et questions créés avec succès !');
+              this.router.navigate(['/admin/defiList']);
+            },
+            error: (err) => {
+              this.isLoading = false;
+              console.error('Erreur création questions du défi:', err);
+              this.toast.error('Défi créé mais erreur lors de la création des questions');
+              this.router.navigate(['/admin/defiList']);
+            }
+          });
+        },
+        error: (err) => {
+          this.isLoading = false;
+          console.error('Erreur lors de la création du défi:', err);
+          this.toast.error('Erreur lors de la création du défi. Veuillez réessayer.');
+        }
+      });
     } else {
       this.marquerChampsCommeTouches();
     }
@@ -173,10 +268,17 @@ export class DefiForm implements OnInit {
 
   // Annulation
   onAnnuler(): void {
-    if (confirm('Voulez-vous vraiment annuler ? Toutes les modifications seront perdues.')) {
-      this.defiForm.reset();
-      this.router.navigate(['/admin/defiList']);
-    }
+    this.confirm.confirm({
+      title: 'Annuler',
+      message: 'Voulez-vous vraiment annuler ? Toutes les modifications seront perdues.',
+      confirmText: 'Annuler',
+      cancelText: 'Continuer'
+    }).then(ok => {
+      if (ok) {
+        this.defiForm.reset();
+        this.router.navigate(['/admin/defiList']);
+      }
+    });
   }
 
   // Marquer tous les champs comme "touched" pour afficher les erreurs
@@ -204,17 +306,7 @@ export class DefiForm implements OnInit {
     });
   }
 
-  // Simulation d'enregistrement
-  private enregistrerDefi(defi: any): void {
-    // Ici, vous intégreriez votre service d'API
-    console.log('Enregistrement du défi:', defi);
-
-    // Simulation de succès
-    setTimeout(() => {
-      alert('Défi enregistré avec succès !');
-      this.router.navigate(['/admin/defiList']);
-    }, 1000);
-  }
+  
 
   // Helpers
   totalPoints(): number {
@@ -223,5 +315,45 @@ export class DefiForm implements OnInit {
 
   estFormulaireValide(): boolean {
     return this.defiForm.valid;
+  }
+
+  private mapFrontTypeToApi(front: string): 'QCU' | 'QCM' | 'VRAI_FAUX' | 'APPARIEMENT' {
+    switch (front) {
+      case 'choix_multiple':
+        return 'QCU';
+      case 'multi_reponse':
+        return 'QCM';
+      case 'vrai_faux':
+        return 'VRAI_FAUX';
+      case 'appariement':
+        return 'APPARIEMENT';
+      default:
+        return 'QCU';
+    }
+  }
+
+  private validateQuestionsBySpec(): boolean {
+    return this.questions.controls.every((ctrl: any) => {
+      const v = ctrl.value;
+      if (!v.question || String(v.question).trim() === '') return false;
+      const type = this.mapFrontTypeToApi(String(v.typeQuestion || '').toLowerCase());
+      if (type === 'QCU') {
+        const reps = v.reponses || [];
+        return reps.length >= 2 && reps.filter((r:any)=>!!r.correcte).length === 1 && reps.every((r:any)=> String(r.texte||'').trim() !== '');
+      }
+      if (type === 'QCM') {
+        const reps = v.reponses || [];
+        return reps.length >= 2 && reps.filter((r:any)=>!!r.correcte).length >= 1 && reps.every((r:any)=> String(r.texte||'').trim() !== '');
+      }
+      if (type === 'VRAI_FAUX') {
+        const reps = v.reponses || [];
+        return reps.length === 2 && reps.filter((r:any)=>!!r.correcte).length === 1;
+      }
+      if (type === 'APPARIEMENT') {
+        const p = v.pairesAppariement || [];
+        return p.length >= 2 && p.every((x:any)=> String(x.elementGauche||'').trim()!=='' && String(x.elementDroit||'').trim()!=='');
+      }
+      return true;
+    });
   }
 }
