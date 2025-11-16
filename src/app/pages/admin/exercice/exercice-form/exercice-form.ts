@@ -74,6 +74,8 @@ export class ExerciceForm implements OnInit {
       matiereConcernee: ['', [Validators.required]],
       titre: ['', [Validators.required, Validators.minLength(3)]],
       description: [''],
+      niveauDifficulte: [1, [Validators.min(1), Validators.max(3)]],
+      tempsAlloue: [10, [Validators.min(1)]],
 
       // Fichiers
       fichierPrincipal: [null],
@@ -170,7 +172,7 @@ export class ExerciceForm implements OnInit {
         if (!exerciceId) {
           this.isLoading = false;
           this.toast.warning("Exercice créé mais identifiant introuvable pour créer les questions.");
-          this.router.navigate(['/admin/exerciceList']);
+          this.confirmRedirectToList("Exercice créé mais identifiant introuvable pour créer les questions.");
           return;
         }
 
@@ -198,14 +200,13 @@ export class ExerciceForm implements OnInit {
         forkJoin(questionRequests.map(req => this.questionsService.createQuestion(req))).subscribe({
           next: () => {
             this.isLoading = false;
-            this.toast.success('Exercice et questions créés avec succès !');
-            this.router.navigate(['/admin/exerciceList']);
+            this.confirmRedirectToList('Exercice et questions créés avec succès !');
           },
           error: (err) => {
             this.isLoading = false;
             console.error('Erreur création questions exercice:', err);
             this.toast.error("Exercice créé mais erreur lors de la création des questions");
-            this.router.navigate(['/admin/exerciceList']);
+            // On reste sur place pour permettre à l'utilisateur de corriger ou réessayer
           }
         });
       },
@@ -223,7 +224,9 @@ export class ExerciceForm implements OnInit {
       titre: v.titre,
       description: v.description,
       active: true,
-      matiereId: +v.matiereConcernee
+      matiereId: +v.matiereConcernee,
+      niveauDifficulte: v.niveauDifficulte || 1,
+      tempsAlloue: v.tempsAlloue || 10
     };
   }
 
@@ -262,8 +265,6 @@ export class ExerciceForm implements OnInit {
       }
     });
   }
-
-  
 
   // Méthodes utilitaires pour le template
   estChampInvalide(nomChamp: string): boolean {
@@ -339,5 +340,20 @@ export class ExerciceForm implements OnInit {
       }
       return true;
     });
+  }
+
+  private confirmRedirectToList(message: string) {
+    this.confirm
+      .confirm({
+        title: 'Exercice créé',
+        message,
+        confirmText: 'Aller à la liste',
+        cancelText: 'Rester ici'
+      })
+      .then((ok) => {
+        if (ok) {
+          this.router.navigate(['/admin/exerciceList']);
+        }
+      });
   }
 }

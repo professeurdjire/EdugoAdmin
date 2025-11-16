@@ -106,9 +106,8 @@
         <legend class="section-title with-button">
           <div class="title-content">
             <img src="images/816_4206.svg" alt="Questions icon">
-            <h2>Questions de l”exercice</h2>
+            <h2>Questions du challenge</h2>
           </div>
-          <!--merged image-->
           <button type="button" class="btn-inline-add" (click)="ajouterQuestion()">
             <img src="images/816_4280.svg" alt="Add icon">
             <span>Ajouter une question</span>
@@ -118,17 +117,32 @@
 
         <div formArrayName="questions">
           <div class="question-block" *ngFor="let q of questions.controls; let i = index" [formGroupName]="i">
+            <div class="question-header">
+              <h3>Question {{ i + 1 }}</h3>
+              <div class="question-actions">
+                <button type="button" class="btn-action" (click)="dupliquerQuestion(i)">⧉</button>
+                <button type="button" class="btn-action" (click)="deplacerQuestion(i, 'up')" [disabled]="i === 0">↑</button>
+                <button type="button" class="btn-action" (click)="deplacerQuestion(i, 'down')" [disabled]="i === questions.length - 1">↓</button>
+                <button type="button" class="btn-action btn-danger" (click)="supprimerQuestion(i)" [disabled]="questions.length === 1">🗑️</button>
+              </div>
+            </div>
+
             <div class="form-grid">
               <div class="form-group">
                 <label [for]="'type-questions-' + i">Type de questions <span class="required">*</span></label>
                 <div class="select-wrapper">
-                  <select [id]="'type-questions-' + i" formControlName="typeQuestion">
-                    <option value="choix_multiple">Question à choix multiples</option>
-                    <option value="vrai_faux">Vrai/Faux</option>
-                    <option value="appariement">Appariement</option>
+                  <select [id]="'type-questions-' + i" formControlName="typeQuestion" (change)="onTypeQuestionChange(i)">
+                    <option *ngFor="let t of typesQuestions" [value]="t.value">{{ t.label }}</option>
                   </select>
                   <img src="images/816_4223.svg" alt="Dropdown arrow" class="select-arrow rotated">
                 </div>
+                <div class="type-description">
+                  {{ getDescriptionType(questions.at(i).get('typeQuestion')?.value) }}
+                </div>
+              </div>
+              <div class="form-group">
+                <label [for]="'points-' + i">Points</label>
+                <input type="number" [id]="'points-' + i" formControlName="points" min="1">
               </div>
             </div>
 
@@ -137,19 +151,47 @@
               <input type="text" [id]="'question-' + i" placeholder="Saisissez la question..." formControlName="question">
             </div>
 
-            <!-- Réponses QCM/QCU -->
-            <div class="form-group full-width" *ngIf="questions.at(i).get('typeQuestion')?.value !== 'appariement'">
+            <!-- Réponses QCM/QCU / multi / ordre -->
+            <div class="form-group full-width" *ngIf="questions.at(i).get('typeQuestion')?.value !== 'appariement'
+                                                    && questions.at(i).get('typeQuestion')?.value !== 'reponse_courte'
+                                                    && questions.at(i).get('typeQuestion')?.value !== 'reponse_longue'
+                                                    && questions.at(i).get('typeQuestion')?.value !== 'vrai_faux'">
               <div class="answers-list" formArrayName="reponses">
                 <div class="answer-row" *ngFor="let rep of getReponses(i).controls; let j = index" [formGroupName]="j">
                   <div class="answer-label">{{ rep.get('lettre')?.value }}</div>
-                  <input type="text" formControlName="texte" [placeholder]="'Reponse ' + rep.get('lettre')?.value">
-                  <button type="button" class="btn-checkbox" [class.correct]="rep.get('correcte')?.value" (click)="onReponseCorrecteChange(i, j)">🔘</button>
+                  <input type="text" formControlName="texte" [placeholder]="'Réponse ' + rep.get('lettre')?.value">
+                  <button type="button" class="btn-checkbox" [class.correct]="rep.get('correcte')?.value"
+                          (click)="onReponseCorrecteChange(i, j, questions.at(i).get('typeQuestion')?.value)">🔘</button>
                   <button type="button" class="btn-action btn-danger" (click)="supprimerReponse(i, j)" [disabled]="getReponses(i).length <= 2">🗑️</button>
                 </div>
                 <div class="answers-actions">
                   <button type="button" class="btn-inline-add" (click)="ajouterReponse(i)" [disabled]="getReponses(i).length >= 6">Ajouter une réponse</button>
                 </div>
               </div>
+            </div>
+
+            <!-- Vrai / Faux -->
+            <div class="form-group full-width" *ngIf="questions.at(i).get('typeQuestion')?.value === 'vrai_faux'">
+              <div class="answers-list" formArrayName="reponses">
+                <div class="answer-row" *ngFor="let rep of getReponses(i).controls; let j = index" [formGroupName]="j">
+                  <div class="answer-label">{{ rep.get('lettre')?.value }}</div>
+                  <input type="text" formControlName="texte" readonly>
+                  <button type="button" class="btn-checkbox" [class.correct]="rep.get('correcte')?.value"
+                          (click)="onReponseCorrecteChange(i, j, 'vrai_faux')">🔘</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Réponse courte -->
+            <div class="form-group full-width" *ngIf="questions.at(i).get('typeQuestion')?.value === 'reponse_courte'">
+              <label>Réponse attendue <span class="required">*</span></label>
+              <input type="text" formControlName="bonneReponse" placeholder="Saisissez la réponse correcte...">
+            </div>
+
+            <!-- Réponse longue -->
+            <div class="form-group full-width" *ngIf="questions.at(i).get('typeQuestion')?.value === 'reponse_longue'">
+              <label>Réponse attendue <span class="required">*</span></label>
+              <textarea formControlName="bonneReponse" rows="3" placeholder="Saisissez la réponse correcte..."></textarea>
             </div>
 
             <!-- Appariement -->
@@ -164,6 +206,17 @@
               <button type="button" class="btn-inline-add" (click)="ajouterPaireAppariement(i)">Ajouter une paire</button>
             </div>
 
+            <!-- Indicateur de bonne réponse (sauf réponses courtes/longues et appariement) -->
+            <div class="bonne-reponse-indicator"
+                 *ngIf="questions.at(i).get('typeQuestion')?.value !== 'reponse_courte'
+                      && questions.at(i).get('typeQuestion')?.value !== 'reponse_longue'
+                      && questions.at(i).get('typeQuestion')?.value !== 'appariement'">
+              <span class="indicator-label">Bonne(s) réponse(s) sélectionnée(s) :</span>
+              <span class="indicator-value">
+                {{ questions.at(i).get('bonneReponse')?.value || 'Aucune' }}
+              </span>
+            </div>
+
             <hr class="divider" *ngIf="i < questions.length - 1">
           </div>
         </div>
@@ -176,7 +229,7 @@
           <span>Annuler</span>
         </button>
         <!--merged image-->
-        <button type="button" class="btn btn-add-question">
+        <button type="button" class="btn btn-add-question" (click)="ajouterQuestion()">
           <img src="images/816_4229.svg" alt="Add icon">
           <span>Ajouter une question</span>
         </button>

@@ -7,14 +7,15 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { Livre } from './livre';
 
 
 export interface Quiz { 
     id?: number;
+    titre?: string;
     statut?: Quiz.StatutEnum;
     createdAt?: string;
-    livre?: Livre;
+    // Correspond au champ titreLivre (String) de QuizResponse côté backend
+    titreLivre?: string;
     nombreQuestions?: number;
 }
 export namespace Quiz {

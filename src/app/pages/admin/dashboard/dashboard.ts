@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   faBook, faBookMedical,
@@ -11,6 +11,10 @@ import {
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import { NgApexchartsModule, ApexChart, ApexTitleSubtitle, ApexXAxis, ApexYAxis, ApexPlotOptions, ApexDataLabels, ApexStroke, ApexFill, ApexLegend, ApexNonAxisChartSeries, ApexResponsive } from 'ng-apexcharts';
 import { RouterLink } from '@angular/router';
+import { StatistiquesService } from '../../../api/api/statistiques.service';
+import { StatistiquesPlateformeResponse } from '../../../api/model/statistiquesPlateformeResponse';
+import { UsersService } from '../../../services/api/admin/users.service';
+import { User } from '../../../api/model/user';
 
 @Component({
   selector: 'app-dashboard',
@@ -24,7 +28,7 @@ import { RouterLink } from '@angular/router';
   templateUrl: './dashboard.html',
   styleUrls: ['./dashboard.css']
 })
-export class Dashboard {
+export class Dashboard implements OnInit {
   // Icônes
   protected readonly faFlagCheckered = faFlagCheckered;
   protected readonly faSquarePollHorizontal = faSquarePollHorizontal;
@@ -33,6 +37,14 @@ export class Dashboard {
   protected readonly faMedal = faMedal;
   protected readonly faPlusCircle = faPlusCircle;
   protected readonly faBookMedical = faBookMedical;
+
+  // Statistiques globales
+  statistiques?: StatistiquesPlateformeResponse;
+  statsLoading = false;
+  statsError: string | null = null;
+
+  // Top utilisateurs pour le dashboard
+  topUsers: { initials: string; fullName: string; level: string; points: number }[] = [];
 
   // Configuration typée pour ApexCharts
   public chartOptions: {
@@ -169,4 +181,66 @@ export class Dashboard {
       }
     ]
   };
+
+  constructor(
+    private statistiquesService: StatistiquesService,
+    private usersService: UsersService
+  ) {}
+
+  ngOnInit(): void {
+    this.loadStatistiques();
+    this.loadTopUsers();
+  }
+
+  private loadStatistiques(): void {
+    this.statsLoading = true;
+    this.statsError = null;
+    this.statistiquesService.getStatistiquesPlateforme().subscribe({
+      next: (stats) => {
+        this.statistiques = stats;
+        this.statsLoading = false;
+      },
+      error: (err) => {
+        console.error('Erreur chargement statistiques:', err);
+        this.statsError = "Impossible de charger les statistiques de la plateforme.";
+        this.statsLoading = false;
+      }
+    });
+  }
+
+  private loadTopUsers(): void {
+    this.usersService.list().subscribe({
+      next: (users: User[]) => {
+        if (!Array.isArray(users)) {
+          this.topUsers = [];
+          return;
+        }
+
+        // Filtrer sur les élèves
+        const eleves = users.filter(u => u.role === User.RoleEnum.Eleve);
+
+        // TODO: lorsqu'un champ "points" existera, on pourra trier ici par points décroissants.
+        const baseList = eleves.length > 0 ? eleves : users;
+
+        this.topUsers = baseList
+          .slice(0, 5)
+          .map(u => {
+            const firstName = u.prenom || '';
+            const lastName = u.nom || '';
+            const initials = `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase();
+            const fullName = `${firstName} ${lastName}`.trim();
+            return {
+              initials: initials || 'U',
+              fullName: fullName || (u.email || 'Utilisateur'),
+              level: '', // niveau non disponible pour l'instant
+              points: 0  // en attendant l'intégration réelle des points
+            };
+          });
+      },
+      error: (err) => {
+        console.error('Erreur chargement utilisateurs pour le top 5:', err);
+        this.topUsers = [];
+      }
+    });
+  }
 }

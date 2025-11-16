@@ -7,8 +7,8 @@
             <fa-icon [icon]="faUsers"></fa-icon>
           </div>
           <div class="alignementTexte">
-            <div class="value">10 000</div>
-            <div class="label">Utilisateurs actifs</div>
+            <div class="value">{{ (statistiques?.totalEleves ?? 0) | number }}</div>
+            <div class="label">Nombre d'utilisateurs</div>
           </div>
         </div>
       </div>
@@ -19,8 +19,8 @@
             <fa-icon [icon]="faBook"></fa-icon>
           </div>
           <div class="alignementTexte">
-            <div class="value">10 000</div>
-            <div class="label">Livres disponibles</div>
+            <div class="value">{{ (statistiques?.totalLivres ?? 0) | number }}</div>
+            <div class="label">Nombre de livres</div>
           </div>
         </div>
       </div>
@@ -31,8 +31,8 @@
             <fa-icon [icon]="faSquarePollHorizontal"></fa-icon>
           </div>
           <div class="alignementTexte">
-            <div class="value">10 000</div>
-            <div class="label">Quiz complétés</div>
+            <div class="value">{{ (statistiques?.totalQuiz ?? 0) | number }}</div>
+            <div class="label">Nombre de quiz</div>
           </div>
         </div>
       </div>
@@ -43,8 +43,8 @@
             <fa-icon [icon]="faFlagCheckered"></fa-icon>
           </div>
           <div class="alignementTexte">
-            <div class="value">10 000</div>
-            <div class="label">Défis réussis</div>
+            <div class="value">{{ (statistiques?.totalDefis ?? 0) | number }}</div>
+            <div class="label">Tatal défis</div>
           </div>
         </div>
       </div>
@@ -142,48 +142,21 @@
           <h2>Top Utilisateurs</h2>
           <a routerLink="/admin/utilisateurs" class="view-all">Voir tout</a>
         </div>
-        <ul class="user-list">
-          <li class="user-item">
-            <div class="user-initials-small">HD</div>
+        <ul class="user-list" *ngIf="topUsers.length > 0; else noTopUsers">
+          <li class="user-item" *ngFor="let u of topUsers">
+            <div class="user-initials-small">{{ u.initials }}</div>
             <div class="user-details-small">
-              <p>Hamidou DJIRÉ</p>
-              <small>4ème année</small>
+              <p>{{ u.fullName }}</p>
+              <small>{{ u.level || 'Niveau à venir' }}</small>
             </div>
-            <span class="points">1 200 pts</span>
-          </li>
-          <li class="user-item">
-            <div class="user-initials-small">MS</div>
-            <div class="user-details-small">
-              <p>Marie SANGARÉ</p>
-              <small>5ème année</small>
-            </div>
-            <span class="points">1 150 pts</span>
-          </li>
-          <li class="user-item">
-            <div class="user-initials-small">TK</div>
-            <div class="user-details-small">
-              <p>Thomas KEITA</p>
-              <small>3ème année</small>
-            </div>
-            <span class="points">1 100 pts</span>
-          </li>
-          <li class="user-item">
-            <div class="user-initials-small">AD</div>
-            <div class="user-details-small">
-              <p>Aminata DIALLO</p>
-              <small>6ème année</small>
-            </div>
-            <span class="points">1 050 pts</span>
-          </li>
-          <li class="user-item">
-            <div class="user-initials-small">BS</div>
-            <div class="user-details-small">
-              <p>Boubacar SISSOKO</p>
-              <small>4ème année</small>
-            </div>
-            <span class="points">1 000 pts</span>
+            <span class="points">
+              {{ u.points > 0 ? (u.points + ' pts') : '—' }}
+            </span>
           </li>
         </ul>
+        <ng-template #noTopUsers>
+          <p class="no-data-message">Aucun utilisateur à afficher pour l'instant.</p>
+        </ng-template>
       </div>
     </section>
   </main>

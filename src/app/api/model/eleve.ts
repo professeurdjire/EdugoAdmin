@@ -23,6 +23,8 @@ export interface Eleve {
     estActive?: boolean;
     photoProfil?: string;
     dateNaissance?: string;
+    telephone?: string;
+    niveau?: string;
     classe?: Classe;
     pointAccumule?: number;
     enabled?: boolean;

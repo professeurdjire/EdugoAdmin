@@ -14,6 +14,8 @@ export interface Partenaire {
   statut: string;
   dateDebut?: string;
   dateAjout?: string;
+  dateCreation?: string;
   description?: string;
   newsletter: boolean;
+  actif?: boolean;
 }

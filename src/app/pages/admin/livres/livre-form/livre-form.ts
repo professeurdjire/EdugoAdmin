@@ -28,6 +28,7 @@ export class LivreForm {
   livreForm: FormGroup;
   isSubmitting = false;
   isEditMode = false;
+  isReadOnly = false;
   livreId: number | null = null;
   loading = false;
 
@@ -58,6 +59,16 @@ export class LivreForm {
     this.annees = Array.from({ length: this.currentYear - start + 1 }, (_, i) => this.currentYear - i);
     this.loadReferenceData();
     this.checkEditMode();
+
+    // Déterminer si on est en mode lecture seule (mode=view)
+    this.route.queryParamMap.subscribe(params => {
+      this.isReadOnly = params.get('mode') === 'view';
+      if (this.isReadOnly) {
+        this.livreForm.disable({ emitEvent: false });
+      } else if (!this.isSubmitting) {
+        this.livreForm.enable({ emitEvent: false });
+      }
+    });
   }
 
   checkEditMode(): void {

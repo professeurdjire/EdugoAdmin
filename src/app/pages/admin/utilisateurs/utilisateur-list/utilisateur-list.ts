@@ -5,23 +5,24 @@ import {CommonModule, Location} from '@angular/common';
 import {faArrowLeft, faEye, faFilter, faPen, faRedoAlt, faTrash} from '@fortawesome/free-solid-svg-icons';
 
 import { UsersService } from '../../../../services/api/admin/users.service';
-import { User } from '../../../../api/model/user';
+import { AdminEleveService, EleveProfile } from '../../../../services/api/admin/admin-eleve.service';
 import { AuthService } from '../../../../services/api/auth.service';
 import { Router } from '@angular/router';
 import { ConfirmService } from '../../../../shared/ui/confirm/confirm.service';
 import { ToastService } from '../../../../shared/ui/toast/toast.service';
 
-// Updated interface to match API model
+// Interface utilisée pour l'affichage dans le tableau
 interface UserDisplay {
   id: number;
   initials: string;
   firstName: string;
   lastName: string;
   email: string;
-  phone: string;
-  level: string;
+  telephone: string;
+  niveau: string;
+  classe: string;
   registrationDate: string;
-  points: string;
+  points: number;
   status: string;
   color: string;
 }
@@ -41,6 +42,7 @@ export class UtilisateurList implements OnInit{
   constructor(
     private location: Location,
     private usersService: UsersService,
+    private adminEleveService: AdminEleveService,
     private authService: AuthService,
     private router: Router,
     private confirm: ConfirmService,
@@ -50,9 +52,8 @@ export class UtilisateurList implements OnInit{
   // Icônes FontAwesome
   faPen = faPen;
 
-  // Données utilisateurs (simule une future API)
+  // Données utilisateurs
   users: UserDisplay[] = [];
-  bon : User[]
   filteredUsers: UserDisplay[] = [];
   pagedUsers: UserDisplay[] = [];
   totalFiltered: number = 0;
@@ -71,7 +72,7 @@ export class UtilisateurList implements OnInit{
 
   // Filtres
   searchTerm: string = '';
-  selectedLevel: string = 'Tous les niveaux';
+  selectedNiveau: string = 'Tous les niveaux';
   selectedStatus: string = 'Tous les statuts';
 
   ngOnInit(): void {
@@ -89,20 +90,20 @@ export class UtilisateurList implements OnInit{
     //   return;
     // }
     
-    this.usersService.list().subscribe({
-      next: (apiUsers: User[]) => {
-        // Filter users by role - only show users with role 'ELEVE'
-        const eleveUsers = apiUsers.filter(user => user.role === 'ELEVE');
-        
-        // Transform API users to display format
-        this.users = eleveUsers.map(user => this.transformUser(user));
+    this.adminEleveService.listEleves().subscribe({
+      next: (eleves: EleveProfile[]) => {
+        // Normalement, l'endpoint ne renvoie que des élèves, on filtre par sécurité
+        const eleveProfiles = eleves.filter(e => e.role === 'ELEVE');
+
+        // Transforme le DTO EleveProfile en format d'affichage
+        this.users = eleveProfiles.map(eleve => this.transformEleve(eleve));
         this.filteredUsers = [...this.users];
         this.totalFiltered = this.filteredUsers.length;
         this.updatePagination();
         this.loading = false;
       },
       error: (err) => {
-        console.error('Error loading users:', err);
+        console.error('Error loading eleves:', err);
         if (err.status === 401 || err.status === 403) {
           this.error = "Vous n'êtes pas autorisé à accéder à cette ressource. Veuillez vous connecter avec les bonnes permissions.";
         } else if (err.status === 0) {
@@ -115,26 +116,25 @@ export class UtilisateurList implements OnInit{
     });
   }
 
-  // Transform API User to display format
-  transformUser(user: User): UserDisplay {
-    // Generate initials from first name and last name
-    const initials = `${user.prenom?.charAt(0) || ''}${user.nom?.charAt(0) || ''}`.toUpperCase();
-    
-    // Determine color based on some logic (you can customize this)
+  // Transforme un EleveProfile (backend) vers le format d'affichage UserDisplay
+  transformEleve(eleve: EleveProfile): UserDisplay {
+    const initials = `${eleve.prenom?.charAt(0) || ''}${eleve.nom?.charAt(0) || ''}`.toUpperCase();
+
     const colors = ['blue', 'green', 'red', 'darkblue'];
-    const colorIndex = user.id ? user.id % colors.length : 0;
-    
+    const colorIndex = eleve.id ? eleve.id % colors.length : 0;
+
     return {
-      id: user.id || 0,
-      initials: initials,
-      firstName: user.prenom || '',
-      lastName: user.nom || '',
-      email: user.email || '',
-      phone: '', // Not in API model, you might need to add this to your backend
-      level: '', // Not in API model, you might need to add this to your backend
-      registrationDate: user.dateCreation || '',
-      points: '0', // Not in API model, you might need to add this to your backend
-      status: user.estActive ? 'Actif' : 'Inactif',
+      id: eleve.id,
+      initials,
+      firstName: eleve.prenom || '',
+      lastName: eleve.nom || '',
+      email: eleve.email || '',
+      telephone: eleve.telephone != null ? eleve.telephone.toString() : '',
+      niveau: eleve.niveauNom || '',
+      classe: eleve.classeNom || '',
+      registrationDate: '', // non fourni par le DTO, à ajouter côté backend si nécessaire
+      points: eleve.pointAccumule ?? 0,
+      status: 'Actif', // pas d'info de statut dans le DTO, à adapter si besoin
       color: colors[colorIndex]
     };
   }
@@ -150,7 +150,7 @@ export class UtilisateurList implements OnInit{
         user.email.toLowerCase().includes(term);
 
       const matchesLevel =
-        this.selectedLevel === 'Tous les niveaux' || user.level === this.selectedLevel;
+        this.selectedNiveau === 'Tous les niveaux' || user.niveau === this.selectedNiveau;
 
       const matchesStatus =
         this.selectedStatus === 'Tous les statuts' || user.status === this.selectedStatus;
@@ -165,7 +165,7 @@ export class UtilisateurList implements OnInit{
 
   resetFilters() {
     this.searchTerm = '';
-    this.selectedLevel = 'Tous les niveaux';
+    this.selectedNiveau = 'Tous les niveaux';
     this.selectedStatus = 'Tous les statuts';
     this.filteredUsers = [...this.users];
     this.totalFiltered = this.filteredUsers.length;

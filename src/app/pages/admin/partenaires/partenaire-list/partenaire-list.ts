@@ -6,7 +6,7 @@ import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import { faEye, faPen, faTrash, faFilter, faRedoAlt } from '@fortawesome/free-solid-svg-icons';
 
 import { Partenaire } from '../../../../models/partenaire.model';
-import { PartenaireService } from '../../../../services/api/partenaire.service';
+import { PartenaireService, PartenaireResponse } from '../../../../services/api/partenaire.service';
 
 @Component({
   selector: 'app-partenaire-list',
@@ -61,44 +61,23 @@ export class PartenaireList implements OnInit {
   // Filtrage
   // ----------------------------------
   onSearch(): void {
-    this.applyFilters();
+    this.currentPage = 0;
+    this.loadPartenaires();
   }
 
   onFilterChange(): void {
-    this.applyFilters();
+    this.currentPage = 0;
+    this.loadPartenaires();
   }
 
   resetFilters(): void {
     this.searchTerm = '';
     this.selectedStatus = '';
     this.selectedType = '';
-    this.applyFilters();
-  }
-
-  private applyFilters(): void {
-    this.filteredPartenaires = this.partenaires.filter(p => {
-      const matchSearch =
-        !this.searchTerm ||
-        p.nom?.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
-        p.email?.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
-        p.domaine?.toLowerCase().includes(this.searchTerm.toLowerCase());
-
-      const matchStatus =
-        !this.selectedStatus || p.statut?.toLowerCase() === this.selectedStatus.toLowerCase();
-
-      const matchType =
-        !this.selectedType || p.type?.toLowerCase() === this.selectedType.toLowerCase();
-
-      return matchSearch && matchStatus && matchType;
-    });
-
-    // Appliquer le tri après filtrage
-    this.applySort();
-
-    // Recalculer pagination
     this.currentPage = 0;
-    this.totalPages = Math.ceil(this.filteredPartenaires.length / this.pageSize);
+    this.loadPartenaires();
   }
+  // Le filtrage est géré côté backend via les paramètres de getAll.
 
   // ----------------------------------
   // Tri
@@ -110,25 +89,10 @@ export class PartenaireList implements OnInit {
       this.sortField = field;
       this.sortDirection = 'asc';
     }
-    this.applySort();
+    this.currentPage = 0;
+    this.loadPartenaires();
   }
-
-  private applySort(): void {
-    this.filteredPartenaires.sort((a, b) => {
-      let valA = (a as any)[this.sortField];
-      let valB = (b as any)[this.sortField];
-
-      if (valA == null) valA = '';
-      if (valB == null) valB = '';
-
-      if (typeof valA === 'string') valA = valA.toLowerCase();
-      if (typeof valB === 'string') valB = valB.toLowerCase();
-
-      if (valA < valB) return this.sortDirection === 'asc' ? -1 : 1;
-      if (valA > valB) return this.sortDirection === 'asc' ? 1 : -1;
-      return 0;
-    });
-  }
+  // Le tri est géré par le backend via sortField / sortDirection.
 
   // ----------------------------------
   // Pagination
@@ -139,19 +103,26 @@ export class PartenaireList implements OnInit {
 
   goToPage(page: number): void {
     this.currentPage = page - 1;
+    this.loadPartenaires();
   }
 
   previousPage(): void {
-    if (this.currentPage > 0) this.currentPage--;
+    if (this.currentPage > 0) {
+      this.currentPage--;
+      this.loadPartenaires();
+    }
   }
 
   nextPage(): void {
-    if (this.currentPage < this.totalPages - 1) this.currentPage++;
+    if (this.currentPage < this.totalPages - 1) {
+      this.currentPage++;
+      this.loadPartenaires();
+    }
   }
 
   onPageSizeChange(): void {
-    this.totalPages = Math.ceil(this.filteredPartenaires.length / this.pageSize);
     this.currentPage = 0;
+    this.loadPartenaires();
   }
 
   getDisplayRange(): string {
@@ -191,84 +162,63 @@ export class PartenaireList implements OnInit {
   }
 
   // ----------------------------------
-  // Chargement des partenaires
+  // Chargement des partenaires (backend paginé)
   // ----------------------------------
-  // ----------------------------------
-// Chargement des partenaires
-// ----------------------------------
-loadPartenaires(): void {
-  this.isLoading = true;
-  this.error = null;
+  loadPartenaires(): void {
+    this.isLoading = true;
+    this.error = null;
 
-  console.log('Chargement partenaires avec params:', {
-    page: this.currentPage,
-    size: this.pageSize,
-    sort: this.sortField,
-    direction: this.sortDirection,
-    search: this.searchTerm,
-    status: this.selectedStatus,
-    type: this.selectedType
-  });
+    console.log('Chargement partenaires avec params:', {
+      page: this.currentPage,
+      size: this.pageSize,
+      sort: this.sortField,
+      direction: this.sortDirection,
+      search: this.searchTerm,
+      status: this.selectedStatus,
+      type: this.selectedType
+    });
 
-  this.partenaireService.getAll(
-    this.currentPage,
-    this.pageSize,
-    this.sortField,
-    this.sortDirection,
-    this.searchTerm,
-    this.selectedStatus,
-    this.selectedType
-  ).subscribe({
-    next: (response: any) => {
-      console.log('Réponse complète:', response);
-      
-      // Gestion flexible de la réponse SANS utiliser response.data
-      if (response && response.content) {
-        // Format Spring Page (PartenaireResponse)
-        this.partenaires = response.content;
-        this.totalElements = response.totalElements || 0;
-        this.totalPages = response.totalPages || 1;
-      } else if (response && Array.isArray(response)) {
-        // Format tableau simple (Partenaire[])
-        this.partenaires = response;
-        this.totalElements = response.length;
-        this.totalPages = Math.ceil(response.length / this.pageSize);
-      } else if (response && typeof response === 'object') {
-        // Autre format d'objet - essayer d'extraire les données
-        this.partenaires = response.content || response.items || response.partenaires || [];
-        this.totalElements = response.totalElements || response.total || this.partenaires.length;
-        this.totalPages = response.totalPages || Math.ceil(this.totalElements / this.pageSize);
-      } else {
-        // Format inconnu, utiliser les données directement
-        this.partenaires = response || [];
-        this.totalElements = this.partenaires.length;
-        this.totalPages = Math.ceil(this.totalElements / this.pageSize);
+    this.partenaireService.getAll(
+      this.currentPage,
+      this.pageSize,
+      this.sortField,
+      this.sortDirection,
+      this.searchTerm,
+      this.selectedStatus,
+      this.selectedType
+    ).subscribe({
+      next: (response: PartenaireResponse) => {
+        console.log('Réponse complète:', response);
+
+        this.partenaires = response?.content || [];
+        this.totalElements = response?.totalElements || this.partenaires.length;
+        this.totalPages = response?.totalPages || 1;
+
+        // Les lignes affichées correspondent à la page courante renvoyée par le backend
+        this.filteredPartenaires = [...this.partenaires];
+
+        console.log('Données finales:', {
+          partenaires: this.partenaires.length,
+          totalElements: this.totalElements,
+          totalPages: this.totalPages,
+          filtered: this.filteredPartenaires.length
+        });
+
+        this.isLoading = false;
+      },
+      error: (err) => {
+        console.error('Erreur lors du chargement des partenaires:', err);
+        this.error = 'Erreur lors du chargement des partenaires: ' + err.message;
+        this.isLoading = false;
+
+        // Charger les données d'exemple seulement en cas d'erreur réelle réseau/serveur
+        if (err.status === 0 || err.status >= 500) {
+          this.loadSampleData();
+        }
       }
+    });
+  }
 
-      // Toujours initialiser filteredPartenaires
-      this.filteredPartenaires = [...this.partenaires];
-      
-      console.log('Données finales:', {
-        partenaires: this.partenaires.length,
-        totalElements: this.totalElements,
-        totalPages: this.totalPages,
-        filtered: this.filteredPartenaires.length
-      });
-
-      this.isLoading = false;
-    },
-    error: (err) => {
-      console.error('Erreur lors du chargement des partenaires:', err);
-      this.error = 'Erreur lors du chargement des partenaires: ' + err.message;
-      this.isLoading = false;
-      
-      // Charger les données d'exemple seulement en cas d'erreur réelle
-      if (err.status === 0 || err.status >= 500) {
-        this.loadSampleData();
-      }
-    }
-  });
-}
   loadSampleData(): void {
     this.partenaires = [
       { id: 1, nom: 'Université de Bamako', domaine: 'Éducation', type: 'institution', email: 'contact@univ-bamako.ml', telephone: '+22320212223', dateAjout: '2024-01-15', statut: 'actif', pays: 'Mali', newsletter: true },
@@ -325,8 +275,28 @@ loadPartenaires(): void {
 
   getStatusLabel(statut: string): string {
     if (!statut) return 'Non défini';
-    const labels: Record<string, string> = { actif: 'Actif', inactif: 'Inactif', en_attente: 'En attente' };
-    return labels[statut.toLowerCase()] || statut;
+    const key = statut.toLowerCase();
+    const labels: Record<string, string> = {
+      actif: 'Actif',
+      inactif: 'Inactif',
+      en_attente: 'En attente',
+      pending: 'En attente'
+    };
+    return labels[key] || statut;
+  }
+
+  // Helper pour déduire un statut à partir du boolean "actif" si le backend ne fournit pas encore "statut"
+  getComputedStatus(p: Partenaire): string {
+    if (p.statut) {
+      return this.getStatusLabel(p.statut);
+    }
+    if ((p as any).actif === true) {
+      return 'Actif';
+    }
+    if ((p as any).actif === false) {
+      return 'Inactif';
+    }
+    return 'Non défini';
   }
 
   // ----------------------------------

@@ -26,8 +26,17 @@
         <div class="form-group">
           <label for="password">Mot de passe</label>
           <div class="input-wrapper">
-            <input type="password" id="password" formControlName="password" placeholder="Votre mot de passe">
-            <img src="/images/I520_1781_191_24.svg" alt="Password Icon" class="input-icon">
+            <input
+              [type]="showPassword ? 'text' : 'password'"
+              id="password"
+              formControlName="password"
+              placeholder="Votre mot de passe">
+            <img
+              src="/images/I520_1781_191_24.svg"
+              alt="Afficher / masquer le mot de passe"
+              class="input-icon"
+              [class.visible]="showPassword"
+              (click)="togglePasswordVisibility()">
           </div>
           <div class="field-error" *ngIf="password.touched && password.invalid">
             <small *ngIf="password.hasError('required')">Le mot de passe est requis.</small>

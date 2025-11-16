@@ -3,6 +3,10 @@ import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
+import { Partenaire } from '../../../../models/partenaire.model';
+import { PartenaireService } from '../../../../services/api/partenaire.service';
+import { ToastService } from '../../../../shared/ui/toast/toast.service';
+import { ConfirmService } from '../../../../shared/ui/confirm/confirm.service';
 
 interface PartenaireForms {
   id?: number;
@@ -36,11 +40,15 @@ export class PartenaireForm implements OnInit, OnDestroy {
   isLoading = false;
   showSuccessModal = false;
   private routeSub: Subscription | undefined;
+  private currentId?: number;
 
   constructor(
     private fb: FormBuilder,
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private partenaireService: PartenaireService,
+    private toast: ToastService,
+    private confirm: ConfirmService
   ) {
     this.partenaireForm = this.createForm();
   }
@@ -49,7 +57,8 @@ export class PartenaireForm implements OnInit, OnDestroy {
     this.routeSub = this.route.params.subscribe(params => {
       if (params['id']) {
         this.isEditMode = true;
-        this.loadPartenaire(parseInt(params['id']));
+        this.currentId = parseInt(params['id']);
+        this.loadPartenaire(this.currentId);
       }
     });
 
@@ -103,31 +112,36 @@ export class PartenaireForm implements OnInit, OnDestroy {
   }
 
   loadPartenaire(id: number): void {
-    // Simulation du chargement d'un partenaire existant
-    // En réalité, vous feriez un appel à votre service
     this.isLoading = true;
-
-    setTimeout(() => {
-      const partenaireMock: PartenaireForms = {
-        id: id,
-        nom: 'Université de Bamako',
-        domaine: 'Éducation supérieure',
-        type: 'institution',
-        email: 'contact@univ-bamako.ml',
-        telephone: '+223 20 21 22 23',
-        siteWeb: 'https://www.univ-bamako.ml',
-        adresse: 'BP 252 Bamako',
-        ville: 'Bamako',
-        pays: 'mali',
-        statut: 'actif',
-        dateDebut: '2024-01-15',
-        description: 'Université publique malienne',
-        newsletter: true
-      };
-
-      this.partenaireForm.patchValue(partenaireMock);
-      this.isLoading = false;
-    }, 1000);
+    this.partenaireService.getById(id).subscribe({
+      next: (p: Partenaire) => {
+        const formValue: PartenaireForms = {
+          id: p.id,
+          nom: p.nom,
+          domaine: p.domaine,
+          type: p.type,
+          autreType: p.autreType,
+          email: p.email,
+          telephone: p.telephone,
+          siteWeb: p.siteWeb,
+          adresse: p.adresse,
+          ville: p.ville,
+          pays: p.pays || 'mali',
+          autrePays: p.autrePays,
+          statut: p.statut,
+          dateDebut: p.dateDebut,
+          description: p.description,
+          newsletter: p.newsletter
+        };
+        this.partenaireForm.patchValue(formValue);
+        this.isLoading = false;
+      },
+      error: (err) => {
+        console.error('Erreur chargement partenaire:', err);
+        this.toast.error('Impossible de charger le partenaire');
+        this.isLoading = false;
+      }
+    });
   }
 
   get showOtherTypeField(): boolean {
@@ -158,18 +172,47 @@ export class PartenaireForm implements OnInit, OnDestroy {
       this.isLoading = true;
 
       // Préparer les données pour l'envoi
-      const formData: PartenaireForm = {
+      const formData: PartenaireForms = {
         ...this.partenaireForm.value,
         type: this.getFinalType(),
         pays: this.getFinalCountry()
       };
+      const payload: Partenaire = {
+        id: this.currentId,
+        nom: formData.nom,
+        domaine: formData.domaine,
+        type: formData.type,
+        autreType: formData.autreType,
+        email: formData.email,
+        telephone: formData.telephone,
+        siteWeb: formData.siteWeb,
+        adresse: formData.adresse,
+        ville: formData.ville,
+        pays: formData.pays,
+        autrePays: formData.autrePays,
+        statut: formData.statut,
+        dateDebut: formData.dateDebut,
+        dateAjout: formData.dateDebut,
+        description: formData.description,
+        newsletter: formData.newsletter,
+        actif: formData.statut === 'actif'
+      };
 
-      // Simuler un appel API
-      setTimeout(() => {
-        console.log('Données du formulaire:', formData);
-        this.isLoading = false;
-        this.showSuccessModal = true;
-      }, 1500);
+      const request$ = this.isEditMode && this.currentId
+        ? this.partenaireService.update(this.currentId, payload)
+        : this.partenaireService.create(payload);
+
+      request$.subscribe({
+        next: () => {
+          this.isLoading = false;
+          this.showSuccessModal = true;
+        },
+        error: (err) => {
+          console.error('Erreur enregistrement partenaire:', err);
+          this.toast.error("Erreur lors de l'enregistrement du partenaire");
+          this.isLoading = false;
+        }
+      });
     } else {
       // Marquer tous les champs comme touchés pour afficher les erreurs
       this.markAllFieldsAsTouched();
@@ -202,7 +245,7 @@ export class PartenaireForm implements OnInit, OnDestroy {
   }
 
   navigateToList(): void {
-    this.router.navigate(['/partenaires']);
+    this.router.navigate(['/admin/partenaire']);
   }
 
   closeSuccessModal(): void {

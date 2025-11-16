@@ -322,9 +322,12 @@
         <i class="icon-cancel">✕</i>
         Annuler
       </button>
-      <button type="submit" class="btn btn-primary" [disabled]="!livreForm.valid || isSubmitting">
+      <button
+        type="submit"
+        class="btn btn-primary"
+        [disabled]="isReadOnly || !livreForm.valid || isSubmitting">
         <i class="icon-save" [class.loading]="isSubmitting">💾</i>
-        {{ isSubmitting ? 'Enregistrement...' : 'Enregistrer le livre' }}
+        {{ isReadOnly ? 'Lecture seule' : (isSubmitting ? 'Enregistrement...' : 'Enregistrer le livre') }}
       </button>
     </div>
   </form>

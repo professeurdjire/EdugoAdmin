@@ -67,6 +67,9 @@
             </div>
           </div>
         </div>
+        <div class="selected-file-name" *ngIf="exerciceForm.get('fichierPrincipal')?.value">
+          Fichier sélectionné : {{ exerciceForm.get('fichierPrincipal')?.value.name }}
+        </div>
       </div>
     </fieldset>
 
@@ -83,6 +86,9 @@
               <div class="upload-sub">Formats: JPG, PNG, WebP . taille max: 10 MB</div>
             </div>
           </div>
+        </div>
+        <div class="selected-file-name" *ngIf="exerciceForm.get('imageExercice')?.value">
+          Image sélectionnée : {{ exerciceForm.get('imageExercice')?.value.name }}
         </div>
       </div>
     </fieldset>

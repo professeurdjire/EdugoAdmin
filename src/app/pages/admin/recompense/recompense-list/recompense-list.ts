@@ -19,6 +19,8 @@ import { BadgeResponse } from '../../../../api/model/badgeResponse';
 import { AuthService } from '../../../../services/api/auth.service';
 import { ConfirmService } from '../../../../shared/ui/confirm/confirm.service';
 import { ToastService } from '../../../../shared/ui/toast/toast.service';
+import { StatistiquesService } from '../../../../api/api/statistiques.service';
+import { StatistiquesPlateformeResponse } from '../../../../api/model/statistiquesPlateformeResponse';
 
 interface RecompenseDisplay {
   id: number;
@@ -42,12 +44,15 @@ export class RecompenseList implements OnInit {
   loading: boolean = false;
   error: string | null = null;
 
+  // Statistiques plateforme (réussites)
+  plateformeStats?: StatistiquesPlateformeResponse;
+
   // Statistiques
   stats = [
-    { label: 'Récompenses Disponibles', value: 0, icon: faTrophy, color: '#A885D8', bgColor: '#ede7ff' },
-    { label: 'Types de Récompenses', value: 0, icon: faStar, color: '#28bd7f', bgColor: '#e8f5e9' },
-    { label: 'Badges Actifs', value: 0, icon: faMedal, color: '#195a9d', bgColor: '#e1f5fe' },
-    { label: 'Total Points', value: 0, icon: faAward, color: '#ff6b6b', bgColor: '#ffebee' },
+    { label: 'Quiz réussis', value: 0, icon: faTrophy, color: '#A885D8', bgColor: '#ede7ff' },
+    { label: 'Défis réussis', value: 0, icon: faStar, color: '#28bd7f', bgColor: '#e8f5e9' },
+    { label: 'Challenges réussis', value: 0, icon: faMedal, color: '#195a9d', bgColor: '#e1f5fe' },
+    { label: 'Exercices réussis', value: 0, icon: faAward, color: '#ff6b6b', bgColor: '#ffebee' },
   ];
 
   // Pagination
@@ -66,11 +71,13 @@ export class RecompenseList implements OnInit {
     private authService: AuthService,
     private router: Router,
     private confirm: ConfirmService,
-    private toast: ToastService
+    private toast: ToastService,
+    private statistiquesService: StatistiquesService
   ) {}
 
   ngOnInit(): void {
     this.loadRecompenses();
+    this.loadPlateformeStats();
   }
 
   loadRecompenses(): void {
@@ -90,9 +97,6 @@ export class RecompenseList implements OnInit {
         this.recompenses = apiBadges.map(badge => this.transformBadge(badge));
         this.filteredRecompenses = [...this.recompenses];
         this.totalFiltered = this.filteredRecompenses.length;
-        
-        // Update stats
-        this.updateStats();
         
         // Extract unique types
         this.types = [...new Set(this.recompenses.map(r => r.type || ''))].filter(t => t);
@@ -127,11 +131,24 @@ export class RecompenseList implements OnInit {
 
   // Met à jour les statistiques
   updateStats(): void {
-    this.stats[0].value = this.recompenses.length;
-    this.stats[1].value = [...new Set(this.recompenses.map(r => r.type || ''))].filter(t => t).length;
-    this.stats[2].value = this.recompenses.filter(r => r.type === 'Badge').length;
-    // Pour les points, on pourrait calculer une valeur basée sur les récompenses si disponible
-    this.stats[3].value = this.recompenses.length * 100; // Valeur exemple
+    const s = this.plateformeStats;
+    this.stats[0].value = s?.totalQuizCompletes ?? 0;
+    this.stats[1].value = s?.totalDefisReussis ?? 0;
+    this.stats[2].value = s?.totalChallengesReussis ?? 0;
+    this.stats[3].value = s?.totalExercicesRealises ?? 0;
+  }
+
+  // Charge les statistiques globales de la plateforme
+  private loadPlateformeStats(): void {
+    this.statistiquesService.getStatistiquesPlateforme().subscribe({
+      next: (stats) => {
+        this.plateformeStats = stats;
+        this.updateStats();
+      },
+      error: (err) => {
+        console.error('Erreur lors du chargement des statistiques plateforme (récompenses):', err);
+      }
+    });
   }
 
   // Met à jour filteredRecompenses selon les filtres

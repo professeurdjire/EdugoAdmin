@@ -69,12 +69,12 @@ export class ExerciceDetails implements OnInit {
   }
 
   goBack(): void {
-    this.router.navigate(['/admin/exerciceList']);
+    this.router.navigate(['/admin/exercicelist']);
   }
 
   editExercice(): void {
     if (this.exerciceId) {
-      this.router.navigate(['/admin/ajouterexercice']);
+      this.router.navigate(['/admin/ajouterexercice', this.exerciceId]);
     }
   }
 }

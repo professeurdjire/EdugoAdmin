@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { RouterLink, Router } from '@angular/router';
+import { RouterLink, Router, ActivatedRoute } from '@angular/router';
 import { QuizzesService } from '../../../../api/api/quizzes.service';
 import { Quiz as ApiQuiz } from '../../../../api/model/quiz';
 import { ToastService } from '../../../../shared/ui/toast/toast.service';
@@ -93,10 +93,13 @@ export class QuizForm {
   backendTypes: Array<{ id: number; libelle: string }> = [];
   livres: Livre[] = [];
   selectedLivreId: number | null = null;
+  isEditMode = false;
+  quizId: number | null = null;
 
   constructor(
     private quizzesService: QuizzesService,
     private router: Router,
+    private route: ActivatedRoute,
     private toast: ToastService,
     private confirm: ConfirmService,
     private questionsService: QuestionsService,
@@ -126,6 +129,48 @@ export class QuizForm {
       },
       error: () => {
         this.toast.error('Impossible de charger la liste des livres');
+      }
+    });
+
+    // Déterminer si on est en mode édition via l'ID dans l'URL
+    this.route.params.subscribe(params => {
+      const idParam = params['id'];
+      if (idParam) {
+        this.isEditMode = true;
+        this.quizId = +idParam;
+        this.loadExistingQuiz(this.quizId);
+      }
+    });
+  }
+
+  private loadExistingQuiz(id: number) {
+    this.isLoading = true;
+    this.quizzesService.getQuizById(id).subscribe({
+      next: (res: any) => {
+        // Adapter les champs disponibles de QuizResponse
+        this.quiz.titre = res.titre || '';
+        this.quiz.description = res.description || '';
+
+        if (res.duree != null) {
+          this.quiz.duree = res.duree;
+        }
+        if (res.difficulte) {
+          this.quiz.difficulte = res.difficulte;
+        }
+
+        // Tenter de pré-sélectionner le livre à partir de titreLivre
+        if (res.titreLivre && this.livres && this.livres.length) {
+          const match = this.livres.find(l => l.titre === res.titreLivre);
+          if (match && match.id) {
+            this.selectedLivreId = match.id;
+          }
+        }
+
+        this.isLoading = false;
+      },
+      error: () => {
+        this.isLoading = false;
+        this.toast.error('Impossible de charger le quiz pour édition');
       }
     });
   }
@@ -365,7 +410,7 @@ export class QuizForm {
 
     this.isLoading = true;
 
-    // Transformation des données pour l'API
+    // Transformation des données pour l'API (création ou mise à jour)
     const payload = {
       titre: this.quiz.titre,
       description: this.quiz.description,
@@ -388,6 +433,24 @@ export class QuizForm {
       }))
     };
 
+    // Mode édition : on met à jour le quiz sans recréer les questions
+    if (this.isEditMode && this.quizId) {
+      this.quizzesService.updateQuiz(this.quizId, payload as any).subscribe({
+        next: () => {
+          this.isLoading = false;
+          this.toast.success('Quiz mis à jour avec succès !');
+          this.router.navigate(['/admin/quizlist']);
+        },
+        error: (err) => {
+          this.isLoading = false;
+          console.error('Erreur lors de la mise à jour du quiz:', err);
+          this.toast.error('Erreur lors de la mise à jour du quiz. Veuillez réessayer.');
+        }
+      });
+      return;
+    }
+
+    // Mode création : on crée le quiz puis les questions
     this.quizzesService.createQuiz(payload as any).subscribe({
       next: (res) => {
         const quizId = (res as any)?.id;

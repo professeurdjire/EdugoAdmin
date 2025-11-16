@@ -162,8 +162,10 @@ export class LivreList implements OnInit {
 
   // Actions
   viewLivre(livre: LivreDisplay) {
-    // Navigate to livre details page
-    this.router.navigate(['/admin/livredetails', livre.id]);
+    // Ouvrir le formulaire livre en mode consultation (lecture seule)
+    this.router.navigate(['/admin/ajouterlivre', livre.id], {
+      queryParams: { mode: 'view' }
+    });
   }
 
   editLivre(livre: LivreDisplay) {

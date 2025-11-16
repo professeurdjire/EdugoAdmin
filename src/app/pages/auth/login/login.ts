@@ -22,6 +22,7 @@ import { ToastContainer } from '../../../shared/ui/toast/toast-container';
 export class Login {
   loginForm: FormGroup;
   loading = false;
+  showPassword = false;
 
   constructor(
     private fb: FormBuilder,
@@ -38,6 +39,10 @@ export class Login {
   // Typed accessors for template to satisfy Angular's strict type-checker
   get email(): FormControl { return this.loginForm.get('email') as FormControl; }
   get password(): FormControl { return this.loginForm.get('password') as FormControl; }
+
+  togglePasswordVisibility(): void {
+    this.showPassword = !this.showPassword;
+  }
 
   onSubmit(): void {
     if (this.loginForm.invalid) {

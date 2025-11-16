@@ -58,49 +58,84 @@ export class PartenaireService {
   //     params = params.set('type', type);
   //   }
 
-  //   return this.http.get<PartenaireResponse>(this.baseUrl, { params })
-  //     .pipe(
-  //       catchError(this.handleError)
-  //     );
-  // }
   // Dans PartenaireService - CORRIGER la méthode getAll
-getAll(
-  page: number = 0,
-  size: number = 10,
-  sortBy: string = 'nom',
-  sortDirection: string = 'asc',
-  searchTerm: string = '',
-  status: string = '',
-  type: string = ''
-): Observable<PartenaireResponse> {
-  let params = new HttpParams()
-    .set('page', page.toString())
-    .set('size', size.toString())
-    .set('sort', `${sortBy},${sortDirection}`); // Format standard pour Spring
+  getAll(
+    page: number = 0,
+    size: number = 10,
+    sortBy: string = 'nom',
+    sortDirection: string = 'asc',
+    searchTerm: string = '',
+    status: string = '',
+    type: string = ''
+  ): Observable<PartenaireResponse> {
+    let params = new HttpParams()
+      .set('page', page.toString())
+      .set('size', size.toString())
+      .set('sort', `${sortBy},${sortDirection}`); // Format standard pour Spring
 
-  if (searchTerm) {
-    params = params.set('search', searchTerm);
+    if (searchTerm) {
+      params = params.set('search', searchTerm);
+    }
+
+    if (status) {
+      params = params.set('statut', status); // Corriger le nom du paramètre
+    }
+
+    if (type) {
+      params = params.set('type', type);
+    }
+
+    console.log('Requête API Partenaires:', {
+      url: this.baseUrl,
+      params: params.toString()
+    });
+
+    // Accepter soit un PartenaireResponse direct, soit un ApiResponse<PartenaireResponse>
+    return this.http.get<any>(this.baseUrl, { params })
+      .pipe(
+        tap(resp => console.log('Réponse brute API Partenaires:', resp)),
+        map((resp: any): PartenaireResponse => {
+          // Cas 1 : enveloppe { data: { content, totalElements, ... } }
+          if (resp && resp.data && resp.data.content) {
+            return resp.data as PartenaireResponse;
+          }
+
+          // Cas 2 : réponse déjà au format PartenaireResponse
+          if (resp && resp.content) {
+            return resp as PartenaireResponse;
+          }
+
+          // Cas 3 : tableau simple de partenaires
+          if (Array.isArray(resp)) {
+            const content = resp as Partenaire[];
+            return {
+              content,
+              totalElements: content.length,
+              totalPages: 1,
+              size: content.length,
+              number: 0,
+              first: true,
+              last: true,
+              empty: content.length === 0
+            } as PartenaireResponse;
+          }
+
+          // Fallback : aucune donnée exploitable
+          return {
+            content: [],
+            totalElements: 0,
+            totalPages: 1,
+            size: 0,
+            number: 0,
+            first: true,
+            last: true,
+            empty: true
+          } as PartenaireResponse;
+        }),
+        tap(page => console.log('Réponse normalisée Partenaires:', page)),
+        catchError(this.handleError)
+      );
   }
-
-  if (status) {
-    params = params.set('statut', status); // Corriger le nom du paramètre
-  }
-
-  if (type) {
-    params = params.set('type', type);
-  }
-
-  console.log('Requête API Partenaires:', { 
-    url: this.baseUrl, 
-    params: params.toString() 
-  });
-
-  return this.http.get<PartenaireResponse>(this.baseUrl, { params })
-    .pipe(
-      tap(response => console.log('Réponse API Partenaires:', response)),
-      catchError(this.handleError)
-    );
-}
 
   // Get a single partenaire by ID
   getById(id: number): Observable<Partenaire> {

@@ -207,7 +207,9 @@
             </td>
             <td>
               <div class="contact-info">
-                <div class="contact-email">{{ partenaire.email }}</div>
+                <div class="contact-email">
+                  {{ partenaire.email || partenaire.siteWeb || '—' }}
+                </div>
                 <div class="contact-phone" *ngIf="partenaire.telephone">
                   {{ partenaire.telephone }}
                 </div>
@@ -215,12 +217,12 @@
             </td>
             <td>
               <div class="date-info">
-                {{ partenaire.dateAjout | date:'dd/MM/yyyy' }}
+                {{ (partenaire.dateAjout || partenaire.dateCreation) | date:'dd/MM/yyyy' }}
               </div>
             </td>
             <td>
               <span class="status-badge" [class]="partenaire.statut?.toLowerCase()">
-                {{ getStatusLabel(partenaire.statut) }}
+                {{ getComputedStatus(partenaire) }}
               </span>
             </td>
             <td>

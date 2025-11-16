@@ -22,7 +22,7 @@
 
       <div class="filter-group">
         <label>Niveau scolaire</label>
-        <select [(ngModel)]="selectedLevel">
+        <select [(ngModel)]="selectedNiveau">
           <option>Tous les niveaux</option>
           <option>2ème</option>
           <option>3ème</option>
@@ -65,7 +65,6 @@
           <th>Utilisateur</th>
           <th>Niveau</th>
           <th>Téléphone</th>
-          <th>Inscription</th>
           <th>Points</th>
           <th>Statut</th>
           <th>Actions</th>
@@ -80,9 +79,8 @@
               <small class="email">{{ user.email }}</small>
             </div>
           </td>
-          <td><span class="level-badge">{{ user.level }}</span></td>
-          <td>{{ user.phone }}</td>
-          <td>{{ user.registrationDate }}</td>
+          <td><span class="level-badge">{{ user.niveau }}</span></td>
+          <td>{{ user.telephone }}</td>
           <td>{{ user.points }}</td>
           <td>
               <span class="status-badge" [class.active-status]="user.status === 'Actif'">

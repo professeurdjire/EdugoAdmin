@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import {FormBuilder, FormGroup, FormArray, Validators, FormControl, ReactiveFormsModule} from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 import { DefisService } from '../../../../services/api/admin/defis.service';
@@ -27,6 +27,8 @@ export class DefiForm implements OnInit {
   loadingTypes = false;
   backendTypes: Array<{ id: number; libelle: string }> = [];
   classes: Classe[] = [];
+  isEditMode = false;
+  defiId: number | null = null;
 
   typesQuestions = [
     { value: 'choix_multiple', label: 'Choix multiple', icon: '📝' },
@@ -44,9 +46,17 @@ export class DefiForm implements OnInit {
     { value: 'difficile', label: 'Difficile' }
   ];
 
+  // Types de défis proposés dans le formulaire (sélection au lieu de saisie libre)
+  defiTypes = [
+    { value: 'JOURNALIER', label: 'Journalier' },
+    { value: 'HEBDOMADAIRE', label: 'Hebdomadaire' },
+    { value: 'MENSUEL', label: 'Mensuel' }
+  ];
+
   constructor(
     private fb: FormBuilder,
     private router: Router,
+    private route: ActivatedRoute,
     private defisService: DefisService,
     private toast: ToastService,
     private confirm: ConfirmService,
@@ -74,6 +84,38 @@ export class DefiForm implements OnInit {
       next: (d) => (this.classes = d || []),
       error: () => this.toast.error('Impossible de charger les classes')
     });
+
+    // Mode édition: récupération de l'ID dans l'URL
+    this.route.params.subscribe(params => {
+      const idParam = params['id'];
+      if (idParam) {
+        this.isEditMode = true;
+        this.defiId = +idParam;
+        this.loadExistingDefi(this.defiId);
+      }
+    });
+  }
+
+  private loadExistingDefi(id: number) {
+    this.isLoading = true;
+    this.defisService.get(id).subscribe({
+      next: (defi) => {
+        // Pré-remplir les champs de base
+        this.defiForm.patchValue({
+          classeConcernee: defi.classe?.id?.toString() || '',
+          titre: defi.titre || '',
+          description: defi.ennonce || '',
+          typeDefis: defi.typeDefi || '',
+          dateAjout: this.toLocalDateTimeInput(defi.dateAjout)
+        });
+
+        this.isLoading = false;
+      },
+      error: () => {
+        this.isLoading = false;
+        this.toast.error('Impossible de charger le défi pour édition');
+      }
+    });
   }
 
   // Getter pour accéder facilement au FormArray des questions
@@ -88,7 +130,7 @@ export class DefiForm implements OnInit {
       classeConcernee: ['', [Validators.required]],
       titre: ['', [Validators.required, Validators.minLength(3)]],
       description: [''],
-      typeDefis: [''],
+      typeDefis: ['', [Validators.required]],
       dateAjout: ['', [Validators.required]],
 
       // Questions (FormArray)
@@ -198,6 +240,65 @@ export class DefiForm implements OnInit {
     paires.removeAt(paireIndex);
   }
 
+  // Changement de type de question (comportement proche de quiz-form)
+  onTypeQuestionChange(index: number) {
+    const questionCtrl = this.questions.at(index) as FormGroup;
+    let type = String(questionCtrl.get('typeQuestion')?.value || 'choix_multiple');
+
+    const reponses = this.getReponses(index);
+    const paires = this.getPaires(index);
+
+    if (type === 'appariement') {
+      // Réinitialiser les paires si nécessaire
+      while (reponses.length) {
+        reponses.removeAt(0);
+      }
+      if (paires.length === 0) {
+        paires.push(this.fb.group({ elementGauche: [''], elementDroit: [''] }));
+        paires.push(this.fb.group({ elementGauche: [''], elementDroit: [''] }));
+      }
+      questionCtrl.get('bonneReponse')?.setValue('');
+      return;
+    }
+
+    // Types sans réponses prédéfinies
+    if (type === 'reponse_courte' || type === 'reponse_longue') {
+      while (reponses.length) {
+        reponses.removeAt(0);
+      }
+      while (paires.length) {
+        paires.removeAt(0);
+      }
+      questionCtrl.get('bonneReponse')?.setValue('');
+      return;
+    }
+
+    // Type VRAI_FAUX : réponses fixes Vrai / Faux
+    if (type === 'vrai_faux') {
+      while (reponses.length) {
+        reponses.removeAt(0);
+      }
+      while (paires.length) {
+        paires.removeAt(0);
+      }
+      reponses.push(this.fb.group({ lettre: ['V'], texte: ['VRAI'], correcte: [false] }));
+      reponses.push(this.fb.group({ lettre: ['F'], texte: ['FAUX'], correcte: [false] }));
+      questionCtrl.get('bonneReponse')?.setValue('');
+      return;
+    }
+
+    // Types à choix (QCU/QCM/case à cocher/ordre)
+    while (paires.length) {
+      paires.removeAt(0);
+    }
+    if (reponses.length < 2) {
+      while (reponses.length) {
+        reponses.removeAt(0);
+      }
+      this.defaultReponses().forEach(g => reponses.push(g));
+    }
+  }
+
   // Soumission du formulaire
   onSubmit(): void {
     if (this.defiForm.valid && this.validateQuestionsBySpec()) {
@@ -205,20 +306,38 @@ export class DefiForm implements OnInit {
       const payload: Partial<Defi> = {
         titre: formData.titre,
         ennonce: formData.description,
-        dateAjout: formData.dateAjout,
+        dateAjout: this.fromLocalDateTimeInput(formData.dateAjout),
         typeDefi: formData.typeDefis,
         pointDefi: this.totalPoints(),
         classe: formData.classeConcernee ? { id: +formData.classeConcernee } : undefined
       };
 
       this.isLoading = true;
+
+      // Edition: mise à jour du défi sans recréer les questions pour l'instant
+      if (this.isEditMode && this.defiId) {
+        this.defisService.update(this.defiId, payload).subscribe({
+          next: () => {
+            this.isLoading = false;
+            this.confirmRedirectToList('Le défi a été mis à jour avec succès.');
+          },
+          error: (err) => {
+            this.isLoading = false;
+            console.error('Erreur lors de la mise à jour du défi:', err);
+            this.toast.error('Erreur lors de la mise à jour du défi. Veuillez réessayer.');
+          }
+        });
+        return;
+      }
+
+      // Création: on crée le défi puis les questions associées
       this.defisService.create(payload).subscribe({
         next: (res) => {
           const defiId = (res as any)?.id;
           if (!defiId) {
             this.isLoading = false;
             this.toast.warning('Défi créé mais identifiant introuvable pour créer les questions.');
-            this.router.navigate(['/admin/defiList']);
+            this.confirmRedirectToList('Défi créé mais identifiant introuvable pour créer les questions.');
             return;
           }
 
@@ -244,14 +363,13 @@ export class DefiForm implements OnInit {
           forkJoin(questionRequests.map(req => this.questionsService.createQuestion(req))).subscribe({
             next: () => {
               this.isLoading = false;
-              this.toast.success('Défi et questions créés avec succès !');
-              this.router.navigate(['/admin/defiList']);
+              this.confirmRedirectToList('Le défi et ses questions ont été créés avec succès.');
             },
             error: (err) => {
               this.isLoading = false;
               console.error('Erreur création questions du défi:', err);
               this.toast.error('Défi créé mais erreur lors de la création des questions');
-              this.router.navigate(['/admin/defiList']);
+              // On reste sur place pour permettre à l'utilisateur de corriger ou réessayer
             }
           });
         },
@@ -276,7 +394,7 @@ export class DefiForm implements OnInit {
     }).then(ok => {
       if (ok) {
         this.defiForm.reset();
-        this.router.navigate(['/admin/defiList']);
+        this.router.navigate(['/admin/defilist']);
       }
     });
   }
@@ -306,8 +424,6 @@ export class DefiForm implements OnInit {
     });
   }
 
-  
-
   // Helpers
   totalPoints(): number {
     return this.questions.controls.reduce((acc, q: any) => acc + (q.get('points')?.value || 0), 0);
@@ -317,19 +433,9 @@ export class DefiForm implements OnInit {
     return this.defiForm.valid;
   }
 
-  private mapFrontTypeToApi(front: string): 'QCU' | 'QCM' | 'VRAI_FAUX' | 'APPARIEMENT' {
-    switch (front) {
-      case 'choix_multiple':
-        return 'QCU';
-      case 'multi_reponse':
-        return 'QCM';
-      case 'vrai_faux':
-        return 'VRAI_FAUX';
-      case 'appariement':
-        return 'APPARIEMENT';
-      default:
-        return 'QCU';
-    }
+  getDescriptionType(type: string): string {
+    const t = this.typesQuestions.find(x => x.value === type);
+    return t ? t.label : '';
   }
 
   private validateQuestionsBySpec(): boolean {
@@ -351,9 +457,62 @@ export class DefiForm implements OnInit {
       }
       if (type === 'APPARIEMENT') {
         const p = v.pairesAppariement || [];
-        return p.length >= 2 && p.every((x:any)=> String(x.elementGauche||'').trim()!=='' && String(x.elementDroit||'').trim()!=='');
+        return p.length >= 2 && p.every((x:any)=> String(x.elementGauche||'').trim()!=='' && String(x.elementDroit||'').trim()!=='' );
       }
       return true;
     });
+  }
+
+  private mapFrontTypeToApi(front: string): 'QCU' | 'QCM' | 'VRAI_FAUX' | 'APPARIEMENT' {
+    switch (front) {
+      case 'choix_multiple':
+        return 'QCU';
+      case 'multi_reponse':
+        return 'QCM';
+      case 'vrai_faux':
+        return 'VRAI_FAUX';
+      case 'appariement':
+        return 'APPARIEMENT';
+      default:
+        return 'QCU';
+    }
+  }
+
+  private toLocalDateTimeInput(value?: string | null): string {
+    if (!value) {
+      return '';
+    }
+    // Supposons un format ISO ou LocalDateTime (ex: 2025-11-16T01:30:00)
+    // L'input datetime-local attend "YYYY-MM-DDTHH:mm"
+    if (value.length >= 16) {
+      return value.substring(0, 16);
+    }
+    return value;
+  }
+
+  private fromLocalDateTimeInput(value?: string | null): string | undefined {
+    if (!value) {
+      return undefined;
+    }
+    // Si pas de secondes, on ajoute ":00" pour avoir un LocalDateTime complet
+    if (value.length === 16) {
+      return value + ':00';
+    }
+    return value;
+  }
+
+  private confirmRedirectToList(message: string) {
+    this.confirm
+      .confirm({
+        title: this.isEditMode ? 'Défi mis à jour' : 'Défi créé',
+        message,
+        confirmText: 'Aller à la liste',
+        cancelText: 'Rester ici'
+      })
+      .then((ok) => {
+        if (ok) {
+          this.router.navigate(['/admin/defilist']);
+        }
+      });
   }
 }

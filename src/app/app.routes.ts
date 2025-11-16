@@ -62,6 +62,7 @@ export const routes: Routes = [
         component: Dashboard, // layout auth
       },
       { path: 'ajouterchallenge', component: ChallengeForm },
+      { path: 'ajouterchallenge/:id', component: ChallengeForm },
       { path: 'challengedetails', component: ChallengeDetails },
       { path: 'challengeDetails/:id', component: ChallengeDetails },
       { path: 'challengelist', component: ChallengeList },

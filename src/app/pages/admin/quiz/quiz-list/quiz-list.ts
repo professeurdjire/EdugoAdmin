@@ -15,7 +15,7 @@ interface QuizDisplay {
   statut: string;
   createdAt: string;
   nombreQuestions: number;
-  livre: string;
+  titreLivre: string;
   titre: string;
 }
 
@@ -109,8 +109,9 @@ export class QuizList implements OnInit {
       statut: statutDisplay,
       createdAt: createdDateStr,
       nombreQuestions: quiz.nombreQuestions || 0,
-      livre: quiz.livre?.titre || 'Non associé',
-      titre: (quiz as any).titre || 'Sans titre'
+      // titreLivre vient directement du DTO QuizResponse (String)
+      titreLivre: quiz.titreLivre || 'Non associé',
+      titre: quiz.titre || 'Sans titre'
     };
   }
 
@@ -121,7 +122,7 @@ export class QuizList implements OnInit {
       const matchesSearch =
         !term ||
         quiz.titre.toLowerCase().includes(term) ||
-        quiz.livre.toLowerCase().includes(term) ||
+        quiz.titreLivre.toLowerCase().includes(term) ||
         quiz.statut.toLowerCase().includes(term);
 
       const matchesStatus =
@@ -170,8 +171,8 @@ export class QuizList implements OnInit {
 
   // Actions
   viewQuiz(quiz: QuizDisplay) {
-    // Navigate to quiz details page
-    this.router.navigate(['/admin/quizdetails', quiz.id]);
+    // Naviguer vers la page de détails du quiz (route: quizDetails/:id)
+    this.router.navigate(['/admin/quizDetails', quiz.id]);
   }
 
   editQuiz(quiz: QuizDisplay) {

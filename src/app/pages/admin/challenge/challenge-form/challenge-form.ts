@@ -39,6 +39,17 @@ export class ChallengeForm {
     { value: 'TOP3', label: 'Top 3' }
   ];
 
+  // Types de questions disponibles (alignés sur Quiz)
+  typesQuestions = [
+    { value: 'choix_multiple', label: 'Choix multiple' },
+    { value: 'multi_reponse', label: 'Multi-réponses' },
+    { value: 'vrai_faux', label: 'Vrai / Faux' },
+    { value: 'reponse_courte', label: 'Réponse courte' },
+    { value: 'reponse_longue', label: 'Réponse longue' },
+    { value: 'appariement', label: 'Appariement' },
+    { value: 'ordre', label: 'Ordre' }
+  ];
+
   constructor(
     private location: Location,
     private challengesService: ChallengesService,
@@ -107,17 +118,56 @@ export class ChallengeForm {
   }
 
   private createQuestionGroup(): FormGroup {
+    return this.createQuestionGroupFromValue({
+      typeQuestion: 'choix_multiple',
+      question: '',
+      points: 1,
+      bonneReponse: '',
+      reponses: [
+        { lettre: 'A', texte: '', correcte: false },
+        { lettre: 'B', texte: '', correcte: false },
+        { lettre: 'C', texte: '', correcte: false },
+        { lettre: 'D', texte: '', correcte: false }
+      ],
+      pairesAppariement: []
+    });
+  }
+
+  private createQuestionGroupFromValue(val: any): FormGroup {
+    const reponsesArray = new FormArray([] as any[]);
+    (val.reponses || []).forEach((r: any) => {
+      reponsesArray.push(
+        this.fb.group({
+          lettre: r.lettre,
+          texte: r.texte,
+          correcte: !!r.correcte
+        })
+      );
+    });
+
+    const pairesArray = new FormArray([] as any[]);
+    (val.pairesAppariement || []).forEach((p: any) => {
+      pairesArray.push(
+        this.fb.group({
+          elementGauche: p.elementGauche,
+          elementDroit: p.elementDroit
+        })
+      );
+    });
+
+    // S'assurer qu'il y a au moins 2 réponses pour les QCM/QCU
+    if (!reponsesArray.length) {
+      reponsesArray.push(this.fb.group({ lettre: 'A', texte: '', correcte: false }));
+      reponsesArray.push(this.fb.group({ lettre: 'B', texte: '', correcte: false }));
+    }
+
     return this.fb.group({
-      typeQuestion: ['choix_multiple', Validators.required],
-      question: ['', [Validators.required, Validators.minLength(5)]],
-      points: [1, [Validators.min(1)]],
-      reponses: this.fb.array([
-        this.fb.group({ lettre: 'A', texte: '', correcte: false }),
-        this.fb.group({ lettre: 'B', texte: '', correcte: false }),
-        this.fb.group({ lettre: 'C', texte: '', correcte: false }),
-        this.fb.group({ lettre: 'D', texte: '', correcte: false })
-      ]),
-      pairesAppariement: this.fb.array([])
+      typeQuestion: [val.typeQuestion || 'choix_multiple', Validators.required],
+      question: [val.question || '', [Validators.required, Validators.minLength(5)]],
+      points: [val.points || 1, [Validators.min(1)]],
+      bonneReponse: [val.bonneReponse || ''],
+      reponses: reponsesArray,
+      pairesAppariement: pairesArray
     });
   }
 
@@ -131,6 +181,20 @@ export class ChallengeForm {
 
   ajouterQuestion() {
     this.questions.push(this.createQuestionGroup());
+  }
+
+  dupliquerQuestion(i: number) {
+    const original = this.questions.at(i) as FormGroup;
+    const clone = this.createQuestionGroupFromValue(original.value);
+    this.questions.insert(i + 1, clone);
+  }
+
+  deplacerQuestion(i: number, direction: 'up' | 'down') {
+    const target = direction === 'up' ? i - 1 : i + 1;
+    if (target < 0 || target >= this.questions.length) return;
+    const ctrl = this.questions.at(i);
+    this.questions.removeAt(i);
+    this.questions.insert(target, ctrl);
   }
 
   supprimerQuestion(i: number) {
@@ -150,9 +214,29 @@ export class ChallengeForm {
     reps.removeAt(j);
   }
 
-  onReponseCorrecteChange(i: number, j: number) {
+  onReponseCorrecteChange(i: number, j: number, type: string) {
+    const questionGroup = this.questions.at(i) as FormGroup;
     const reps = this.getReponses(i);
+
+    if (type === 'multi_reponse' || type === 'case_a_cocher') {
+      const current = reps.at(j);
+      const newValue = !current.get('correcte')?.value;
+      current.get('correcte')?.setValue(newValue);
+
+      // Mettre à jour bonneReponse avec la liste des lettres correctes
+      const letters = reps.controls
+        .filter(ctrl => !!ctrl.get('correcte')?.value)
+        .map(ctrl => String(ctrl.get('lettre')?.value || ''))
+        .join(',');
+      questionGroup.get('bonneReponse')?.setValue(letters);
+      return;
+    }
+
+    // QCU / vrai_faux / ordre / autres : une seule bonne réponse
     reps.controls.forEach((ctrl, idx) => ctrl.get('correcte')?.setValue(idx === j));
+    const selected = reps.at(j);
+    const lettre = String(selected.get('lettre')?.value || '');
+    questionGroup.get('bonneReponse')?.setValue(lettre);
   }
 
   ajouterPaireAppariement(i: number) {
@@ -164,6 +248,59 @@ export class ChallengeForm {
     const p = this.getPaires(i);
     if (p.length <= 2) return;
     p.removeAt(j);
+  }
+
+  onTypeQuestionChange(i: number) {
+    const qGroup = this.questions.at(i) as FormGroup;
+    const type = String(qGroup.get('typeQuestion')?.value || 'choix_multiple');
+    const reponses = qGroup.get('reponses') as FormArray;
+    const paires = qGroup.get('pairesAppariement') as FormArray;
+
+    // Réinitialiser certains champs
+    qGroup.get('bonneReponse')?.setValue('');
+
+    if (type === 'appariement') {
+      // Pas de réponses classiques, seulement des paires
+      while (reponses.length) reponses.removeAt(0);
+      if (paires.length === 0) {
+        paires.push(this.fb.group({ elementGauche: '', elementDroit: '' }));
+        paires.push(this.fb.group({ elementGauche: '', elementDroit: '' }));
+      }
+      return;
+    }
+
+    if (type === 'vrai_faux') {
+      // 2 réponses fixes Vrai/Faux
+      while (paires.length) paires.removeAt(0);
+      while (reponses.length) reponses.removeAt(0);
+      reponses.push(this.fb.group({ lettre: 'V', texte: 'VRAI', correcte: false }));
+      reponses.push(this.fb.group({ lettre: 'F', texte: 'FAUX', correcte: false }));
+      return;
+    }
+
+    if (type === 'reponse_courte' || type === 'reponse_longue') {
+      // Pas de réponses multiples ni de paires, seulement bonneReponse
+      while (paires.length) paires.removeAt(0);
+      while (reponses.length) reponses.removeAt(0);
+      return;
+    }
+
+    // Types QCU / QCM / ordre : réponses classiques, pas de paires
+    while (paires.length) paires.removeAt(0);
+    if (reponses.length < 2) {
+      while (reponses.length) reponses.removeAt(0);
+      reponses.push(this.fb.group({ lettre: 'A', texte: '', correcte: false }));
+      reponses.push(this.fb.group({ lettre: 'B', texte: '', correcte: false }));
+    }
+  }
+
+  totalPoints(): number {
+    return this.questions.controls.reduce((acc, ctrl: any) => acc + (ctrl.value.points || 0), 0);
+  }
+
+  getDescriptionType(type: string): string {
+    const t = this.typesQuestions.find(x => x.value === type);
+    return t ? t.label : '';
   }
 
   onRetour() {
@@ -208,7 +345,7 @@ export class ChallengeForm {
         if (!challengeId) {
           this.isLoading = false;
           this.toast.warning('Challenge créé mais identifiant introuvable pour créer les questions.');
-          this.router.navigate(['/admin/challengelist']);
+          this.confirmRedirectToList('Challenge créé mais identifiant introuvable pour créer les questions.');
           return;
         }
 
@@ -234,14 +371,13 @@ export class ChallengeForm {
         forkJoin(questionRequests.map(req => this.questionsService.createQuestion(req))).subscribe({
           next: () => {
             this.isLoading = false;
-            this.toast.success('Challenge et questions créés avec succès !');
-            this.router.navigate(['/admin/challengelist']);
+            this.confirmRedirectToList('Le challenge et ses questions ont été créés avec succès.');
           },
           error: (err) => {
             this.isLoading = false;
             console.error('Erreur création questions du challenge:', err);
             this.toast.error('Challenge créé mais erreur lors de la création des questions');
-            this.router.navigate(['/admin/challengelist']);
+            // On reste sur place pour permettre à l'utilisateur de corriger ou réessayer
           }
         });
       },
@@ -266,5 +402,20 @@ export class ChallengeForm {
       default:
         return 'QCU';
     }
+  }
+
+  private confirmRedirectToList(message: string) {
+    this.confirm
+      .confirm({
+        title: 'Challenge créé',
+        message,
+        confirmText: 'Aller à la liste',
+        cancelText: 'Rester ici'
+      })
+      .then((ok) => {
+        if (ok) {
+          this.router.navigate(['/admin/challengelist']);
+        }
+      });
   }
 }

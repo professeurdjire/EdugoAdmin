@@ -1,13 +1,17 @@
 <div class="form-container">
   <div class="form-header">
-    <h1 class="form-title">Ajouter un défi</h1>
+    <h1 class="form-title">{{ isEditMode ? 'Modifier un défi' : 'Ajouter un défi' }}</h1>
     <a routerLink="/admin/defilist" class="back-btn">
       <fa-icon [icon]="faArrowLeft"></fa-icon>
       <span>Retour</span>
     </a>
   </div>
 
-  <div class="form-description">Remplissez les informations suivantes pour ajouter un défi dans la plateforme.</div>
+  <div class="form-description">
+    {{ isEditMode
+        ? 'Modifiez les informations de ce défi tout en conservant les données existantes.'
+        : 'Remplissez les informations suivantes pour ajouter un défi dans la plateforme.' }}
+  </div>
 
   <div class="form-content">
     <form class="challenge-form" [formGroup]="defiForm" (ngSubmit)="onSubmit()">
@@ -50,10 +54,12 @@
       <div class="form-group">
         <label for="challenge-type">Type de défis</label>
         <div class="input-wrapper">
-          <input type="text" id="challenge-type"
-                 formControlName="typeDefis"
-                 placeholder="Sélectionnez le type de défi"
-                 class="form-input">
+          <select id="challenge-type"
+                  formControlName="typeDefis"
+                  class="form-input">
+            <option value="" disabled>Sélectionnez le type de défi</option>
+            <option *ngFor="let t of defiTypes" [value]="t.value">{{ t.label }}</option>
+          </select>
           <span class="input-icon dropdown-arrow-90">▼</span>
         </div>
       </div>
@@ -61,7 +67,7 @@
       <div class="form-group">
         <label for="date-added">Date ajout <span class="required-star">*</span></label>
         <div class="input-wrapper">
-          <input type="date" id="date-added"
+          <input type="datetime-local" id="date-added"
                  formControlName="dateAjout"
                  class="form-input">
           <div class="input-icon-group">
@@ -101,13 +107,17 @@
           <div class="input-wrapper">
             <select [id]="'question-type-' + i"
                     formControlName="typeQuestion"
-                    class="form-input">
-              <option value="">Ex: Question a multiples choix</option>
-              <option value="choix_multiple">Question à choix multiples</option>
-              <option value="vrai_faux">Vrai/Faux</option>
-              <option value="reponse_courte">Réponse courte</option>
+                    class="form-input"
+                    (change)="onTypeQuestionChange(i)">
+              <option value="">Sélectionner un type</option>
+              <option *ngFor="let type of typesQuestions" [value]="type.value">
+                {{ type.label }}
+              </option>
             </select>
             <span class="input-icon dropdown-arrow-neg-90">▼</span>
+          </div>
+          <div class="type-description">
+            {{ getDescriptionType(question.get('typeQuestion')?.value) }}
           </div>
         </div>
 

@@ -1,1 +1,128 @@
-<p>utilisateur-form works!</p>
+<div class="user-form-page">
+  <div class="page-header">
+    <h1 class="page-title">Détails de l'élève</h1>
+    <a routerLink="/admin/utilisateurs" class="back-link">&larr; Retour à la liste</a>
+  </div>
+
+  <div *ngIf="error" class="error-banner">
+    {{ error }}
+  </div>
+
+  <div *ngIf="loading" class="loading-overlay">
+    <div class="loading-spinner">Chargement des informations...</div>
+  </div>
+
+  <form *ngIf="!loading" [formGroup]="form" (ngSubmit)="onSubmit()" class="user-form">
+    <div class="form-row">
+      <div class="form-group">
+        <label>Prénom</label>
+        <input type="text" formControlName="prenom" />
+      </div>
+      <div class="form-group">
+        <label>Nom</label>
+        <input type="text" formControlName="nom" />
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group full-width">
+        <label>Email</label>
+        <input type="email" formControlName="email" />
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label>Téléphone</label>
+        <input type="text" formControlName="telephone" />
+      </div>
+      <div class="form-group">
+        <label>Niveau</label>
+        <input type="text" formControlName="niveau" />
+      </div>
+      <div class="form-group">
+        <label>Classe</label>
+        <input type="text" formControlName="classe" />
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label>Points accumulés</label>
+        <input type="number" formControlName="pointAccumule" />
+      </div>
+      <div class="form-group">
+        <label>Date de naissance</label>
+        <input type="date" formControlName="dateNaissance" />
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label>Photo (URL)</label>
+        <input type="text" formControlName="photoProfil" />
+      </div>
+      <div class="form-group">
+        <label>Nom d'utilisateur</label>
+        <input type="text" formControlName="username" />
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label>Rôle</label>
+        <input type="text" formControlName="role" />
+      </div>
+      <div class="form-group">
+        <label>Date de création</label>
+        <input type="text" formControlName="dateCreation" />
+      </div>
+      <div class="form-group">
+        <label>Date de modification</label>
+        <input type="text" formControlName="dateModification" />
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group checkbox-group">
+        <label>
+          <input type="checkbox" formControlName="estActive" />
+          Actif
+        </label>
+      </div>
+      <div class="form-group checkbox-group">
+        <label>
+          <input type="checkbox" formControlName="enabled" />
+          Enabled
+        </label>
+      </div>
+      <div class="form-group checkbox-group">
+        <label>
+          <input type="checkbox" formControlName="accountNonExpired" />
+          Compte non expiré
+        </label>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group checkbox-group">
+        <label>
+          <input type="checkbox" formControlName="accountNonLocked" />
+          Compte non verrouillé
+        </label>
+      </div>
+      <div class="form-group checkbox-group">
+        <label>
+          <input type="checkbox" formControlName="credentialsNonExpired" />
+          Identifiants non expirés
+        </label>
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <button type="submit" class="btn btn-primary" [disabled]="form.invalid || loading">
+        Enregistrer
+      </button>
+    </div>
+  </form>
+</div>

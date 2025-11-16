@@ -7,13 +7,15 @@
         <span class="arrow-back">←</span>
         <span>Retour</span>
       </button>
-      <div class="page-title">Créer un Quiz</div>
+      <div class="page-title">{{ isEditMode ? 'Modifier un Quiz' : 'Créer un Quiz' }}</div>
     </div>
 
     <!-- Main Content -->
     <div class="main-content">
       <div class="description">
-        Créez un quiz interactif avec différents types de questions pour évaluer vos apprenants !
+        {{ isEditMode
+            ? 'Modifiez les informations de ce quiz tout en conservant les données existantes.'
+            : 'Créez un quiz interactif avec différents types de questions pour évaluer vos apprenants !' }}
       </div>
 
       <!-- Section 1: Informations de base -->
