@@ -138,7 +138,7 @@ export class PartenaireForm implements OnInit, OnDestroy {
       },
       error: (err) => {
         console.error('Erreur chargement partenaire:', err);
-        this.toast.error('Impossible de charger le partenaire');
+        this.toast.error('Impossible de charger les informations de ce partenaire.');
         this.isLoading = false;
       }
     });
@@ -209,7 +209,7 @@ export class PartenaireForm implements OnInit, OnDestroy {
         },
         error: (err) => {
           console.error('Erreur enregistrement partenaire:', err);
-          this.toast.error("Erreur lors de l'enregistrement du partenaire");
+          this.toast.error('Une erreur est survenue lors de l\'enregistrement du partenaire. Veuillez réessayer.');
           this.isLoading = false;
         }
       });

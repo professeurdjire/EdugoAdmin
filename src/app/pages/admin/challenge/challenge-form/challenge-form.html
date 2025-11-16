@@ -100,8 +100,55 @@
             </div>
           </div>
         </div>
+
+        <!-- Sélection des badges à attribuer -->
+        <div class="form-group full-width" *ngIf="badges?.length">
+          <label for="badges-select">Badges à attribuer</label>
+          <div class="select-wrapper multi-select-wrapper">
+            <select id="badges-select" formControlName="badgeIds" multiple>
+              <option *ngFor="let b of badges" [ngValue]="b.id">
+                {{ b.icone || '🏆' }}
+                {{ b.nom }}
+              </option>
+            </select>
+          </div>
+          <small class="field-hint">Maintenez Ctrl (ou Cmd) pour sélectionner plusieurs badges.</small>
+        </div>
       </fieldset>
 
+      <!-- Section Récompenses et visibilité -->
+      <fieldset class="form-section">
+        <legend class="section-title">
+          <div class="title-content">
+            <img src="images/816_4206.svg" alt="Récompenses icon">
+            <h2>Récompenses et visibilité</h2>
+          </div>
+        </legend>
+        <hr class="divider">
+
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="points">Points bonus (XP)</label>
+            <input type="number" id="points" formControlName="points" min="0" placeholder="Ex: 500">
+          </div>
+
+          <div class="form-group checkbox-group">
+            <label class="checkbox-wrapper">
+              <input type="checkbox" formControlName="activerImmediat">
+              <span>Activer le challenge immédiatement</span>
+            </label>
+          </div>
+
+          <div class="form-group checkbox-group">
+            <label class="checkbox-wrapper">
+              <input type="checkbox" formControlName="challengePrive">
+              <span>Challenge privé (visible uniquement par les administrateurs)</span>
+            </label>
+          </div>
+        </div>
+      </fieldset>
+
+      <!-- Section Questions du challenge -->
       <fieldset class="form-section">
         <legend class="section-title with-button">
           <div class="title-content">

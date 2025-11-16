@@ -44,6 +44,25 @@
                   class="form-textarea"></textarea>
       </div>
 
+      <div class="form-row">
+        <div class="form-group">
+          <label for="niveau-difficulte">Niveau de difficulté</label>
+          <div class="input-wrapper">
+            <select id="niveau-difficulte" formControlName="niveauDifficulte" class="form-input">
+              <option [value]="1">Facile</option>
+              <option [value]="2">Moyenne</option>
+              <option [value]="3">Difficile</option>
+            </select>
+            <span class="input-icon dropdown-arrow-90">▼</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="temps-alloue">Temps alloué (minutes)</label>
+          <input type="number" id="temps-alloue" formControlName="tempsAlloue" min="1" class="form-input">
+        </div>
+      </div>
+
       
     </fieldset>
 
@@ -124,10 +143,10 @@
             <select [id]="'question-type-' + i"
                     formControlName="typeQuestion"
                     class="form-input">
-              <option value="">Ex: Question a multiples choix</option>
+              <option value="">Sélectionner un type</option>
+              <option value="choix_unique">Question à choix unique</option>
               <option value="choix_multiple">Question à choix multiples</option>
               <option value="vrai_faux">Vrai/Faux</option>
-              <option value="reponse_courte">Réponse courte</option>
             </select>
             <span class="input-icon dropdown-arrow-neg-90">▼</span>
           </div>
@@ -142,8 +161,8 @@
                  class="form-input">
         </div>
 
-        <!-- Réponses -->
-        <div class="reponses-group">
+        <!-- Réponses (QCU / QCM) -->
+        <div class="reponses-group" *ngIf="$any(question).get('typeQuestion')?.value !== 'vrai_faux'">
           <div class="form-group" *ngFor="let lettre of ['A', 'B', 'C', 'D']">
             <label [for]="'answer-' + lettre.toLowerCase() + '-' + i" class="sr-only">Reponse {{ lettre }}</label>
             <div class="input-wrapper">
@@ -159,7 +178,9 @@
         <!-- Bonne réponse -->
         <div class="form-group">
           <label [for]="'correct-answer-' + i">Bonne reponse <span class="required-star">*</span></label>
-          <select [id]="'correct-answer-' + i"
+          <!-- QCU / QCM -->
+          <select *ngIf="$any(question).get('typeQuestion')?.value !== 'vrai_faux'"
+                  [id]="'correct-answer-' + i"
                   formControlName="bonneReponse"
                   class="form-input">
             <option value="">La bonne reponse!</option>
@@ -167,6 +188,16 @@
             <option value="B">Réponse B</option>
             <option value="C">Réponse C</option>
             <option value="D">Réponse D</option>
+          </select>
+
+          <!-- Vrai / Faux -->
+          <select *ngIf="$any(question).get('typeQuestion')?.value === 'vrai_faux'"
+                  [id]="'correct-answer-' + i"
+                  formControlName="bonneReponse"
+                  class="form-input">
+            <option value="">La bonne reponse!</option>
+            <option value="VRAI">Vrai</option>
+            <option value="FAUX">Faux</option>
           </select>
         </div>
 

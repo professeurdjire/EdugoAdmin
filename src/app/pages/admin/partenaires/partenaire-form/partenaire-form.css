@@ -212,13 +212,18 @@ select.form-control {
 }
 
 .btn-primary {
-  background-color: #007bff;
+  background-color: #a885d8;
   color: white;
 }
 
 .btn-primary:hover:not(:disabled) {
-  background-color: #0056b3;
+  background-color: #8c6bb8;
   transform: translateY(-1px);
+}
+
+.btn-primary:focus-visible {
+  outline: 2px solid #a885d8;
+  outline-offset: 2px;
 }
 
 .btn-secondary {

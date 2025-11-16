@@ -152,15 +152,20 @@ export class ExerciceForm implements OnInit {
   onSubmit(): void {
     if (!(this.exerciceForm.valid && this.validateQuestionsBySpec())) {
       this.marquerChampsCommeTouches();
+      this.toast.error('Veuillez corriger les informations de l\'exercice et les questions avant de continuer.');
       return;
     }
 
     const file: File | null = this.exerciceForm.get('fichierPrincipal')?.value;
-    const image: File | null = this.exerciceForm.get('imageExercice')?.value;
+    let image: File | null = this.exerciceForm.get('imageExercice')?.value;
 
-    if (!(file instanceof File) || !(image instanceof File)) {
-      this.toast.error("Le fichier principal et l'image de l'exercice sont obligatoires.");
+    if (!(file instanceof File)) {
+      this.toast.error('Le fichier principal de l\'exercice est obligatoire pour créer l\'exercice.');
       return;
+    }
+
+    if (!(image instanceof File)) {
+      image = null;
     }
 
     const payload = this.prepareExerciceData();
@@ -171,8 +176,8 @@ export class ExerciceForm implements OnInit {
         const exerciceId = (res as any)?.id;
         if (!exerciceId) {
           this.isLoading = false;
-          this.toast.warning("Exercice créé mais identifiant introuvable pour créer les questions.");
-          this.confirmRedirectToList("Exercice créé mais identifiant introuvable pour créer les questions.");
+          this.toast.warning('Exercice créé, mais identifiant introuvable pour créer les questions associées.');
+          this.confirmRedirectToList('Exercice créé sans ses questions, vous pourrez les ajouter plus tard.');
           return;
         }
 
@@ -200,12 +205,12 @@ export class ExerciceForm implements OnInit {
         forkJoin(questionRequests.map(req => this.questionsService.createQuestion(req))).subscribe({
           next: () => {
             this.isLoading = false;
-            this.confirmRedirectToList('Exercice et questions créés avec succès !');
+            this.confirmRedirectToList('Exercice et questions créés avec succès, il est prêt à être proposé aux apprenants.');
           },
           error: (err) => {
             this.isLoading = false;
             console.error('Erreur création questions exercice:', err);
-            this.toast.error("Exercice créé mais erreur lors de la création des questions");
+            this.toast.error('Exercice créé, mais une erreur est survenue lors de la création des questions.');
             // On reste sur place pour permettre à l'utilisateur de corriger ou réessayer
           }
         });
@@ -213,7 +218,7 @@ export class ExerciceForm implements OnInit {
       error: (err) => {
         this.isLoading = false;
         console.error('Erreur lors de la création de l\'exercice:', err);
-        this.toast.error("Erreur lors de la création de l'exercice. Veuillez réessayer.");
+        this.toast.error('Une erreur est survenue lors de la création de l\'exercice. Veuillez réessayer.');
       }
     });
   }
@@ -240,7 +245,7 @@ export class ExerciceForm implements OnInit {
     }).then(ok => {
       if (ok) {
         this.exerciceForm.reset();
-        this.router.navigate(['/admin/exerciceList']);
+        this.router.navigate(['/admin/exercices']);
       }
     });
   }
@@ -352,7 +357,7 @@ export class ExerciceForm implements OnInit {
       })
       .then((ok) => {
         if (ok) {
-          this.router.navigate(['/admin/exerciceList']);
+          this.router.navigate(['/admin/exercicelist']);
         }
       });
   }

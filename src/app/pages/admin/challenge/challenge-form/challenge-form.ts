@@ -13,6 +13,8 @@ import { ToastService } from '../../../../shared/ui/toast/toast.service';
 import { ConfirmService } from '../../../../shared/ui/confirm/confirm.service';
 import { QuestionsService, CreateQuestionRequest } from '../../../../services/api/questions.service';
 import { forkJoin } from 'rxjs';
+import { BadgesService } from '../../../../services/api/admin/badges.service';
+import { BadgeResponse } from '../../../../api/model/badgeResponse';
 
 @Component({
   selector: 'app-challenge-form',
@@ -28,6 +30,7 @@ export class ChallengeForm {
   classes: Classe[] = [];
   loadingTypes = false;
   backendTypes: Array<{ id: number; libelle: string }> = [];
+  badges: BadgeResponse[] = [];
 
   typeOptions = [
     { value: Challenge.TypeChallengeEnum.Interclasse, label: 'Interclasse' },
@@ -59,7 +62,8 @@ export class ChallengeForm {
     private classesService: ClassesService,
     private toast: ToastService,
     private confirm: ConfirmService,
-    private questionsService: QuestionsService
+    private questionsService: QuestionsService,
+    private badgesService: BadgesService
   ) {
     this.form = this.fb.group({
       typeChallenge: [this.typeOptions[0].value, Validators.required],
@@ -72,11 +76,15 @@ export class ChallengeForm {
       points: [0, [Validators.required, Validators.min(0)]],
       niveauId: [null],
       classeId: [null],
+      activerImmediat: [false],
+      challengePrive: [false],
+      badgeIds: [[]],
       questions: this.fb.array([this.createQuestionGroup()])
     });
 
     this.loadRefs();
     this.loadQuestionTypes();
+    this.loadBadges();
   }
 
   // Formater une valeur provenant d'un input datetime-local en LocalDateTime (sans fuseau horaire)
@@ -109,6 +117,17 @@ export class ChallengeForm {
       error: () => {
         this.loadingTypes = false;
         this.toast.error('Impossible de charger les types de questions');
+      }
+    });
+  }
+
+  private loadBadges() {
+    this.badgesService.list().subscribe({
+      next: (badges) => {
+        this.badges = badges || [];
+      },
+      error: () => {
+        this.toast.error('Impossible de charger les badges disponibles');
       }
     });
   }
@@ -321,6 +340,7 @@ export class ChallengeForm {
   onSubmit() {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
+      this.toast.error('Veuillez compléter correctement les informations du challenge et au moins une question.');
       return;
     }
 
@@ -335,7 +355,8 @@ export class ChallengeForm {
       dateFin: this.toLocalDateTime(v.dateFin) as any,
       niveau: v.niveauId ? { id: +v.niveauId } as any : undefined,
       classe: v.classeId ? { id: +v.classeId } as any : undefined,
-      winnersCount: v.winnersCount
+      winnersCount: v.winnersCount,
+      badgeIds: v.badgeIds ?? []
     } as any;
 
     this.isLoading = true;
@@ -344,8 +365,8 @@ export class ChallengeForm {
         const challengeId = (res as any)?.id;
         if (!challengeId) {
           this.isLoading = false;
-          this.toast.warning('Challenge créé mais identifiant introuvable pour créer les questions.');
-          this.confirmRedirectToList('Challenge créé mais identifiant introuvable pour créer les questions.');
+          this.toast.warning('Challenge créé, mais identifiant introuvable pour créer les questions associées.');
+          this.confirmRedirectToList('Challenge créé sans ses questions, vous pourrez les ajouter plus tard.');
           return;
         }
 
@@ -371,20 +392,19 @@ export class ChallengeForm {
         forkJoin(questionRequests.map(req => this.questionsService.createQuestion(req))).subscribe({
           next: () => {
             this.isLoading = false;
-            this.confirmRedirectToList('Le challenge et ses questions ont été créés avec succès.');
+            this.confirmRedirectToList('Le challenge et ses questions ont été créés avec succès, il est prêt à être lancé.');
           },
           error: (err) => {
             this.isLoading = false;
             console.error('Erreur création questions du challenge:', err);
-            this.toast.error('Challenge créé mais erreur lors de la création des questions');
-            // On reste sur place pour permettre à l'utilisateur de corriger ou réessayer
+            this.toast.error('Challenge créé, mais une erreur est survenue lors de la création des questions.');
           }
         });
       },
       error: (err) => {
         this.isLoading = false;
         console.error('Erreur lors de la création du challenge:', err);
-        this.toast.error('Erreur lors de la création du challenge. Veuillez réessayer.');
+        this.toast.error('Une erreur est survenue lors de la création du challenge. Veuillez réessayer.');
       }
     });
   }

@@ -609,13 +609,13 @@ select {
 
 .btn-primary,
 .btn-add-question {
-  background: var(--primary-blue);
+  background: var(--primary-purple);
   color: var(--white);
 }
 
 .btn-primary:hover:not(:disabled),
 .btn-add-question:hover:not(:disabled) {
-  background: #14487e;
+  background: #8c6bb8;
   transform: translateY(-1px);
 }
 

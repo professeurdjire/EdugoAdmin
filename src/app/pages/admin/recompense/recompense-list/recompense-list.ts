@@ -206,8 +206,8 @@ export class RecompenseList implements OnInit {
 
   // Actions
   viewRecompense(recompense: RecompenseDisplay): void {
-    // Navigate to recompense details page
-    this.router.navigate(['/admin/recompensedetails', recompense.id]);
+    // Pas encore de page de détails dédiée : on réutilise le formulaire d'édition
+    this.router.navigate(['/admin/editerrecompense', recompense.id]);
   }
 
   editRecompense(recompense: RecompenseDisplay): void {

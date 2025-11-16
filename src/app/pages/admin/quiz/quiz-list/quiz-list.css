@@ -527,9 +527,9 @@ tbody tr:hover {
 
 .page-number.active,
 .pagination__number.active {
-  background-color: var(--primary-blue);
-  color: white;
-  border-color: var(--primary-blue);
+  background-color: var(--primary-purple);
+  color: #ffffff;
+  border-color: var(--primary-purple);
   font-weight: 600;
 }
 
