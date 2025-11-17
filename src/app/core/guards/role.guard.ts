@@ -1,3 +1,4 @@
+// role.guard.ts - CORRIGÉ
 import { Injectable } from '@angular/core';
 import {
   CanActivate,
@@ -7,8 +8,8 @@ import {
   UrlTree
 } from '@angular/router';
 import { Observable } from 'rxjs';
-import {NotificationService} from '../../services/utils/notification.service';
-import {AuthService} from '../../services/api/auth.service';
+import { NotificationService } from '../../services/utils/notification.service';
+import { AuthService, User } from '../../services/api/auth.service';
 
 @Injectable({
   providedIn: 'root'
@@ -26,10 +27,15 @@ export class RoleGuard implements CanActivate {
     state: RouterStateSnapshot
   ): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
 
+    // Vérifier d'abord si l'utilisateur est connecté
+    if (!this.authService.isLoggedIn()) {
+      this.handleNotAuthenticated(state.url);
+      return false;
+    }
+
     // Récupérer l'utilisateur courant
     const currentUser = this.authService.getCurrentUser();
 
-    // Vérifier si l'utilisateur est connecté
     if (!currentUser) {
       this.handleNotAuthenticated(state.url);
       return false;
@@ -57,36 +63,17 @@ export class RoleGuard implements CanActivate {
     return false;
   }
 
-  /**
-   * Vérifie si l'utilisateur a le rôle requis
-   */
-  private checkUserRole(user: any, requiredRole: string): boolean {
+  private checkUserRole(user: User, requiredRole: string): boolean {
     const userRole = user.role?.toUpperCase();
     const normalizedRequiredRole = requiredRole.toUpperCase();
-
-    // Gestion des rôles hiérarchiques
-    const roleHierarchy = this.getRoleHierarchy(userRole);
-
-    return roleHierarchy.includes(normalizedRequiredRole);
+    
+    if (userRole === 'ADMIN') {
+      return true; // L'admin a accès à tout
+    }
+    
+    return userRole === normalizedRequiredRole;
   }
 
-  /**
-   * Définit la hiérarchie des rôles
-   */
-  private getRoleHierarchy(userRole: string): string[] {
-    const hierarchy: { [key: string]: string[] } = {
-      'SUPER_ADMIN': ['SUPER_ADMIN', 'ADMIN', 'MODERATOR', 'USER'],
-      'ADMIN': ['ADMIN', 'MODERATOR', 'USER'],
-      'MODERATOR': ['MODERATOR', 'USER'],
-      'USER': ['USER']
-    };
-
-    return hierarchy[userRole] || ['USER'];
-  }
-
-  /**
-   * Gère l'accès non authentifié
-   */
   private handleNotAuthenticated(returnUrl: string): void {
     this.notificationService.showWarning(
       'Authentification requise',
@@ -98,21 +85,17 @@ export class RoleGuard implements CanActivate {
     });
   }
 
-  /**
-   * Gère l'accès refusé
-   */
   private handleAccessDenied(): void {
     this.notificationService.showError(
       'Accès refusé',
       'Vous n\'avez pas les permissions nécessaires pour accéder à cette page.'
     );
 
-    // Rediriger vers le dashboard ou page non autorisée selon le rôle
     const user = this.authService.getCurrentUser();
-    if (user && user.role !== 'USER') {
+    if (user && user.role === 'ADMIN') {
       this.router.navigate(['/admin/dashboard']);
     } else {
-      this.router.navigate(['/unauthorized']);
+      this.router.navigate(['/eleve/dashboard']);
     }
   }
 }

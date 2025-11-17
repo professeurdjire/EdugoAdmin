@@ -1,0 +1,305 @@
+<!-- Debug et états -->
+<div *ngIf="isLoading" class="loading-overlay">
+  <div class="loading-spinner">Chargement des partenaires...</div>
+</div>
+
+<div *ngIf="error" class="error-banner">
+  <div class="error-content">
+    <span class="error-text">{{ error }}</span>
+    <button class="btn btn-secondary btn-sm" (click)="loadPartenaires()">Réessayer</button>
+  </div>
+</div>
+
+<!-- Debug info 
+<div class="debug-info" *ngIf="!isLoading && !error">
+  Partenaires: {{ partenaires.length }} | 
+  Filtres: {{ filteredPartenaires.length }} | 
+  Page: {{ currentPage + 1 }}/{{ totalPages }} |
+  Total: {{ totalElements }}
+</div>   -->
+
+<div class="partenaire-management-content">
+  <!-- En-tête de page -->
+  <div class="page-header">
+    <div class="header-content">
+      <h1 class="page-title">Gestion des Partenaires</h1>
+      <p class="page-subtitle">Gérez les partenaires et institutions collaborant avec votre plateforme</p>
+    </div>
+    <button class="btn-add" routerLink="/admin/ajouterpartenaire" (click)="openAddModal()">
+      <i class="fa-solid fa-plus"></i>
+      Ajouter un partenaire
+    </button>
+  </div>
+
+  <!-- Filtres et recherche -->
+  <div class="filters-section">
+    <div class="filters-grid">
+      <!-- Recherche -->
+      <div class="filter-group">
+        <label for="search" class="filter-label">Rechercher</label>
+        <div class="input-with-icon">
+          <i class="icon-search">🔍</i>
+          <input 
+            type="text" 
+            id="search" 
+            [(ngModel)]="searchTerm"
+            (input)="onSearch()"
+            placeholder="Nom, email, domaine..." 
+            class="form-control">
+        </div>
+      </div>
+
+      <!-- Filtre par statut -->
+      <div class="filter-group">
+        <label for="status" class="filter-label">Statut</label>
+        <select 
+          id="status" 
+          [(ngModel)]="selectedStatus" 
+          (change)="onFilterChange()"
+          class="form-control">
+          <option value="">Tous les statuts</option>
+          <option value="actif">Actif</option>
+          <option value="inactif">Inactif</option>
+          <option value="en_attente">En attente</option>
+        </select>
+      </div>
+
+      <!-- Filtre par type -->
+      <div class="filter-group">
+        <label for="type" class="filter-label">Type de partenaire</label>
+        <select 
+          id="type" 
+          [(ngModel)]="selectedType" 
+          (change)="onFilterChange()"
+          class="form-control">
+          <option value="">Tous les types</option>
+          <option value="institution">Institution</option>
+          <option value="entreprise">Entreprise</option>
+          <option value="ong">ONG</option>
+          <option value="gouvernement">Gouvernement</option>
+        </select>
+      </div>
+
+      <!-- Actions des filtres -->
+      <div class="filter-actions">
+        <button class="reset-btn" (click)="resetFilters()">
+          <fa-icon [icon]="faRedoAlt"></fa-icon>
+          Réinitialiser
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Statistiques -->
+  <div class="stats-cards">
+    <div class="stat-card">
+      <div class="stat-icon total">🏢</div>
+      <div class="stat-content">
+        <div class="stat-value">{{ totalPartenaires }}</div>
+        <div class="stat-label">Total partenaires</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon active">✅</div>
+      <div class="stat-content">
+        <div class="stat-value">{{ activePartenaires }}</div>
+        <div class="stat-label">Partenaires actifs</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon pending">⏳</div>
+      <div class="stat-content">
+        <div class="stat-value">{{ pendingPartenaires }}</div>
+        <div class="stat-label">En attente</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon new">🆕</div>
+      <div class="stat-content">
+        <div class="stat-value">{{ newThisMonth }}</div>
+        <div class="stat-label">Nouveaux ce mois</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tableau des partenaires -->
+  <div class="table-section">
+    <div class="table-header">
+      <h2 class="table-title">Liste des partenaires</h2>
+      <div class="table-actions">
+        <button class="btn btn-outline" (click)="exportToExcel()">
+          <i class="icon-export">📊</i>
+          Exporter
+        </button>
+        <button class="btn btn-outline" (click)="refreshData()">
+          <i class="icon-refresh">🔄</i>
+          Actualiser
+        </button>
+      </div>
+    </div>
+
+    <!-- Tableau -->
+    <div class="table-wrapper">
+      <table class="partenaires-table">
+        <thead>
+          <tr>
+            <th>
+              <label class="checkbox-cell">
+                <input 
+                  type="checkbox" 
+                  [checked]="isAllSelected()"
+                  (change)="toggleSelectAll($event)">
+                <span class="checkbox-custom"></span>
+              </label>
+            </th>
+            <th (click)="sortBy('nom')" class="sortable">
+              Partenaire
+              <i class="sort-icon" [class.asc]="sortField === 'nom' && sortDirection === 'asc'"
+                 [class.desc]="sortField === 'nom' && sortDirection === 'desc'">▼</i>
+            </th>
+            <th (click)="sortBy('type')" class="sortable">
+              Type
+              <i class="sort-icon" [class.asc]="sortField === 'type' && sortDirection === 'asc'"
+                 [class.desc]="sortField === 'type' && sortDirection === 'desc'">▼</i>
+            </th>
+            <th>Contact</th>
+            <th (click)="sortBy('dateAjout')" class="sortable">
+              Date d'ajout
+              <i class="sort-icon" [class.asc]="sortField === 'dateAjout' && sortDirection === 'asc'"
+                 [class.desc]="sortField === 'dateAjout' && sortDirection === 'desc'">▼</i>
+            </th>
+            <th (click)="sortBy('statut')" class="sortable">
+              Statut
+              <i class="sort-icon" [class.asc]="sortField === 'statut' && sortDirection === 'asc'"
+                 [class.desc]="sortField === 'statut' && sortDirection === 'desc'">▼</i>
+            </th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let partenaire of filteredPartenaires" 
+              [class.selected]="isSelected(partenaire.id)"
+              [class.inactive]="partenaire.statut?.toLowerCase() === 'inactif'">
+            <td>
+              <label class="checkbox-cell">
+                <input 
+                  type="checkbox" 
+                  [checked]="isSelected(partenaire.id)"
+                  (change)="toggleSelection(partenaire.id)">
+                <span class="checkbox-custom"></span>
+              </label>
+            </td>
+            <td>
+              <div class="partenaire-info">
+                <div class="partenaire-avatar">
+                  {{ getInitials(partenaire.nom) }}
+                </div>
+                <div class="partenaire-details">
+                  <div class="partenaire-name">{{ partenaire.nom }}</div>
+                  <div class="partenaire-domain">{{ partenaire.domaine }}</div>
+                </div>
+              </div>
+            </td>
+            <td>
+              <span class="type-badge" [class]="partenaire.type?.toLowerCase()">
+                {{ getTypeLabel(partenaire.type) }}
+              </span>
+            </td>
+            <td>
+              <div class="contact-info">
+                <div class="contact-email">{{ partenaire.email }}</div>
+                <div class="contact-phone" *ngIf="partenaire.telephone">
+                  {{ partenaire.telephone }}
+                </div>
+              </div>
+            </td>
+            <td>
+              <div class="date-info">
+                {{ partenaire.dateAjout | date:'dd/MM/yyyy' }}
+              </div>
+            </td>
+            <td>
+              <span class="status-badge" [class]="partenaire.statut?.toLowerCase()">
+                {{ getStatusLabel(partenaire.statut) }}
+              </span>
+            </td>
+            <td>
+              <div class="action-buttons">
+                <span class="action-btn view-btn" (click)="viewPartenaire(partenaire.id)" title="Voir les détails">
+                  <fa-icon [icon]="faEye"></fa-icon>
+                </span>
+                <span class="action-btn edit-btn" (click)="editPartenaire(partenaire.id)" title="Modifier">
+                  <fa-icon [icon]="faPen"></fa-icon>
+                </span>
+                <span class="action-btn delete-btn" (click)="deletePartenaire(partenaire)" title="Supprimer">
+                  <fa-icon [icon]="faTrash"></fa-icon>
+                </span>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- Message si aucun résultat -->
+      <div *ngIf="filteredPartenaires.length === 0" class="no-data">
+        <div class="no-data-icon">🏢</div>
+        <h3>Aucun partenaire trouvé</h3>
+        <p>Aucun partenaire ne correspond à vos critères de recherche.</p>
+        <button class="btn btn-primary" (click)="resetFilters()">Réinitialiser les filtres</button>
+      </div>
+    </div>
+
+    <!-- Pagination -->
+    <div class="pagination" *ngIf="filteredPartenaires.length > 0">
+      <div class="pagination-info">
+        Affichage de {{ getDisplayRange() }} sur {{ totalPartenaires }} partenaires
+      </div>
+      <div class="pagination-controls">
+        <button class="pagination-btn" (click)="previousPage()" [disabled]="currentPage === 0">
+          <i class="icon-prev">←</i>
+        </button>
+        
+        <div class="pagination-numbers">
+          <button *ngFor="let page of getPages()" 
+                  class="pagination-number" 
+                  [class.active]="page === currentPage + 1"
+                  (click)="goToPage(page)">
+            {{ page }}
+          </button>
+        </div>
+
+        <button class="pagination-btn" (click)="nextPage()" [disabled]="currentPage === totalPages - 1">
+          <i class="icon-next">→</i>
+        </button>
+      </div>
+      <div class="pagination-size">
+        <select [(ngModel)]="pageSize" (change)="onPageSizeChange()" class="form-control">
+          <option value="10">10 / page</option>
+          <option value="25">25 / page</option>
+          <option value="50">50 / page</option>
+        </select>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de confirmation de suppression -->
+<div *ngIf="showDeleteModal" class="modal-overlay">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>Confirmer la suppression</h3>
+      <button class="modal-close" (click)="closeDeleteModal()">×</button>
+    </div>
+    <div class="modal-body">
+      <p>Êtes-vous sûr de vouloir supprimer le partenaire <strong>{{ partenaireToDelete?.nom }}</strong> ?</p>
+      <p class="warning-text">Cette action est irréversible.</p>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" (click)="closeDeleteModal()">Annuler</button>
+      <button class="btn btn-danger" (click)="confirmDelete()">
+        <fa-icon [icon]="faTrash"></fa-icon>
+        Supprimer
+      </button>
+    </div>
+  </div>
+</div>

@@ -1,1 +1,94 @@
-<p>exercice-details works!</p>
+<div class="exercice-management-container">
+  <div class="users-page-container">
+    <div class="page-header">
+      <h1 class="page-title">Détails de l'Exercice</h1>
+      <button class="back-btn" (click)="goBack()">← Retour</button>
+    </div>
+
+    <!-- Loading indicator -->
+    <div *ngIf="loading" class="loading-indicator">
+      <p>Chargement des détails de l'exercice...</p>
+    </div>
+    
+    <!-- Error message -->
+    <div *ngIf="error" class="error-message">
+      <p>{{ error }}</p>
+      <button class="retry-btn" (click)="loadExerciceDetails(exerciceId!)">Réessayer</button>
+    </div>
+
+    <!-- Exercice details -->
+    <div *ngIf="exercice && !loading && !error" class="exercice-details-container">
+      <div class="exercice-header">
+        <div class="exercice-info">
+          <h2>{{ exercice.titre }}</h2>
+          <p class="exercice-description">{{ exercice.description }}</p>
+          
+          <div class="exercice-meta">
+            <div class="meta-item">
+              <span class="label">ID:</span>
+              <span class="value">{{ exercice.id }}</span>
+            </div>
+            <div class="meta-item">
+              <span class="label">Date de création:</span>
+              <span class="value">{{ exercice.dateCreation | date:'dd/MM/yyyy' }}</span>
+            </div>
+            <div class="meta-item">
+              <span class="label">Date de modification:</span>
+              <span class="value">{{ exercice.dateModification | date:'dd/MM/yyyy' }}</span>
+            </div>
+            <div class="meta-item">
+              <span class="label">Statut:</span>
+              <span class="value">{{ exercice.active ? 'Actif' : 'Inactif' }}</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="exercice-actions">
+          <button class="edit-btn" (click)="editExercice()">Modifier</button>
+        </div>
+      </div>
+
+      <div class="exercice-details-grid">
+        <div class="detail-card">
+          <h3>Informations pédagogiques</h3>
+          <div class="detail-row">
+            <span class="label">Matière:</span>
+            <span class="value">{{ exercice.matiere?.nom || 'Non spécifiée' }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="label">Niveau scolaire:</span>
+            <span class="value">{{ exercice.niveauScolaire?.nom || 'Non spécifié' }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="label">Difficulté:</span>
+            <span class="value">{{ exercice.niveauDifficulte || 'Non spécifiée' }}</span>
+          </div>
+        </div>
+
+        <div class="detail-card">
+          <h3>Configuration</h3>
+          <div class="detail-row">
+            <span class="label">Temps alloué (minutes):</span>
+            <span class="value">{{ exercice.tempsAlloue || 'Non spécifié' }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="label">Livre associé:</span>
+            <span class="value">{{ exercice.livre?.titre || 'Aucun' }}</span>
+          </div>
+        </div>
+
+        <div class="detail-card">
+          <h3>Statistiques</h3>
+          <div class="detail-row">
+            <span class="label">Nombre de questions:</span>
+            <span class="value">{{ $any(exercice)?.questionsExercice?.length || 0 }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="label">Nombre de réalisations:</span>
+            <span class="value">{{ $any(exercice)?.faireExercices?.length || 0 }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

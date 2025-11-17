@@ -1,0 +1,269 @@
+<div class="form-container">
+  <!-- En-tête -->
+  <div class="form-header">
+    <h1 class="form-title">{{ isEditMode ? 'Modifier le partenaire' : 'Ajouter un partenaire' }}</h1>
+    <p class="form-subtitle">
+      {{ isEditMode ? 'Modifiez les informations du partenaire' : 'Remplissez les informations pour ajouter un nouveau partenaire' }}
+    </p>
+  </div>
+
+  <!-- Formulaire -->
+  <form [formGroup]="partenaireForm" (ngSubmit)="onSubmit()" class="partenaire-form">
+    <div class="form-grid">
+      <!-- Informations générales -->
+      <div class="form-section">
+        <h3 class="section-title">Informations générales</h3>
+        
+        <div class="form-group">
+          <label for="nom" class="form-label">Nom du partenaire *</label>
+          <input
+            type="text"
+            id="nom"
+            formControlName="nom"
+            class="form-control"
+            [class.error]="isFieldInvalid('nom')"
+            placeholder="Ex: Université de Bamako">
+          <div class="error-message" *ngIf="isFieldInvalid('nom')">
+            Le nom du partenaire est requis
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="domaine" class="form-label">Domaine d'activité *</label>
+          <input
+            type="text"
+            id="domaine"
+            formControlName="domaine"
+            class="form-control"
+            [class.error]="isFieldInvalid('domaine')"
+            placeholder="Ex: Éducation, Technologie, Santé...">
+          <div class="error-message" *ngIf="isFieldInvalid('domaine')">
+            Le domaine d'activité est requis
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="type" class="form-label">Type de partenaire *</label>
+          <select
+            id="type"
+            formControlName="type"
+            class="form-control"
+            [class.error]="isFieldInvalid('type')">
+            <option value="">Sélectionnez un type</option>
+            <option value="institution">Institution</option>
+            <option value="entreprise">Entreprise</option>
+            <option value="ong">ONG</option>
+            <option value="gouvernement">Gouvernement</option>
+            <option value="autre">Autre</option>
+          </select>
+          <div class="error-message" *ngIf="isFieldInvalid('type')">
+            Le type de partenaire est requis
+          </div>
+        </div>
+
+        <div class="form-group" *ngIf="showOtherTypeField">
+          <label for="autreType" class="form-label">Précisez le type</label>
+          <input
+            type="text"
+            id="autreType"
+            formControlName="autreType"
+            class="form-control"
+            placeholder="Précisez le type de partenaire">
+        </div>
+      </div>
+
+      <!-- Informations de contact -->
+      <div class="form-section">
+        <h3 class="section-title">Informations de contact</h3>
+
+        <div class="form-group">
+          <label for="email" class="form-label">Email *</label>
+          <input
+            type="email"
+            id="email"
+            formControlName="email"
+            class="form-control"
+            [class.error]="isFieldInvalid('email')"
+            placeholder="exemple@organisation.ml">
+          <div class="error-message" *ngIf="isFieldInvalid('email')">
+            <span *ngIf="partenaireForm.get('email')?.errors?.['required']">L'email est requis</span>
+            <span *ngIf="partenaireForm.get('email')?.errors?.['email']">Format d'email invalide</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="telephone" class="form-label">Téléphone</label>
+          <input
+            type="tel"
+            id="telephone"
+            formControlName="telephone"
+            class="form-control"
+            placeholder="+223 XX XX XX XX">
+          <div class="error-message" *ngIf="isFieldInvalid('telephone')">
+            Format de téléphone invalide
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="siteWeb" class="form-label">Site web</label>
+          <input
+            type="url"
+            id="siteWeb"
+            formControlName="siteWeb"
+            class="form-control"
+            placeholder="https://www.exemple.ml">
+          <div class="error-message" *ngIf="isFieldInvalid('siteWeb')">
+            Format d'URL invalide
+          </div>
+        </div>
+      </div>
+
+      <!-- Adresse -->
+      <div class="form-section">
+        <h3 class="section-title">Adresse</h3>
+
+        <div class="form-group">
+          <label for="adresse" class="form-label">Adresse</label>
+          <textarea
+            id="adresse"
+            formControlName="adresse"
+            class="form-control"
+            rows="3"
+            placeholder="Adresse complète..."></textarea>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="ville" class="form-label">Ville</label>
+            <input
+              type="text"
+              id="ville"
+              formControlName="ville"
+              class="form-control"
+              placeholder="Ex: Bamako">
+          </div>
+
+          <div class="form-group">
+            <label for="pays" class="form-label">Pays</label>
+            <select
+              id="pays"
+              formControlName="pays"
+              class="form-control">
+              <option value="mali">Mali</option>
+              <option value="autre">Autre pays</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group" *ngIf="showOtherCountryField">
+          <label for="autrePays" class="form-label">Précisez le pays</label>
+          <input
+            type="text"
+            id="autrePays"
+            formControlName="autrePays"
+            class="form-control"
+            placeholder="Nom du pays">
+        </div>
+      </div>
+
+      <!-- Statut et informations supplémentaires -->
+      <div class="form-section">
+        <h3 class="section-title">Statut et informations supplémentaires</h3>
+
+        <div class="form-group">
+          <label for="statut" class="form-label">Statut *</label>
+          <select
+            id="statut"
+            formControlName="statut"
+            class="form-control"
+            [class.error]="isFieldInvalid('statut')">
+            <option value="">Sélectionnez un statut</option>
+            <option value="actif">Actif</option>
+            <option value="inactif">Inactif</option>
+            <option value="en_attente">En attente</option>
+          </select>
+          <div class="error-message" *ngIf="isFieldInvalid('statut')">
+            Le statut est requis
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="dateDebut" class="form-label">Date de début de partenariat</label>
+          <input
+            type="date"
+            id="dateDebut"
+            formControlName="dateDebut"
+            class="form-control">
+        </div>
+
+        <div class="form-group">
+          <label for="description" class="form-label">Description</label>
+          <textarea
+            id="description"
+            formControlName="description"
+            class="form-control"
+            rows="4"
+            placeholder="Description du partenaire, domaines de collaboration..."></textarea>
+        </div>
+
+        <div class="form-group">
+          <label class="checkbox-label">
+            <input
+              type="checkbox"
+              formControlName="newsletter"
+              class="checkbox">
+            <span class="checkmark"></span>
+            Inscrire à la newsletter
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <!-- Actions du formulaire -->
+    <div class="form-actions">
+      <button
+        type="button"
+        class="btn btn-secondary"
+        (click)="onCancel()">
+        <i class="icon-cancel">✕</i>
+        Annuler
+      </button>
+      
+      <button
+        type="button"
+        class="btn btn-outline"
+        (click)="resetForm()"
+        *ngIf="!isEditMode">
+        <i class="icon-reset">🔄</i>
+        Réinitialiser
+      </button>
+
+      <button
+        type="submit"
+        class="btn btn-primary"
+        [disabled]="partenaireForm.invalid || isLoading">
+        <i class="icon-save">💾</i>
+        {{ isLoading ? 'Enregistrement...' : (isEditMode ? 'Modifier' : 'Ajouter le partenaire') }}
+      </button>
+    </div>
+  </form>
+
+  <!-- Modal de confirmation -->
+  <div *ngIf="showSuccessModal" class="modal-overlay">
+    <div class="modal">
+      <div class="modal-header">
+        <h3>Succès !</h3>
+        <button class="modal-close" (click)="closeSuccessModal()">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="success-icon">✅</div>
+        <p>Le partenaire a été {{ isEditMode ? 'modifié' : 'ajouté' }} avec succès.</p>
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-primary" (click)="onSuccessConfirm()">
+          OK
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

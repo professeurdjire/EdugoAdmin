@@ -1,1 +1,74 @@
-<p>quiz-details works!</p>
+<div class="quiz-management-container">
+  <div class="users-page-container">
+    <div class="page-header">
+      <h1 class="page-title">Détails du Quiz</h1>
+      <button class="back-btn" (click)="goBack()">← Retour</button>
+    </div>
+
+    <!-- Loading indicator -->
+    <div *ngIf="loading" class="loading-indicator">
+      <p>Chargement des détails du quiz...</p>
+    </div>
+    
+    <!-- Error message -->
+    <div *ngIf="error" class="error-message">
+      <p>{{ error }}</p>
+      <button class="retry-btn" (click)="loadQuizDetails(quizId!)">Réessayer</button>
+    </div>
+
+    <!-- Quiz details -->
+    <div *ngIf="quiz && !loading && !error" class="quiz-details-container">
+      <div class="quiz-header">
+        <div class="quiz-info">
+          <h2>Quiz #{{ quiz.id }}</h2>
+          <p class="quiz-description">Quiz associé au livre: {{ quiz.livre?.titre || 'Non spécifié' }}</p>
+          
+          <div class="quiz-meta">
+            <div class="meta-item">
+              <span class="label">ID:</span>
+              <span class="value">{{ quiz.id }}</span>
+            </div>
+            <div class="meta-item">
+              <span class="label">Statut:</span>
+              <span class="value">{{ quiz.statut || 'Non spécifié' }}</span>
+            </div>
+            <div class="meta-item">
+              <span class="label">Date de création:</span>
+              <span class="value">{{ quiz.createdAt | date:'dd/MM/yyyy' }}</span>
+            </div>
+            <div class="meta-item">
+              <span class="label">Nombre de questions:</span>
+              <span class="value">{{ quiz.nombreQuestions || 0 }}</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="quiz-actions">
+          <button class="edit-btn" (click)="editQuiz()">Modifier</button>
+        </div>
+      </div>
+
+      <div class="quiz-details-grid">
+        <div class="detail-card">
+          <h3>Statistiques</h3>
+          <div class="detail-row">
+            <span class="label">Nombre de questions:</span>
+            <span class="value">{{ quiz.nombreQuestions || 0 }}</span>
+          </div>
+        </div>
+
+        <div class="detail-card">
+          <h3>Informations du livre</h3>
+          <div class="detail-row">
+            <span class="label">Titre du livre:</span>
+            <span class="value">{{ quiz.livre?.titre || 'Non spécifié' }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="label">Auteur:</span>
+            <span class="value">{{ quiz.livre?.auteur || 'Non spécifié' }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

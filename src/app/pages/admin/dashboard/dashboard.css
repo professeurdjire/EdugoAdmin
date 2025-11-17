@@ -1,336 +1,542 @@
 /* -------------------- Variables de base -------------------- */
 :root {
-  --primary-color: #7b4fff; /* Violet principal */
-  --main-bg: #f4f6fa;
-  --text-color: #333;
-  --secondary-text-color: #777;
-  --card-bg: #ffffff;
-  --shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-
+  --primary-purple: #a885d8;
+  --primary-blue: #195a9d;
+  --light-grey: #d9d9d9;
+  --text-grey: #808080;
+  --white: #ffffff;
+  --black: #000000;
+  --red: #ff0000;
+  --border-color: #d9d9d9;
+  --divider-color: rgba(128, 128, 128, 0.5);
+  --main-bg: #ECF0F1;
+  --green: #28bd7f;
+  --shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
 }
 
-/* -------------------- Conteneur principal -------------------- */
-.main-content {
-  flex: 1;
-  margin-left: 210px; /* espace sidebar */
-  margin-top: 70px;   /* espace navbar */
-  padding: 1rem;
+/* -------------------- Conteneur principal du dashboard -------------------- */
+.dashboard-container, .main-content {
+   flex: 1;
+  /* For dashboard only: remove top/header and left/sidebar offsets so the page is flush */
+  margin-left: 0 !important;
+  margin-top: 0 !important;
+  padding: 0;
   min-height: calc(100vh - 60px);
   display: flex;
   flex-direction: column;
-  gap: 2rem;
+  gap: 1rem;
   background-color: var(--main-bg);
-  overflow-x: hidden;
 }
 
-/* -------------------- les Cartes de statistiques -------------------- */
-.alignementTexte {
-  display: flex;
-  flex-direction: column; /* disposition verticale */
-  justify-content: center; /* centre verticalement si nécessaire */
-  align-items: flex-start; /* aligne à gauche */
-  gap: 4px; /* espace entre la valeur et le label */
-}
+/* -------------------- Cartes de statistiques -------------------- */
 .stats-cards-container {
-  display: flex;
-  gap: 35px;
-  margin-bottom: 30px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 15px;
+  margin-bottom: 0;
+  align-items: stretch;
 }
-.stat-cards-deco{
-  background-color: #A885D8;
+
+.stat-cards-deco {
+  background: #FFFFFF;
+  border-left: 8px solid #A885D8;
+  box-shadow: 4px 5px 5px rgba(0, 0, 0, 0.21);
   border-radius: 8px;
-  box-shadow: var(--shadow);
-  z-index: 1;
-  padding-left: 6px; /* espace intérieur pour décaler le contenu */
+  height: 110px;
   display: flex;
+  align-items: center;
+  padding: 0 15px;
+  min-width: 0;
 }
 
 .stat-card {
-  background-color: white;
-  padding: 15px 20px;
-  border-radius: 8px;
-  box-shadow: 0 8px 16px rgba(0,0,0,0.3);
-  flex: 1;
   display: flex;
   align-items: center;
   gap: 15px;
-  margin-left: 3px;
-  width: 210px;
-  height: 150px;
+  width: 100%;
 }
 
-.stat-card .icon-containerA {
-  width: 45px;
-  height: 45px;
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  font-size: 1.3rem;
-  flex-shrink: 0;
-  background-color: #0000FF;
-}
-.stat-card .icon-containerB {
-  width: 45px;
-  height: 45px;
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  font-size: 1.3rem;
-  flex-shrink: 0;
-  background-color: #28BD7F;
-}
-.stat-card .icon-containerC {
-  width: 45px;
-  height: 45px;
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  font-size: 1.3rem;
-  flex-shrink: 0;
-  background-color: #FF7900;
-}
+.stat-card .icon-containerA,
+.stat-card .icon-containerB,
+.stat-card .icon-containerC,
 .stat-card .icon-containerD {
-  width: 45px;
-  height: 45px;
-  border-radius: 8px;
+  width: 55px;
+  height: 55px;
+  border-radius: 5px;
   display: flex;
   align-items: center;
   justify-content: center;
   color: white;
-  font-size: 1.3rem;
+  font-size: 1.4rem;
   flex-shrink: 0;
-  background-color: #195A9D;
 }
+
+.stat-card .icon-containerA { background-color: #0000FF; }
+.stat-card .icon-containerB { background-color: #28BD7F; }
+.stat-card .icon-containerC { background-color: #FF9800; }
+.stat-card .icon-containerD { background-color: #195A9D; }
+
+.alignementTexte {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 4px;
+  flex: 1;
+}
+
 .stat-card .value {
-  font-size: 1.2rem;
-  font-weight: bold;
+  font-family: 'Roboto', sans-serif;
+  font-style: normal;
+  font-weight: 400;
+  font-size: 22px;
+  line-height: 26px;
+  color: #000000;
+  margin: 0;
 }
 
 .stat-card .label {
-  font-size: 0.8rem;
-  color: var(--secondary-text-color);
+  font-family: 'Roboto', sans-serif;
+  font-style: normal;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 16px;
+  color: #808080;
+  margin: 0;
 }
 
-/* -------------------- 2. Grille des sections principales -------------------- */
+/* -------------------- Grille des sections principales -------------------- */
 .dashboard-grid {
   display: grid;
   grid-template-columns: 2fr 1fr;
-  grid-template-rows: auto auto;
-  gap: 30px;
+  grid-template-rows: 340px 340px;
+  gap: 20px;
+  flex: 1;
 }
-
-.grid-item {
-  background-color: white;
-  padding: 20px;
-  border-radius: 8px;
+/* -------------------- Graphique d'activité -------------------- */
+.activity-chart {
+  background: #FFFFFF;
   box-shadow: var(--shadow);
+  border-radius: 8px;
+  padding: 15px;
+  grid-column: 1 / 2;
+  grid-row: 1 / 2;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
 
-.item-header {
+.activity-chart .item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  flex-shrink: 0;
+}
+
+.activity-chart h2 {
+  font-family: 'Roboto', sans-serif;
+  font-style: normal;
+  font-weight: 400;
+  font-size: 18px;
+  line-height: 21px;
+  color: #000000;
+  margin: 0;
+}
+
+.chart-options {
+  box-sizing: border-box;
+  width: 130px;
+  height: 28px;
+  border: 1px solid #000000;
+  border-radius: 4px;
+  padding: 0 6px;
+  font-family: 'Roboto', sans-serif;
+  font-style: normal;
+  font-weight: 400;
+  font-size: 11px;
+  line-height: 13px;
+  color: #000000;
+  background: #ffffff;
+}
+
+.chart-placeholder {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.legend-chart {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 8px;
+  padding-left: 0;
+  flex-shrink: 0;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  font-family: 'Roboto', sans-serif;
+  font-style: normal;
+  font-weight: 400;
+  font-size: 11px;
+  line-height: 13px;
+  color: #000000;
+}
+
+.legend-item.blue::before {
+  content: "";
+  display: inline-block;
+  width: 25px;
+  height: 8px;
+  background-color: #0000FF;
+  border: 1px solid #0000FF;
+  margin-right: 5px;
+}
+
+.legend-item.green::before {
+  content: "";
+  display: inline-block;
+  width: 25px;
+  height: 8px;
+  background-color: #008000;
+  border: 1px solid #008000;
+  margin-right: 5px;
+}
+
+.graph-area {
+  flex: 1;
+  min-height: 0;
+  border-left: 1px solid #000000;
+  border-bottom: 1px solid #000000;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Style pour le composant ApexCharts à l'intérieur */
+.graph-area apx-chart {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.graph-area ::ng-deep .apexcharts-canvas {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.graph-area ::ng-deep .apexcharts-inner {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.graph-area ::ng-deep svg {
+  width: 100% !important;
+  height: 100% !important;
+}
+/* -------------------- Actions Rapides -------------------- */
+.quick-actions {
+  background: #FFFFFF;
+  border: 2px solid #ECF0F1;
+  box-shadow: var(--shadow);
+  border-radius: 8px;
+  padding: 20px;
+  grid-column: 2 / 3;
+  grid-row: 1 / 2;
+  display: flex;
+  flex-direction: column;
+}
+
+.quick-actions h2 {
+  font-family: 'Roboto', sans-serif;
+  font-style: normal;
+  font-weight: 400;
+  font-size: 20px;
+  line-height: 23px;
+  color: #000000;
+  margin: 0 0 15px 0;
+  position: relative;
+}
+
+.traitA {
+  height: 1px;
+  background-color: #000000;
+  width: 100%;
+  margin-bottom: 15px;
+}
+
+.actions-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  flex: 1;
+  align-content: start;
+}
+
+.action-btn {
+  background: rgba(128, 128, 128, 0.2);
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-family: 'Roboto', sans-serif;
+  font-style: normal;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 16px;
+  color: #000000;
+  transition: all 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 15px 8px;
+  min-height: 90px;
+}
+
+.action-btn .btn-icon {
+  font-size: 1.5rem;
+  color: #A885D8;
+  margin-bottom: 8px;
+}
+
+.action-btn:hover {
+  background: rgba(128, 128, 128, 0.3);
+  transform: translateY(-2px);
+}
+
+
+/* -------------------- Répartition de lecture -------------------- */
+.reading-distribution {
+  background: #FFFFFF;
+  box-shadow: var(--shadow);
+  border-radius: 8px;
+  padding: 20px;
+  grid-column: 1 / 2;
+  grid-row: 2 / 3;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+}
+
+.reading-distribution h2 {
+  font-family: 'Roboto', sans-serif;
+  font-style: normal;
+  font-weight: 400;
+  font-size: 18px;
+  line-height: 21px;
+  color: #000000;
+  margin: 0 0 15px 0;
+  flex-shrink: 0;
+}
+
+.trait {
+  height: 1px;
+  background-color: #808080;
+  width: 100%;
+  margin-bottom: 15px;
+  flex-shrink: 0;
+}
+
+.distribution-content {
+  display: flex;
+  align-items: flex-start;
+  gap: 50px;
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+}
+
+/* --- Cercle du graphique --- */
+.pie-chart-placeholder {
+  width: 210px;
+  height: 210px;
+  border-radius: 50%;
+  background: transparent;
+  flex-shrink: 0;
+  position: relative;
+}
+
+/* Forcer ApexCharts à remplir complètement le conteneur */
+.pie-chart-placeholder ::ng-deep .apexcharts-canvas,
+.pie-chart-placeholder ::ng-deep .apexcharts-inner,
+.pie-chart-placeholder ::ng-deep svg {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+/* Cacher la légende par défaut d'ApexCharts */
+.pie-chart-placeholder ::ng-deep .apexcharts-legend {
+  display: none !important;
+}
+
+.pie-chart-placeholder ::ng-deep .apexcharts-datalabels {
+  display: none !important;
+}
+
+/* --- Légende --- */
+.legend {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-height: 0;
+}
+
+.legend li {
+  padding-left: 45px;
+  position: relative;
+  margin-bottom: 0;
+  white-space: nowrap;
+  font-family: 'Roboto', sans-serif;
+  font-style: normal;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 16px;
+  color: #000000;
+  height: 25px;
+  display: flex;
+  align-items: center;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+}
+
+.legend li:hover {
+  background-color: #f5f5f5;
+}
+
+.legend li::before {
+  content: '';
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 25px;
+  height: 15px;
+  border: 1px solid;
+  box-sizing: border-box;
+  border-radius: 3px;
+}
+
+/* Couleurs de la légende */
+.legend .maths::before { background-color: #0000FF; border-color: #0000FF; }
+.legend .francais::before { background-color: #008000; border-color: #008000; }
+.legend .histoires::before { background-color: #FFFF00; border-color: #D4B106; }
+.legend .geographie::before { background-color: #808080; border-color: #666666; }
+.legend .anglais::before { background-color: #FF6B6B; border-color: #FF6B6B; }
+.legend .ecm::before { background-color: #9B59B6; border-color: #9B59B6; }
+.legend .physique::before { background-color: #FFA500; border-color: #E69500; }
+.legend .chimie::before { background-color: #2C3E50; border-color: #2C3E50; }
+
+/* Ajustements responsive */
+@media (max-width: 1400px) {
+  .distribution-content {
+    gap: 25px;
+  }
+  
+  .pie-chart-placeholder {
+    width: 210px;
+    height: 210px;
+  }
+  
+  .legend li {
+    font-size: 13px;
+    height: 22px;
+    padding-left: 40px;
+  }
+  
+  .legend li::before {
+    width: 22px;
+    height: 13px;
+    left: 8px;
+  }
+}
+
+@media (max-width: 768px) {
+  .distribution-content {
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+  }
+  
+  .pie-chart-placeholder {
+    width: 210px;
+    height: 210px;
+  }
+  
+  .legend {
+    width: 100%;
+  }
+  
+  .legend li {
+    justify-content: flex-start;
+  }
+} 
+/* -------------------- Top Utilisateurs -------------------- */
+.top-users {
+  background: #FFFFFF;
+  border: 1px solid #ECF0F1;
+  box-shadow: var(--shadow);
+  border-radius: 8px;
+  padding: 20px;
+  grid-column: 2 / 3;
+  grid-row: 2 / 3;
+  display: flex;
+  flex-direction: column;
+}
+
+.top-users .item-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 15px;
 }
 
-.grid-item h2 {
-  font-size: 1.2rem;
-  font-weight: 600;
-}
-
-/* -------------------- 3. Graphique d'activité -------------------- */
-.activity-chart {
-  grid-column: 1 / 2;
-  grid-row: 1 / 2;
-  box-shadow: 0 8px 16px rgba(0,0,0,0.3);
-}
-
-.chart-options {
-  padding: 5px 10px;
-  border-radius: 5px;
-  border: 1px solid #ddd;
-  font-size: 0.85rem;
-  color: var(--secondary-text-color);
-}
-
-.chart-placeholder {
-  position: relative;
-  padding-top: 10px;
-  height: 320px;
-}
-
-.legend-chart {
-  font-size: 0.8rem;
-  display: flex;
-  gap: 15px;
-  margin-bottom: 5px;
-  padding-left: 50px;
-}
-
-.legend-chart .legend-item::before {
-  content: '';
-  display: inline-block;
-  width: 10px;
-  height: 2px;
-  margin-right: 5px;
-  vertical-align: middle;
-}
-
-.graph-area {
-  height: 80%;
-  border-left: 1px solid #ddd;
-  border-bottom: 1px solid #ddd;
-  position: relative;
-  margin-left: 45px;
-}
-
-.axis-labels {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 10px;
-  margin-left: 45px;
-  font-size: 0.75rem;
-  color: var(--secondary-text-color);
-}
-
-/* -------------------- 4. Actions Rapides -------------------- */
-.quick-actions {
-  grid-column: 2 / 3;
-  grid-row: 1 / 2;
-  box-shadow: 0 8px 16px rgba(0,0,0,0.3);
-}
-
-.actions-container {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 40px;
-  margin-top: 40px;
-}
-
-.action-btn {
-  background-color: #f7f7f7;
-  border: 1px solid #e0e0e0;
-  padding: 15px 10px;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 0.9rem;
-  font-weight: 500;
-  color: var(--text-color);
-  transition: background-color 0.2s, transform 0.1s;
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-}
-
-.action-btn:hover {
-  background-color: #eee;
-  transform: translateY(-2px);
-}
-
-.action-btn .btn-icon {
-  font-size: 1.5rem;
-  color: var(--secondary-text-color);
-}
-
-/* -------------------- 5. Répartition de lecture -------------------- */
-.reading-distribution {
-  grid-column: 1 / 2;
-  grid-row: 2 / 3;
-  box-shadow: 0 8px 16px rgba(0,0,0,0.3);
-}
-
-.distribution-content {
-  display: flex;
-  gap: 70px;
-  align-items: center;
-  padding: 20px 0;
-  margin-top: 5%;
-  margin-left: 5%;
-}
-
-.pie-chart-placeholder {
-  width: 200px;
-  height: 200px;
-  border-radius: 50%;
-  background: conic-gradient(
-    #4a68f2 0% 12.5%,
-    #37c75b 12.5% 25%,
-    #ff914d 25% 37.5%,
-    #ff3e3e 37.5% 50%,
-    #ffdd00 50% 62.5%,
-    #9013fe 62.5% 75%,
-    #1b4965 75% 87.5%,
-    #777 87.5% 100%
-  );
-  flex-shrink: 0;
-  border: 5px solid white;
-  box-shadow: 0 0 0 1px #eee;
-}
-
-.legend {
-  list-style: none;
-  font-size: 0.9rem;
-  columns: 2;
-}
-
-.legend li {
-  padding-left: 18px;
-  position: relative;
-  margin-bottom: 8px;
-  white-space: nowrap;
-}
-
-.legend li::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-}
-
-/* Couleurs de la légende */
-.legend .maths::before { background-color: #4a68f2; }
-.legend .francais::before { background-color: #37c75b; }
-.legend .histoires::before { background-color: #ff914d; }
-.legend .geographie::before { background-color: #ff3e3e; }
-.legend .anglais::before { background-color: #ffdd00; }
-.legend .ecm::before { background-color: #9013fe; }
-.legend .physique::before { background-color: #1b4965; }
-.legend .chimie::before { background-color: #777; }
-
-/* -------------------- 6. Top Utilisateurs -------------------- */
-.top-users {
-  grid-column: 2 / 3;
-  grid-row: 2 / 3;
-  box-shadow: 0 8px 16px rgba(0,0,0,0.3);
+.top-users h2 {
+  font-family: 'Roboto', sans-serif;
+  font-style: normal;
+  font-weight: 400;
+  font-size: 20px;
+  line-height: 23px;
+  color: #000000;
+  margin: 0;
 }
 
 .view-all {
-  color: var(--primary-color);
+  font-family: 'Roboto', sans-serif;
+  font-style: normal;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 19px;
+  color: #0000FF;
   text-decoration: none;
-  font-size: 0.9rem;
+}
+
+.view-all:hover {
+  text-decoration: underline;
 }
 
 .user-list {
   list-style: none;
+  margin: 0;
+  padding: 0;
+  flex: 1;
 }
 
 .user-item {
   display: flex;
   align-items: center;
-  padding: 10px 0;
-  border-bottom: 1px solid #eee;
+  padding: 12px 0;
+  border-bottom: 1px solid rgba(128, 128, 128, 0.5);
+  height: 55px;
 }
 
 .user-item:last-child {
@@ -338,17 +544,20 @@
 }
 
 .user-initials-small {
-  width: 30px;
-  height: 30px;
-  background-color: #008CFF;
-  color: white;
+  width: 40px;
+  height: 40px;
+  background: rgba(0, 140, 255, 0.4);
+  color: #000000;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: bold;
-  font-size: 12px;
-  margin-right: 15px;
+  font-family: 'Roboto', sans-serif;
+  font-style: normal;
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 16px;
+  margin-right: 12px;
   flex-shrink: 0;
 }
 
@@ -358,31 +567,136 @@
 }
 
 .user-details-small p {
-  font-weight: 600;
-  font-size: 0.9rem;
+  font-family: 'Roboto', sans-serif;
+  font-style: normal;
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 16px;
+  color: #000000;
+  margin: 0 0 2px 0;
 }
 
 .user-details-small small {
-  color: var(--secondary-text-color);
-  font-size: 0.75rem;
+  font-family: 'Roboto', sans-serif;
+  font-style: normal;
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 14px;
+  color: rgba(0, 0, 0, 0.5);
 }
 
 .points {
-  font-weight: 600;
-  font-size: 0.9rem;
-  color: var(--secondary-text-color);
+  font-family: 'Roboto', sans-serif;
+  font-style: normal;
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 16px;
+  color: #000000;
   flex-shrink: 0;
 }
-.trait{
-  height: 1px;
-  background-color: black;
-  width: 90vh;
-  margin: 2%;
-}
-.traitA{
-  height: 1px;
-  background-color: black;
-  width: 45vh;
-  margin: 2%;
+
+/* -------------------- Responsive -------------------- */
+@media (max-width: 1200px) {
+  .stats-cards-container {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+  
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto auto auto;
+    gap: 15px;
+  }
+
+  
+  
+  .activity-chart { grid-column: 1 / 2; grid-row: 1 / 2; }
+  .quick-actions { grid-column: 1 / 2; grid-row: 2 / 3; }
+  .reading-distribution { grid-column: 1 / 2; grid-row: 3 / 4; }
+  .top-users { grid-column: 1 / 2; grid-row: 4 / 5; }
 }
 
+@media (max-width: 768px) {
+  .main-content {
+    padding: 15px;
+    gap: 20px;
+  }
+  
+  .stats-cards-container {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  
+  .stat-cards-deco {
+    height: 100px;
+    padding: 0 12px;
+  }
+  
+  .stat-card .icon-containerA,
+  .stat-card .icon-containerB,
+  .stat-card .icon-containerC,
+  .stat-card .icon-containerD {
+    width: 50px;
+    height: 50px;
+    font-size: 1.2rem;
+  }
+  
+  .stat-card .value {
+    font-size: 20px;
+  }
+  
+  .stat-card .label {
+    font-size: 13px;
+  }
+  
+  .actions-container {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+  
+  .action-btn {
+    min-height: 80px;
+    font-size: 13px;
+  }
+  
+  .distribution-content {
+    flex-direction: column;
+    gap: 20px;
+    text-align: center;
+  }
+  
+  .pie-chart-placeholder {
+        width: 210px;
+        height: 210px;
+  }
+  
+  .activity-chart,
+  .quick-actions,
+  .reading-distribution,
+  .top-users {
+    padding: 15px;
+  }
+}
+
+@media (max-width: 480px) {
+  .activity-chart h2,
+  .quick-actions h2,
+  .reading-distribution h2,
+  .top-users h2 {
+    font-size: 18px;
+  }
+  
+  .legend li {
+    font-size: 12px;
+    padding-left: 30px;
+  }
+  
+  .legend li::before {
+    width: 20px;
+    height: 10px;
+  }
+}
+
+.pie-chart-placeholder svg {
+  overflow: visible !important;
+}

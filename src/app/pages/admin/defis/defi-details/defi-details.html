@@ -1,1 +1,77 @@
-<p>defi-details works!</p>
+<div class="defi-management-container">
+  <div class="users-page-container">
+    <div class="page-header">
+      <h1 class="page-title">Détails du Défi</h1>
+      <button class="back-btn" (click)="goBack()">
+        <fa-icon [icon]="faArrowLeft"></fa-icon>
+        Retour
+      </button>
+    </div>
+
+    <!-- Loading indicator -->
+    <div *ngIf="loading" class="loading-indicator">
+      <p>Chargement des détails du défi...</p>
+    </div>
+    
+    <!-- Error message -->
+    <div *ngIf="error" class="error-message">
+      <p>{{ error }}</p>
+      <button class="retry-btn" (click)="loadDefiDetails(defiId!)">Réessayer</button>
+    </div>
+
+    <!-- Defi details -->
+    <div *ngIf="defi && !loading && !error" class="defi-details-container">
+      <div class="defi-header">
+        <div class="defi-info">
+          <h2>{{ defi.titre }}</h2>
+          <p class="defi-description">{{ defi.ennonce }}</p>
+          
+          <div class="defi-meta">
+            <div class="meta-item">
+              <span class="label">ID:</span>
+              <span class="value">{{ defi.id }}</span>
+            </div>
+            <div class="meta-item">
+              <span class="label">Date d'ajout:</span>
+              <span class="value">{{ defi.dateAjout | date:'dd/MM/yyyy' }}</span>
+            </div>
+            <div class="meta-item">
+              <span class="label">Points:</span>
+              <span class="value">{{ defi.pointDefi || 0 }}</span>
+            </div>
+            <div class="meta-item">
+              <span class="label">Participations:</span>
+              <span class="value">{{ defi.nbreParticipations || 0 }}</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="defi-actions">
+          <button class="edit-btn" (click)="editDefi()">Modifier</button>
+        </div>
+      </div>
+
+      <div class="defi-details-grid">
+        <div class="detail-card">
+          <h3>Informations</h3>
+          <div class="detail-row">
+            <span class="label">Type de défi:</span>
+            <span class="value">{{ defi.typeDefi || 'Non spécifié' }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="label">Classe:</span>
+            <span class="value">{{ defi.classe?.nom || 'Non spécifiée' }}</span>
+          </div>
+        </div>
+
+        <div class="detail-card">
+          <h3>Réponse</h3>
+          <div class="detail-row">
+            <span class="label">Réponse:</span>
+            <span class="value">{{ defi.reponseDefi || 'Non spécifiée' }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

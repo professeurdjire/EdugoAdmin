@@ -1,7 +1,9 @@
 <app-navebar></app-navebar>
-<div class="admin-layout">
+<div class="admin-layout" [class.collapsed]="isCollapsed">
   <app-sidebar></app-sidebar>
   <div class="main-content">
     <router-outlet></router-outlet>
   </div>
 </div>
+<app-toast-container></app-toast-container>
+<app-confirm-container></app-confirm-container>

@@ -1,1 +1,111 @@
-<p>challenge-list works!</p>
+<div class="users-page-container">
+  <div class="page-header">
+    <h1 class="page-title">Challenges</h1>
+    <a routerLink="/admin/ajouterchallenge" class="btn-add"><i class="fa-solid fa-plus"></i>&nbsp;Ajouter un challenge</a>
+  </div>
+
+  <!-- Message d'erreur -->
+  <div *ngIf="error" class="error-message">
+    {{ error }}
+  </div>
+
+  <!-- Indicateur de chargement -->
+  <div *ngIf="loading" class="loading-overlay">
+    <div class="loading-spinner"></div>
+    <p>Chargement des challenges...</p>
+  </div>
+
+  <!-- Filters -->
+  <div class="filter" *ngIf="!loading && !error">
+    <section class="filters-container">
+      <div class="filter-group">
+        <label>Recherche</label>
+        <input type="text" placeholder="Nom, description..." [(ngModel)]="searchTerm" (keyup.enter)="applyFilters()" />
+      </div>
+      <div class="filter-group">
+        <label>Type</label>
+        <select [(ngModel)]="selectedType" (change)="applyFilters()">
+          <option value="">Tous les types</option>
+          <option value="INTERCLASSE">Interclasse</option>
+          <option value="INTERNIVEAU">Interniveau</option>
+        </select>
+      </div>
+      <div class="action-buttons">
+        <button class="filter-btn" (click)="applyFilters()">
+          <fa-icon [icon]="faFilter"></fa-icon>
+          Filtrer
+        </button>
+        <button class="reset-btn" (click)="resetFilters()">
+          <fa-icon [icon]="faRedoAlt"></fa-icon>
+          Réinitialiser
+        </button>
+      </div>
+    </section>
+  </div>
+
+  <div class="table-header-info" *ngIf="!loading && !error">
+    <h2>Liste des Challenges ({{ totalFiltered }})</h2>
+  </div>
+
+  <section class="users-table-section" *ngIf="!loading && !error">
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>Challenge</th>
+            <th>Type</th>
+            <th>Dates</th>
+            <th>Statut</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let challenge of pagedChallenges">
+            <td class="user-details-cell">
+              <div class="user-info-text">
+                <p class="name">{{ challenge.titre }}</p>
+                <small class="email">{{ challenge.description }}</small>
+              </div>
+            </td>
+            <td><span class="level-badge">{{ challenge.typeChallenge }}</span></td>
+            <td>
+              Du {{ challenge.dateDebut }}<br>
+              Au {{ challenge.dateFin }}
+            </td>
+            <td><span class="status-badge active-status">Actif</span></td>
+            <td class="actions-cell">
+              <span class="action-btn view-btn" (click)="viewChallenge(challenge)">
+                <fa-icon [icon]="faEye"></fa-icon>
+              </span>
+              <span class="action-btn edit-btn" (click)="editChallenge(challenge)">
+                <fa-icon [icon]="faPen"></fa-icon>
+              </span>
+              <span class="action-btn delete-btn" (click)="deleteChallenge(challenge)">
+                <fa-icon [icon]="faTrash"></fa-icon>
+              </span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- Pagination -->
+      <div class="book-list__footer" *ngIf="totalPages > 1">
+        <p>Affichage de {{ ((currentPage - 1) * pageSize) + 1 }} à {{ getMinValue(currentPage * pageSize, totalFiltered) }} sur {{ totalFiltered }} Challenges</p>
+        <nav class="pagination">
+          <button class="pagination__arrow" (click)="changePage(currentPage - 1)" [disabled]="currentPage === 1">
+            <span>←</span>
+          </button>
+          <span *ngFor="let page of [].constructor(totalPages); let i = index"
+                class="pagination__number" 
+                [class.active]="(i + 1) === currentPage"
+                (click)="changePage(i + 1)">
+            {{ i + 1 }}
+          </span>
+          <button class="pagination__arrow" (click)="changePage(currentPage + 1)" [disabled]="currentPage === totalPages">
+            <span>→</span>
+          </button>
+        </nav>
+      </div>
+    </div>
+  </section>
+</div>

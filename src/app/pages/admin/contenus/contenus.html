@@ -1,0 +1,249 @@
+<!-- Indicateur de chargement -->
+<div *ngIf="loading" class="loading-overlay">
+  <div class="loading-spinner">Chargement des données...</div>
+</div>
+
+<!-- Message d'erreur -->
+<div *ngIf="error && !loading" class="error-banner">
+  <div class="error-content">
+    <span class="error-text">{{ error }}</span>
+    <button class="btn btn-secondary btn-sm" (click)="loadData()">Réessayer</button>
+  </div>
+</div>
+<div class="content-management">
+  <div class="page-header">
+    <h1 class="page-title">Gestion des Contenus</h1>
+    <button class="btn-add" (click)="openAddModal()">
+      <i class="fa-solid fa-plus"></i>&nbsp;Ajouter
+    </button>
+  </div>
+
+  <div class="content-tabs">
+    <div
+      class="tab"
+      [class.active]="currentTab === 'subjects'"
+      (click)="switchTab('subjects')">
+      Matières
+    </div>
+    <div
+      class="tab"
+      [class.active]="currentTab === 'levels'"
+      (click)="switchTab('levels')">
+      Niveaux
+    </div>
+    <div
+      class="tab"
+      [class.active]="currentTab === 'classes'"
+      (click)="switchTab('classes')">
+      Classes
+    </div>
+  </div>
+
+  <!-- Section Matières -->
+  <div class="tab-content" [class.active]="currentTab === 'subjects'">
+    <div class="content-section">
+      <div class="section-header">
+        <h2 class="section-title">Liste des Matières</h2>
+        <div class="search-bar">
+          <input type="text" class="search-input" placeholder="Rechercher une matière...">
+          <button class="btn btn-secondary">Filtrer</button>
+        </div>
+      </div>
+
+      <div class="content-grid">
+        <div *ngIf="subjects.length === 0" class="empty-state">
+          <div class="empty-state-icon">📚</div>
+          <div class="empty-state-text">Aucune matière n'a été ajoutée</div>
+          <button class="btn-add" (click)="openAddModal()"><i class="fa-solid fa-plus"></i>&nbsp;Ajouter une matière</button>
+        </div>
+
+        <div class="content-card" *ngFor="let subject of subjects">
+          <div class="card-header">
+            <div>
+              <h3 class="card-title">{{ subject.name }}</h3>
+              <p class="card-subtitle">{{ subject.description }}</p>
+            </div>
+            <div class="card-actions">
+              <div class="action-btn edit-btn" (click)="openEditModal(subject.id)"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M2 11.5002V14.0002H4.5L11.8733 6.62683L9.37333 4.12683L2 11.5002ZM13.8067 4.6935C13.8685 4.63182 13.9175 4.55856 13.951 4.47791C13.9844 4.39727 14.0016 4.31081 14.0016 4.2235C14.0016 4.13619 13.9844 4.04973 13.951 3.96908C13.9175 3.88843 13.8685 3.81517 13.8067 3.7535L12.2467 2.1935C12.185 2.1317 12.1117 2.08266 12.0311 2.04921C11.9504 2.01576 11.864 1.99854 11.7767 1.99854C11.6894 1.99854 11.6029 2.01576 11.5223 2.04921C11.4416 2.08266 11.3683 2.1317 11.3067 2.1935L10.0867 3.4135L12.5867 5.9135L13.8067 4.6935Z" fill="#808080"/>
+</svg>
+</div>
+              <div class="action-btn delete-btn" (click)="deleteItem(subject.id)"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M4.00065 12.6667C4.00065 13.4 4.60065 14 5.33398 14H10.6673C11.4007 14 12.0007 13.4 12.0007 12.6667V4.66667H4.00065V12.6667ZM12.6673 2.66667H10.334L9.66732 2H6.33398L5.66732 2.66667H3.33398V4H12.6673V2.66667Z" fill="#808080"/>
+</svg>
+</div>
+            </div>
+          </div>
+          <div class="card-stats">
+            <div class="stat">
+              <span class="stat-value">{{ subject.quizCount }}</span>
+              <span class="stat-label">Quiz</span>
+            </div>
+            <div class="stat">
+              <span class="stat-value">{{ subject.studentsCount }}</span>
+              <span class="stat-label">Élèves</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Section Niveaux -->
+  <div class="tab-content" [class.active]="currentTab === 'levels'">
+    <div class="content-section">
+      <div class="section-header">
+        <h2 class="section-title">Liste des Niveaux</h2>
+        <div class="search-bar">
+          <input type="text" class="search-input" placeholder="Rechercher un niveau...">
+          <button class="btn btn-secondary">Filtrer</button>
+        </div>
+      </div>
+
+      <div class="content-grid">
+        <div *ngIf="levels.length === 0" class="empty-state">
+          <div class="empty-state-icon">🎓</div>
+          <div class="empty-state-text">Aucun niveau n'a été ajouté</div>
+          <button class="btn-add" (click)="openAddModal()"><i class="fa-solid fa-plus"></i>&nbsp;Ajouter un niveau</button>
+        </div>
+
+        <div class="content-card" *ngFor="let level of levels">
+          <div class="card-header">
+            <div>
+              <h3 class="card-title">{{ level.name }}</h3>
+              <p class="card-subtitle">Cycle {{ level.cycle }}</p>
+            </div>
+            <div class="card-actions">
+              <div class="action-btn edit-btn" (click)="openEditModal(level.id)"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M2 11.5002V14.0002H4.5L11.8733 6.62683L9.37333 4.12683L2 11.5002ZM13.8067 4.6935C13.8685 4.63182 13.9175 4.55856 13.951 4.47791C13.9844 4.39727 14.0016 4.31081 14.0016 4.2235C14.0016 4.13619 13.9844 4.04973 13.951 3.96908C13.9175 3.88843 13.8685 3.81517 13.8067 3.7535L12.2467 2.1935C12.185 2.1317 12.1117 2.08266 12.0311 2.04921C11.9504 2.01576 11.864 1.99854 11.7767 1.99854C11.6894 1.99854 11.6029 2.01576 11.5223 2.04921C11.4416 2.08266 11.3683 2.1317 11.3067 2.1935L10.0867 3.4135L12.5867 5.9135L13.8067 4.6935Z" fill="#808080"/>
+</svg>
+</div>
+              <div class="action-btn delete-btn" (click)="deleteItem(level.id)"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M4.00065 12.6667C4.00065 13.4 4.60065 14 5.33398 14H10.6673C11.4007 14 12.0007 13.4 12.0007 12.6667V4.66667H4.00065V12.6667ZM12.6673 2.66667H10.334L9.66732 2H6.33398L5.66732 2.66667H3.33398V4H12.6673V2.66667Z" fill="#808080"/>
+</svg></div>
+            </div>
+          </div>
+          <div class="card-stats">
+            <div class="stat">
+              <span class="stat-value">{{ level.classesCount }}</span>
+              <span class="stat-label">Classes</span>
+            </div>
+            <div class="stat">
+              <span class="stat-value">{{ level.studentsCount }}</span>
+              <span class="stat-label">Élèves</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Section Classes -->
+  <div class="tab-content" [class.active]="currentTab === 'classes'">
+    <div class="content-section">
+      <div class="section-header">
+        <h2 class="section-title">Liste des Classes</h2>
+        <div class="search-bar">
+          <input type="text" class="search-input" placeholder="Rechercher une classe...">
+          <button class="btn btn-secondary">Filtrer</button>
+        </div>
+      </div>
+
+      <div class="content-grid">
+        <div *ngIf="classes.length === 0" class="empty-state">
+          <div class="empty-state-icon">👨‍🏫</div>
+          <div class="empty-state-text">Aucune classe n'a été ajoutée</div>
+          <button class="btn-add" (click)="openAddModal()"><i class="fa-solid fa-plus"></i>&nbsp;Ajouter une classe</button>
+        </div>
+
+        <div class="content-card" *ngFor="let classItem of classes">
+          <div class="card-header">
+            <div>
+              <h3 class="card-title">{{ classItem.name }}</h3>
+              <p class="card-subtitle">{{ classItem.studentsCount }} - {{ classItem.level }}</p>
+            </div>
+            <div class="card-actions">
+              <div class="action-btn edit-btn" (click)="openEditModal(classItem.id)"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M2 11.5002V14.0002H4.5L11.8733 6.62683L9.37333 4.12683L2 11.5002ZM13.8067 4.6935C13.8685 4.63182 13.9175 4.55856 13.951 4.47791C13.9844 4.39727 14.0016 4.31081 14.0016 4.2235C14.0016 4.13619 13.9844 4.04973 13.951 3.96908C13.9175 3.88843 13.8685 3.81517 13.8067 3.7535L12.2467 2.1935C12.185 2.1317 12.1117 2.08266 12.0311 2.04921C11.9504 2.01576 11.864 1.99854 11.7767 1.99854C11.6894 1.99854 11.6029 2.01576 11.5223 2.04921C11.4416 2.08266 11.3683 2.1317 11.3067 2.1935L10.0867 3.4135L12.5867 5.9135L13.8067 4.6935Z" fill="#808080"/>
+</svg>
+</div>
+              <div class="action-btn delete-btn" (click)="deleteItem(classItem.id)"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M4.00065 12.6667C4.00065 13.4 4.60065 14 5.33398 14H10.6673C11.4007 14 12.0007 13.4 12.0007 12.6667V4.66667H4.00065V12.6667ZM12.6673 2.66667H10.334L9.66732 2H6.33398L5.66732 2.66667H3.33398V4H12.6673V2.66667Z" fill="#808080"/>
+</svg></div>
+            </div>
+          </div>
+          <div class="card-stats">
+            <div class="stat">
+              <span class="stat-value">{{ classItem.studentsCount }}</span>
+              <span class="stat-label">Élèves</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal d'ajout/modification -->
+<div class="modal" [class.active]="isModalOpen">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2 class="modal-title">{{ modalTitle }}</h2>
+      <span class="close-modal" (click)="closeModal()">&times;</span>
+    </div>
+
+    <form (ngSubmit)="saveContent()" #contentForm="ngForm">
+      <div class="form-group">
+        <label class="form-label" for="contentName">Nom</label>
+        <input
+          type="text"
+          class="form-input"
+          id="contentName"
+          [(ngModel)]="formData.name"
+          name="name"
+          required>
+      </div>
+
+      <div class="form-group" *ngIf="showSubjectFields">
+        <label class="form-label" for="subjectDescription">Description</label>
+        <textarea
+          class="form-input"
+          id="subjectDescription"
+          rows="3"
+          [(ngModel)]="formData.description"
+          name="description"></textarea>
+      </div>
+
+      <div class="form-group" *ngIf="showLevelFields">
+        <label class="form-label" for="levelCycle">Cycle</label>
+        <select
+          class="form-select"
+          id="levelCycle"
+          [(ngModel)]="formData.cycle"
+          name="cycle">
+          <option value="primaire">Primaire</option>
+          <option value="college">Collège</option>
+          <option value="lycee">Lycée</option>
+        </select>
+      </div>
+
+      <div class="form-group" *ngIf="showClassFields">
+        <label class="form-label" for="classLevel">Niveau</label>
+        <select
+          class="form-select"
+          id="classLevel"
+          [(ngModel)]="formData.level"
+          name="level">
+          <!-- Utiliser les niveaux dynamiques depuis l'API -->
+          <option *ngFor="let level of levels" [value]="level.name">{{ level.name }}</option>
+        </select>
+        <!-- SUPPRIMÉ: Le champ Professeur principal -->
+      </div>
+
+      <div class="form-actions">
+        <button type="button" class="btn btn-secondary" (click)="closeModal()">Annuler</button>
+        <button type="submit" class="btn btn-primary">Enregistrer</button>
+      </div>
+    </form>
+  </div>
+</div>

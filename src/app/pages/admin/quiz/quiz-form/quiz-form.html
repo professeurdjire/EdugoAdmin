@@ -1,1 +1,378 @@
-<p>quiz-form works!</p>
+<!-- HTML amélioré -->
+<div class="form-main-container">
+  <div class="ajout-quiz-container">
+    <!-- Header -->
+    <div class="header">
+      <button routerLink="/admin/quizlist" class="back-btn">
+        <span class="arrow-back">←</span>
+        <span>Retour</span>
+      </button>
+      <div class="page-title">Créer un Quiz</div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+      <div class="description">
+        Créez un quiz interactif avec différents types de questions pour évaluer vos apprenants !
+      </div>
+
+      <!-- Section 1: Informations de base -->
+      <div class="section">
+        <div class="section-header">
+          <div class="section-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+              <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="currentColor" stroke-width="2"/>
+              <path d="M12 16V12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              <path d="M12 8H12.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <h3>Informations de base</h3>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Livre associé <span class="required">*</span></label>
+            <div class="input-field">
+              <select [(ngModel)]="selectedLivreId" class="form-select">
+                <option [ngValue]="null" disabled>Sélectionner un livre</option>
+                <option *ngFor="let l of livres" [ngValue]="l.id">{{ l.titre }}</option>
+              </select>
+              <div class="input-icon">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                  <path d="M4 6L8 10L12 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Titre du quiz <span class="required">*</span></label>
+            <div class="input-field">
+              <input type="text" 
+                     [(ngModel)]="quiz.titre" 
+                     placeholder="Donnez un titre"
+                     class="form-input">
+            </div>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Durée (minutes)</label>
+            <div class="input-field">
+              <input type="number" 
+                     [(ngModel)]="quiz.duree" 
+                     min="1" 
+                     max="180"
+                     class="form-input">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Difficulté</label>
+            <div class="input-field">
+              <select [(ngModel)]="quiz.difficulte" class="form-select">
+                <option *ngFor="let niveau of niveauxDifficulte" [value]="niveau.value">
+                  {{ niveau.label }}
+                </option>
+              </select>
+              <div class="input-icon">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                  <path d="M4 6L8 10L12 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group full-width">
+          <label class="form-label">Description</label>
+          <div class="textarea-field">
+            <textarea [(ngModel)]="quiz.description" 
+                     placeholder="Description détaillée du quiz..."
+                     class="form-textarea"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 2: Questions du quiz -->
+      <div class="section" *ngFor="let question of quiz.questions; let i = index">
+        <div class="section-header">
+          <div class="section-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+              <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="currentColor" stroke-width="2"/>
+              <path d="M9.08997 9.00008C9.32507 8.33175 9.78912 7.76819 10.3999 7.40921C11.0107 7.05024 11.7289 6.91902 12.4271 7.03879C13.1254 7.15857 13.7588 7.52161 14.215 8.06361C14.6713 8.60561 14.921 9.2916 14.92 10.0001C14.92 12.0001 11.92 13.0001 11.92 13.0001" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M12 17H12.01" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <h3>Question {{ question.numero }}</h3>
+          <div class="question-actions">
+            <button class="btn-action" (click)="dupliquerQuestion(i)" title="Dupliquer">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <rect x="2" y="2" width="8" height="8" rx="1" stroke="currentColor" stroke-width="1.5"/>
+                <rect x="6" y="6" width="8" height="8" rx="1" stroke="currentColor" stroke-width="1.5"/>
+              </svg>
+            </button>
+            <button class="btn-action" (click)="deplacerQuestion(i, 'up')" 
+                    [disabled]="i === 0" title="Déplacer vers le haut">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <path d="M12 10L8 6L4 10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            <button class="btn-action" (click)="deplacerQuestion(i, 'down')" 
+                    [disabled]="i === quiz.questions.length - 1" title="Déplacer vers le bas">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <path d="M4 6L8 10L12 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            <button class="btn-action btn-danger" (click)="supprimerQuestion(i)" 
+                    [disabled]="quiz.questions.length === 1" title="Supprimer">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <path d="M2 4H14M5.33333 4V2.66667C5.33333 2.29848 5.63181 2 6 2H10C10.3682 2 10.6667 2.29848 10.6667 2.66667V4M12.6667 4V13.3333C12.6667 13.7015 12.3682 14 12 14H4C3.63181 14 3.33333 13.7015 3.33333 13.3333V4H12.6667Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Type de question <span class="required">*</span></label>
+            <div class="input-field">
+              <select [(ngModel)]="question.type" 
+                      (change)="onTypeQuestionChange(i)"
+                      class="form-select">
+                <option *ngFor="let type of typesQuestions" [value]="type.value">
+                  {{ type.label }}
+                </option>
+              </select>
+              <div class="input-icon">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                  <path d="M4 6L8 10L12 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </div>
+            </div>
+            <div class="type-description">
+              {{ getDescriptionType(question.type) }}
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Points</label>
+            <div class="input-field">
+              <input type="number" 
+                     [(ngModel)]="question.points" 
+                     min="1" 
+                     max="10"
+                     class="form-input">
+            </div>
+          </div>
+        </div>
+
+        <!-- Question Input -->
+        <div class="form-group full-width">
+          <label class="form-label">Question <span class="required">*</span></label>
+          <div class="input-field">
+            <input type="text" 
+                   [(ngModel)]="question.question" 
+                   placeholder="Saisissez la question..."
+                   class="form-input">
+          </div>
+        </div>
+
+        <!-- Contenu dynamique selon le type de question -->
+        <div class="question-content">
+          
+          <!-- Questions à choix multiples / Multi-réponses -->
+          <div *ngIf="question.type === 'choix_multiple' || question.type === 'multi_reponse' || question.type === 'case_a_cocher' || question.type === 'ordre'">
+            <div class="reponses-header">
+              <label class="form-label">Réponses</label>
+              <button class="btn-add-reponse" (click)="ajouterReponse(i)" 
+                      [disabled]="question.reponses.length >= 6">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                  <path d="M8 3V13M3 8H13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                </svg>
+                Ajouter une réponse
+              </button>
+            </div>
+            
+            <div class="reponses-section">
+              <div class="reponse-item" *ngFor="let reponse of question.reponses; let j = index">
+                <div class="reponse-label">{{ reponse.lettre }}</div>
+                <div class="input-field reponse-input">
+                  <input type="text" 
+                         [(ngModel)]="reponse.texte" 
+                         [placeholder]="'Réponse ' + reponse.lettre"
+                         class="form-input">
+                </div>
+                <button class="btn-checkbox" 
+                        [class.correct]="reponse.correcte"
+                        (click)="onReponseCorrecteChange(i, j, question.type)">
+                  <span class="btn-icon">
+                    <svg *ngIf="question.type === 'multi_reponse' || question.type === 'case_a_cocher'" width="16" height="16" viewBox="0 0 16 16" fill="none">
+                      <rect x="0.5" y="0.5" width="15" height="15" rx="3.5" stroke="currentColor" [attr.fill]="reponse.correcte ? 'currentColor' : 'none'"/>
+                      <path *ngIf="reponse.correcte" d="M4 8L7 11L12 5" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    <svg *ngIf="question.type === 'choix_multiple' || question.type === 'ordre'" width="16" height="16" viewBox="0 0 16 16" fill="none">
+                      <circle cx="8" cy="8" r="7.5" stroke="currentColor" [attr.fill]="reponse.correcte ? 'currentColor' : 'none'"/>
+                      <circle *ngIf="reponse.correcte" cx="8" cy="8" r="4" fill="white"/>
+                    </svg>
+                  </span>
+                </button>
+                <button class="btn-action btn-danger" 
+                        (click)="supprimerReponse(i, j)"
+                        [disabled]="question.reponses.length <= 2">
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                    <path d="M2 4H14M5.33333 4V2.66667C5.33333 2.29848 5.63181 2 6 2H10C10.3682 2 10.6667 2.29848 10.6667 2.66667V4M12.6667 4V13.3333C12.6667 13.7015 12.3682 14 12 14H4C3.63181 14 3.33333 13.7015 3.33333 13.3333V4H12.6667Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Question Vrai/Faux -->
+          <div *ngIf="question.type === 'vrai_faux'" class="vrai-faux-section">
+            <div class="reponses-section">
+              <div class="reponse-item" *ngFor="let reponse of question.reponses; let j = index">
+                <div class="reponse-label">{{ reponse.lettre }}</div>
+                <div class="reponse-text">{{ reponse.texte }}</div>
+                <button class="btn-checkbox" 
+                        [class.correct]="reponse.correcte"
+                        (click)="onReponseCorrecteChange(i, j, question.type)">
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                    <circle cx="8" cy="8" r="7.5" stroke="currentColor" [attr.fill]="reponse.correcte ? 'currentColor' : 'none'"/>
+                    <circle *ngIf="reponse.correcte" cx="8" cy="8" r="4" fill="white"/>
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Réponse courte -->
+          <div *ngIf="question.type === 'reponse_courte'" class="reponse-courte-section">
+            <label class="form-label">Réponse attendue <span class="required">*</span></label>
+            <div class="input-field">
+              <input type="text" 
+                     [(ngModel)]="question.bonneReponse" 
+                     placeholder="Saisissez la réponse correcte..."
+                     class="form-input">
+            </div>
+          </div>
+
+          <!-- Réponse longue -->
+          <div *ngIf="question.type === 'reponse_longue'" class="reponse-longue-section">
+            <label class="form-label">Réponse attendue <span class="required">*</span></label>
+            <div class="textarea-field">
+              <textarea [(ngModel)]="question.bonneReponse" 
+                       placeholder="Saisissez la réponse correcte..."
+                       class="form-textarea"></textarea>
+            </div>
+          </div>
+
+          <!-- Appariement -->
+          <div *ngIf="question.type === 'appariement'" class="appariement-section">
+            <div class="appariement-header">
+              <label class="form-label">Paires d'appariement</label>
+              <button class="btn-add-reponse" (click)="ajouterPaireAppariement(i)">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                  <path d="M8 3V13M3 8H13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                </svg>
+                Ajouter une paire
+              </button>
+            </div>
+            
+            <div class="appariement-grid">
+              <div class="appariement-header-row">
+                <div class="appariement-col">Élément de gauche</div>
+                <div class="appariement-col">Élément de droite</div>
+                <div class="appariement-actions">Actions</div>
+              </div>
+              
+              <div class="appariement-row" *ngFor="let paire of question.pairesAppariement; let j = index">
+                <div class="appariement-col">
+                  <div class="input-field">
+                    <input type="text" 
+                           [(ngModel)]="paire.elementGauche" 
+                           placeholder="Élément à associer..."
+                           class="form-input">
+                  </div>
+                </div>
+                <div class="appariement-col">
+                  <div class="input-field">
+                    <input type="text" 
+                           [(ngModel)]="paire.elementDroit" 
+                           placeholder="Élément correspondant..."
+                           class="form-input">
+                  </div>
+                </div>
+                <div class="appariement-actions">
+                  <button class="btn-action btn-danger" 
+                          (click)="supprimerPaireAppariement(i, j)"
+                          [disabled]="question.pairesAppariement!.length <= 2">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                      <path d="M2 4H14M5.33333 4V2.66667C5.33333 2.29848 5.63181 2 6 2H10C10.3682 2 10.6667 2.29848 10.6667 2.66667V4M12.6667 4V13.3333C12.6667 13.7015 12.3682 14 12 14H4C3.63181 14 3.33333 13.7015 3.33333 13.3333V4H12.6667Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Indicateur de bonne réponse -->
+        <div *ngIf="question.type !== 'reponse_courte' && question.type !== 'reponse_longue' && question.type !== 'appariement'" 
+             class="bonne-reponse-indicator">
+          <span class="indicator-label">Bonne(s) réponse(s) sélectionnée(s) :</span>
+          <span class="indicator-value">
+            {{ question.bonneReponse || 'Aucune' }}
+          </span>
+        </div>
+      </div>
+
+      <!-- Bouton pour ajouter une nouvelle question -->
+      <div class="add-question-section">
+        <button class="btn btn-add-question-large" (click)="ajouterQuestion()">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+            <path d="M10 4V16M4 10H16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+          <span>Ajouter une nouvelle question</span>
+        </button>
+      </div>
+
+      <!-- Résumé du quiz -->
+      <div class="quiz-summary">
+        <div class="summary-item">
+          <span class="summary-label">Nombre de questions :</span>
+          <span class="summary-value">{{ quiz.questions.length }}</span>
+        </div>
+        <div class="summary-item">
+          <span class="summary-label">Points totaux :</span>
+          <span class="summary-value">{{ totalPoints() }}</span>
+        </div>
+        <div class="summary-item">
+          <span class="summary-label">Durée totale :</span>
+          <span class="summary-value">{{ quiz.duree }} minutes</span>
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div class="actions-section">
+        <button class="btn btn-cancel" (click)="onAnnuler()">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+            <path d="M5 5L15 15M5 15L15 5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+          <span>Annuler</span>
+        </button>
+        <button class="btn btn-submit" 
+                (click)="onEnregistrerQuiz()"
+                [disabled]="!estFormulaireValide()">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+            <path d="M16.5 5.5L8.5 13.5L4.5 9.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M15.5 5.5H16.5V14.5C16.5 15.0523 16.0523 15.5 15.5 15.5H4.5C3.94772 15.5 3.5 15.0523 3.5 14.5V5.5C3.5 4.94772 3.94772 4.5 4.5 4.5H13.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <span>Enregistrer le quiz</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

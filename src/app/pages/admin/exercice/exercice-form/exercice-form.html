@@ -1,1 +1,178 @@
-<p>exercice-form works!</p>
+<div class="form-page-container">
+  <header class="form-header">
+    <h1>Ajouter un exercice</h1>
+    <button routerLink="/admin/exercicelist" class="back-btn">
+      <span class="back-icon">←</span>
+      <span>Retour</span>
+    </button>
+  </header>
+
+  <form class="exercice-form" [formGroup]="exerciceForm" (ngSubmit)="onSubmit()">
+    <!-- Section 1: Informations de base -->
+    <fieldset id="basic-info" class="form-section">
+      <legend class="section-title">
+        <span class="legend-icon">ℹ️</span>
+        <span>Information de bases</span>
+      </legend>
+      <hr class="divider">
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="matiere-concernee">Matière concernée <span class="required-star">*</span></label>
+          <div class="input-wrapper">
+            <select id="matiere-concernee" formControlName="matiereConcernee" class="form-input">
+              <option value="" disabled>Sélectionner une matière</option>
+              <option *ngFor="let m of matieres" [value]="m.id">{{ m.nom }}</option>
+            </select>
+            <span class="input-icon dropdown-arrow-90">▼</span>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="exercice-title">Titre de l'exercice <span class="required-star">*</span></label>
+          <input type="text" id="exercice-title"
+                 formControlName="titre"
+                 placeholder="Donnez un titre"
+                 class="form-input">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="description">Description</label>
+        <textarea id="description"
+                  formControlName="description"
+                  placeholder="Description detaillée du défis..."
+                  class="form-textarea"></textarea>
+      </div>
+
+      
+    </fieldset>
+
+    <!-- Section 2: Fichiers de l'exercice -->
+    <fieldset id="files" class="form-section">
+      <legend class="section-title">
+        <span class="legend-icon">📁</span>
+        <span>Fichiers de l'exercice</span>
+      </legend>
+      <hr class="divider">
+
+      <div class="form-group">
+        <label for="fichier-principal">Fichier principal (PDF/EPUB) <span class="required-star">*</span></label>
+        <div class="file-upload-area" (click)="fileInput.click()">
+          <input type="file" #fileInput class="file-input" accept=".pdf,.epub" (change)="onFileSelected($event, 'fichier')">
+          <div class="upload-content">
+            <div class="upload-icon">📥</div>
+            <div class="upload-text">
+              <div class="upload-main">Glissez deposez votre fichier ici ou cliquez pour parcourir</div>
+              <div class="upload-sub">Formats acceptés: PDF, EPUB * taille max: 50 MB</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </fieldset>
+
+    <!-- Section 3: Image de l'exercice -->
+    <fieldset id="image" class="form-section">
+      <div class="form-group">
+        <label for="image-exercice">Image de l'exercice</label>
+        <div class="image-upload-area" (click)="imageInput.click()">
+          <input type="file" #imageInput class="file-input" accept=".jpg,.jpeg,.png,.webp" (change)="onFileSelected($event, 'image')">
+          <div class="upload-content">
+            <div class="upload-icon">🖼️</div>
+            <div class="upload-text">
+              <div class="upload-main">Glissez deposez l'image de l'exercice</div>
+              <div class="upload-sub">Formats: JPG, PNG, WebP . taille max: 10 MB</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </fieldset>
+
+    <!-- Section 4: Questions de l'exercice -->
+    <fieldset id="questions" class="form-section" formArrayName="questions">
+      <div class="section-header">
+        <legend class="section-title">
+          <span class="legend-icon">❓</span>
+          <span>Questions de l'exercice</span>
+        </legend>
+        <button type="button" class="btn-add-question-inline" (click)="ajouterQuestion()">
+          <span class="btn-icon">➕</span>
+          <span>Ajouter une question</span>
+        </button>
+      </div>
+      <hr class="divider">
+
+      <!-- Questions dynamiques -->
+      <div class="question-group" *ngFor="let question of questions.controls; let i = index" [formGroupName]="i">
+        <div class="question-header" *ngIf="i > 0">
+          <h3>Question {{ i + 1 }}</h3>
+          <button type="button" class="btn-remove-question" (click)="supprimerQuestion(i)">
+            <span class="btn-icon">🗑️</span>
+            <span>Supprimer</span>
+          </button>
+        </div>
+
+        <!-- Type de question -->
+        <div class="form-group half-width">
+          <label [for]="'question-type-' + i">Type de questions <span class="required-star">*</span></label>
+          <div class="input-wrapper">
+            <select [id]="'question-type-' + i"
+                    formControlName="typeQuestion"
+                    class="form-input">
+              <option value="">Ex: Question a multiples choix</option>
+              <option value="choix_multiple">Question à choix multiples</option>
+              <option value="vrai_faux">Vrai/Faux</option>
+              <option value="reponse_courte">Réponse courte</option>
+            </select>
+            <span class="input-icon dropdown-arrow-neg-90">▼</span>
+          </div>
+        </div>
+
+        <!-- Question -->
+        <div class="form-group">
+          <label [for]="'question-' + i">Question {{ i + 1 }} <span class="required-star">*</span></label>
+          <input type="text" [id]="'question-' + i"
+                 formControlName="question"
+                 placeholder="Saisissez la question..."
+                 class="form-input">
+        </div>
+
+        <!-- Réponses -->
+        <div class="reponses-group">
+          <div class="form-group" *ngFor="let lettre of ['A', 'B', 'C', 'D']">
+            <label [for]="'answer-' + lettre.toLowerCase() + '-' + i" class="sr-only">Reponse {{ lettre }}</label>
+            <div class="input-wrapper">
+              <input type="text" [id]="'answer-' + lettre.toLowerCase() + '-' + i"
+                     [formControlName]="'reponse' + lettre"
+                     placeholder="Reponse {{ lettre }}"
+                     class="form-input">
+              <span class="input-icon dropdown-arrow-neg-90">▼</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bonne réponse -->
+        <div class="form-group">
+          <label [for]="'correct-answer-' + i">Bonne reponse <span class="required-star">*</span></label>
+          <select [id]="'correct-answer-' + i"
+                  formControlName="bonneReponse"
+                  class="form-input">
+            <option value="">La bonne reponse!</option>
+            <option value="A">Réponse A</option>
+            <option value="B">Réponse B</option>
+            <option value="C">Réponse C</option>
+            <option value="D">Réponse D</option>
+          </select>
+        </div>
+
+        <hr class="divider" *ngIf="i < questions.controls.length - 1">
+      </div>
+    </fieldset>
+
+    <!-- Actions -->
+    <div class="form-actions">
+      <button type="button" class="btn btn-secondary btn-action" (click)="onAnnuler()">Annuler</button>
+      <button type="button" class="btn btn-secondary btn-action" (click)="ajouterQuestion()">Ajouter une question</button>
+      <button type="submit" class="btn btn-primary btn-action" [disabled]="exerciceForm.invalid">Enregistrer l'exercice</button>
+    </div>
+  </form>
+</div>

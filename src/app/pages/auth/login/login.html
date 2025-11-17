@@ -3,31 +3,35 @@
     <div class="login-form-section">
       <header class="login-header">
         <!--merged image-->
-        <div class="logo">
-          <div class="logo-graphic">
-            <img src="/images/771_2528.svg" alt="logo element" class="logo-svg-1">
-            <img src="/images/771_2521.svg" alt="logo element" class="logo-svg-3">
-          </div>
-          <span class="logo-text">EDUGO</span>
-        </div>
+       <div class="logo">
+  <img src="/icones/logo.png" alt="EDUGO Logo" class="logo-full">
+</div>
         <h1 class="title">Connexion Administrateur</h1>
         <p class="subtitle">Acceder à votre tableau de bord</p>
       </header>
 
-      <form class="login-form">
+      <form class="login-form" [formGroup]="loginForm" (ngSubmit)="onSubmit()">
         <div class="form-group">
-          <label for="email">Adresse Email</label>
+          <label for="email">Email</label>
           <div class="input-wrapper">
-            <input type="email" id="email" placeholder="Entré Votre Email">
+            <input type="email" id="email" formControlName="email" placeholder="Entrer votre email">
             <img src="/images/520_1779.svg" alt="Email Icon" class="input-icon">
+          </div>
+          <div class="field-error" *ngIf="email.touched && email.invalid">
+            <small *ngIf="email.hasError('required')">L'email est requis.</small>
+            <small *ngIf="email.hasError('email')">Email non valide.</small>
           </div>
         </div>
 
         <div class="form-group">
-          <label for="password">Mot De Passe</label>
+          <label for="password">Mot de passe</label>
           <div class="input-wrapper">
-            <input type="password" id="password" placeholder="Votre mot de passe">
+            <input type="password" id="password" formControlName="password" placeholder="Votre mot de passe">
             <img src="/images/I520_1781_191_24.svg" alt="Password Icon" class="input-icon">
+          </div>
+          <div class="field-error" *ngIf="password.touched && password.invalid">
+            <small *ngIf="password.hasError('required')">Le mot de passe est requis.</small>
+            <small *ngIf="password.hasError('minlength')">Le mot de passe doit contenir au moins 6 caractères.</small>
           </div>
         </div>
 
@@ -35,16 +39,20 @@
           <label class="remember-me">
             <input type="checkbox" class="hidden-checkbox">
             <img src="/images/520_1788.svg" alt="Checkbox" class="checkbox-icon">
-            <span>Se souvenir de moi !</span>
+            <span>Se souvenir de moi</span>
           </label>
           <a href="#" class="forgot-password">Mot de passe oublié?</a>
         </div>
 
-        <button type="submit" class="submit-btn">Se connecter</button>
+        <button type="submit" class="btn btn-primary" [disabled]="loginForm.invalid || loading">
+          <span *ngIf="!loading">Se connecter</span>
+          <span *ngIf="loading">Connexion...</span>
+        </button>
       </form>
     </div>
     <div class="login-image-section">
-      <img src="/images/e74008dc4e128b8604394040ede5f9720e41dbb0.png" alt="Students reading books in a library">
+      <img src="/images/image.png" alt="Students reading books in a library">
     </div>
   </div>
 </main>
+<app-toast-container></app-toast-container>

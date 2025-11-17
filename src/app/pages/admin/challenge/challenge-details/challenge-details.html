@@ -1,1 +1,86 @@
-<p>challenge-details works!</p>
+<div class="challenge-management-container">
+  <div class="users-page-container">
+    <div class="page-header">
+      <h1 class="page-title">Détails du Challenge</h1>
+      <button class="back-btn" (click)="goBack()">← Retour</button>
+    </div>
+
+    <!-- Loading indicator -->
+    <div *ngIf="loading" class="loading-indicator">
+      <p>Chargement des détails du challenge...</p>
+    </div>
+    
+    <!-- Error message -->
+    <div *ngIf="error" class="error-message">
+      <p>{{ error }}</p>
+      <button class="retry-btn" (click)="loadChallengeDetails(challengeId!)">Réessayer</button>
+    </div>
+
+    <!-- Challenge details -->
+    <div *ngIf="challenge && !loading && !error" class="challenge-details-container">
+      <div class="challenge-header">
+        <div class="challenge-info">
+          <h2>{{ challenge.titre }}</h2>
+          <p class="challenge-description">{{ challenge.description }}</p>
+          
+          <div class="challenge-meta">
+            <div class="meta-item">
+              <span class="label">ID:</span>
+              <span class="value">{{ challenge.id }}</span>
+            </div>
+            <div class="meta-item">
+              <span class="label">Date de début:</span>
+              <span class="value">{{ challenge.dateDebut | date:'dd/MM/yyyy' }}</span>
+            </div>
+            <div class="meta-item">
+              <span class="label">Date de fin:</span>
+              <span class="value">{{ challenge.dateFin | date:'dd/MM/yyyy' }}</span>
+            </div>
+            <div class="meta-item">
+              <span class="label">Type:</span>
+              <span class="value">{{ challenge.typeChallenge || 'Non spécifié' }}</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="challenge-actions">
+          <button class="edit-btn" (click)="editChallenge()">Modifier</button>
+        </div>
+      </div>
+
+      <div class="challenge-details-grid">
+        <div class="detail-card">
+          <h3>Organisation</h3>
+          <div class="detail-row">
+            <span class="label">Niveau:</span>
+            <span class="value">{{ challenge.niveau?.nom || 'Non spécifié' }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="label">Classe:</span>
+            <span class="value">{{ challenge.classe?.nom || 'Non spécifiée' }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="label">Mode de récompense:</span>
+            <span class="value">{{ challenge.rewardMode || 'Non spécifié' }}</span>
+          </div>
+        </div>
+
+        <div class="detail-card">
+          <h3>Statistiques</h3>
+          <div class="detail-row">
+            <span class="label">Nombre de questions:</span>
+            <span class="value">{{ $any(challenge)?.questionsChallenge?.length || 0 }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="label">Nombre de participations:</span>
+            <span class="value">{{ $any(challenge)?.participations?.length || 0 }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="label">Nombre de récompenses:</span>
+            <span class="value">{{ $any(challenge)?.rewards?.length || 0 }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

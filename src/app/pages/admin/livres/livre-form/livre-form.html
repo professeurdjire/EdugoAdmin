@@ -1,177 +1,331 @@
-<body>
-<div class="dashboard-container">
+<!-- Indication du mode -->
+<div class="form-mode-indicator" *ngIf="isEditMode">
+  <i class="icon-edit">✏️</i>
+  Mode édition - Modification du livre
+</div>
 
-  <div class="main-area">
+<!-- Indicateur de chargement -->
+<div *ngIf="loading" class="loading-overlay">
+  <div class="loading-spinner">Chargement des données...</div>
+</div>
+<div class="form-container">
+  <!-- Header -->
+  <div class="form-header">
+    <button class="back-btn" routerLink="/admin/livrelist">
+      <i class="icon-arrow">←</i>
+      Retour
+    </button>
+    
+    <div class="header-content">
+      <h1 class="page-title">Ajouter un livre</h1>
+      <p class="page-subtitle">Remplissez les informations pour ajouter un livre dans la bibliothèque</p>
+    </div>
+  </div>
 
+  <!-- Formulaire -->
+  <form class="form-content" [formGroup]="livreForm" (ngSubmit)="onSubmit()">
+    
+    <!-- Section 1: Informations de base -->
+    <div class="form-section">
+      <div class="section-header">
+        <h3 class="section-title">
+          <i class="icon-info">ℹ</i>
+          Informations de base
+        </h3>
+      </div>
 
-    <main class="main-content">
-      <button class="back-button">
-        <img src="images/465_2393.svg" alt="Back">
-        Retour
-      </button>
-
-      <section class="filters-section">
-        <div class="filter-group">
-          <label for="search">Recherche</label>
-          <input type="text" id="search" placeholder="Nom, email, telephone...">
+      <div class="form-grid">
+        <!-- Titre du livre -->
+        <div class="form-group">
+          <label for="titre" class="form-label">
+            Titre du livre <span class="required">*</span>
+          </label>
+          <input 
+            type="text" 
+            id="titre" 
+            formControlName="titre"
+            class="form-control"
+            placeholder="Ex: Mathématiques 4ème">
+          <div class="error-message" *ngIf="showError('titre')">
+            {{ getError('titre') }}
+          </div>
         </div>
-        <div class="filter-group">
-          <label for="level">Niveau Scolaire</label>
-          <div class="select-wrapper">
-            <select id="level">
-              <option>Tous les niveaux</option>
+
+        <!-- Auteur -->
+        <div class="form-group">
+          <label for="auteur" class="form-label">
+            Auteur <span class="required">*</span>
+          </label>
+          <input 
+            type="text" 
+            id="auteur" 
+            formControlName="auteur"
+            class="form-control"
+            placeholder="Ex: Dr. Hamidou DJIRE">
+          <div class="error-message" *ngIf="showError('auteur')">
+            {{ getError('auteur') }}
+          </div>
+        </div>
+
+        <!-- ISBN -->
+        <div class="form-group">
+          <label for="isbn" class="form-label">ISBN</label>
+          <input 
+            type="text" 
+            id="isbn" 
+            formControlName="isbn"
+            class="form-control"
+            placeholder="Ex: 978-2-1234-5680-3">
+        </div>
+
+        <!-- Éditeur -->
+        <div class="form-group">
+          <label for="editeur" class="form-label">Éditeur</label>
+          <input 
+            type="text" 
+            id="editeur" 
+            formControlName="editeur"
+            class="form-control"
+            placeholder="Ex: Edition EDUGO">
+        </div>
+
+        <!-- Description -->
+        <div class="form-group full-width">
+          <label for="description" class="form-label">Description</label>
+          <textarea 
+            id="description" 
+            formControlName="description"
+            rows="3" 
+            class="form-control"
+            placeholder="Description détaillée du livre..."></textarea>
+          <div class="char-counter">
+            {{ description?.value?.length || 0 }}/500
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 2: Classification -->
+    <div class="form-section">
+      <div class="section-header">
+        <h3 class="section-title">
+          <i class="icon-category">📚</i>
+          Classification
+        </h3>
+      </div>
+
+      <div class="form-grid">
+        <!-- Matière -->
+        <div class="form-group">
+          <label for="matiere" class="form-label">
+            Matière <span class="required">*</span>
+          </label>
+          <div class="input-wrapper">
+            <select id="matiere" formControlName="matiere" class="form-control">
+              <option value="">Sélectionner une matière</option>
+              <option *ngFor="let matiere of matieres" [value]="matiere.id">{{ matiere.nom }}</option>
             </select>
-            <img src="images/430_1315.svg" alt="expand">
+            <i class="dropdown-arrow">▼</i>
+          </div>
+          <div class="error-message" *ngIf="showError('matiere')">
+            {{ getError('matiere') }}
           </div>
         </div>
-        <div class="filter-group">
-          <label for="subject">Matière</label>
-          <div class="select-wrapper">
-            <select id="subject">
-              <option>Tous les statuts</option>
+
+        <!-- Niveau scolaire -->
+        <div class="form-group">
+          <label for="niveau" class="form-label">
+            Niveau scolaire <span class="required">*</span>
+          </label>
+          <div class="input-wrapper">
+            <select id="niveau" formControlName="niveau" class="form-control">
+              <option value="">Sélectionner un niveau</option>
+              <option *ngFor="let niveau of niveaux" [value]="niveau.id">{{ niveau.nom }}</option>
             </select>
-            <img src="images/430_1317.svg" alt="expand">
+            <i class="dropdown-arrow">▼</i>
           </div>
-        </div>
-        <div class="filter-actions">
-          <button class="btn btn-filter">
-            <img src="images/430_1313.svg" alt="">Filtrer
-          </button>
-          <button class="btn btn-refresh">
-            <img src="images/430_1311.svg" alt="">actualiser
-          </button>
-        </div>
-      </section>
-
-      <section class="book-list-section">
-        <div class="book-list__header">
-          <h2>Listes des Livres (2,847)</h2>
-          <div class="select-wrapper sort-by">
-            <select>
-              <option>Trier par date d’inscription</option>
-            </select>
-            <img src="images/430_2232.svg" alt="expand">
+          <div class="error-message" *ngIf="showError('niveau')">
+            {{ getError('niveau') }}
           </div>
         </div>
 
-        <div class="book-list__grid book-list__grid--header">
-          <div>Livres</div>
-          <div>Niveau</div>
-          <div>Pages</div>
-          <div>Telechargements</div>
-          <div>Matières</div>
-          <div>Statut</div>
-          <div>Actions</div>
-        </div>
-
-        <div class="book-list__grid book-list__grid--row">
-          <div class="book-info">
-            <!--merged image-->
-            <div class="book-icon">
-              <img src="images/430_2244.svg" alt="">
-              <img src="images/448_1346.svg" alt="book icon">
-            </div>
-            <div>
-              <p class="book-title">Mathematiques 4 ème</p>
-              <p class="book-author">Par Dr. Issa Traoré</p>
-            </div>
-          </div>
-          <div><span class="badge badge-purple">4 ème</span></div>
-          <div>356 pages</div>
-          <div>1000</div>
-          <div class="subject">mathématiques</div>
-          <div><span class="badge badge-active">Actif</span></div>
-          <div class="action-buttons">
-            <button><img src="images/430_2274.svg" alt="View"></button>
-            <button><img src="images/430_2294.svg" alt="Delete"></button>
-          </div>
-        </div>
-
-        <!-- Repeated rows for demonstration -->
-        <div class="book-list__grid book-list__grid--row">
-          <div class="book-info">
-            <!--merged image-->
-            <div class="book-icon">
-              <img src="images/448_1348.svg" alt="">
-              <img src="images/448_1349.svg" alt="book icon">
-            </div>
-            <div>
-              <p class="book-title">Mathematiques 4 ème</p>
-              <p class="book-author">Par Dr. Issa Traoré</p>
-            </div>
-          </div>
-          <div><span class="badge badge-blue-dark">4 ème</span></div>
-          <div>356 pages</div>
-          <div>1000</div>
-          <div class="subject">mathématiques</div>
-          <div><span class="badge badge-active">Actif</span></div>
-          <div class="action-buttons">
-            <button><img src="images/430_2276.svg" alt="View"></button>
-            <button><img src="images/430_2296.svg" alt="Delete"></button>
-          </div>
-        </div>
-
-        <div class="book-list__grid book-list__grid--row">
-          <div class="book-info">
-            <!--merged image-->
-            <div class="book-icon">
-              <img src="images/448_1351.svg" alt="">
-              <img src="images/448_1352.svg" alt="book icon">
-            </div>
-            <div>
-              <p class="book-title">Mathematiques 4 ème</p>
-              <p class="book-author">Par Dr. Issa Traoré</p>
-            </div>
-          </div>
-          <div><span class="badge badge-blue-light">4 ème</span></div>
-          <div>356 pages</div>
-          <div>1000</div>
-          <div class="subject">mathématiques</div>
-          <div><span class="badge badge-active">Actif</span></div>
-          <div class="action-buttons">
-            <button><img src="images/430_2278.svg" alt="View"></button>
-            <button><img src="images/430_2298.svg" alt="Delete"></button>
-          </div>
-        </div>
-
-        <!-- Add more rows as needed -->
-        <div class="book-list__grid book-list__grid--row">
-          <div class="book-info">
-            <!--merged image-->
-            <div class="book-icon">
-              <img src="images/448_1354.svg" alt="">
-              <img src="images/448_1355.svg" alt="book icon">
-            </div>
-            <div>
-              <p class="book-title">Mathematiques 4 ème</p>
-              <p class="book-author">Par Dr. Issa Traoré</p>
-            </div>
-          </div>
-          <div><span class="badge badge-blue-light">4 ème</span></div>
-          <div>356 pages</div>
-          <div>1000</div>
-          <div class="subject">mathématiques</div>
-          <div><span class="badge badge-active">Actif</span></div>
-          <div class="action-buttons">
-            <button><img src="images/430_2280.svg" alt="View"></button>
-            <button><img src="images/430_2300.svg" alt="Delete"></button>
-          </div>
-        </div>
-
-        <div class="book-list__footer">
-          <p>Affichage de 1 à 10 sur 10 000 Livres</p>
-          <nav class="pagination">
-            <button class="pagination__arrow"><img src="images/430_2316.svg" alt="Previous"></button>
-            <button class="pagination__number active">1</button>
-            <button class="pagination__number">2</button>
-            <button class="pagination__number">3</button>
-            <button class="pagination__number">4</button>
-            <button class="pagination__number">5</button>
-            <button class="pagination__arrow"><img src="images/430_2314.svg" alt="Next"></button>
-          </nav>
-        </div>
-      </section>
-    </main>
+       <!-- Section Langue -->
+<div class="form-group">
+  <label for="langue" class="form-label">Langue</label>
+  <div class="input-wrapper">
+    <select id="langue" formControlName="langue" class="form-control">
+      <option value="">Sélectionner une langue</option>
+      <option *ngFor="let langue of langues" [value]="langue.id">{{ langue.nom }} ({{ langue.codeIso }})</option>
+    </select>
+    <i class="dropdown-arrow">▼</i>
+  </div>
+  <div class="error-message" *ngIf="showError('langue')">
+    {{ getError('langue') }}
   </div>
 </div>
-</body>
+      </div>
+    </div>
+
+    <!-- Section 3: Fichiers du livre -->
+    <div class="form-section">
+      <div class="section-header">
+        <h3 class="section-title">
+          <i class="icon-file">📁</i>
+          Fichiers du livre
+        </h3>
+      </div>
+
+      <div class="form-grid">
+        <!-- Fichier principal -->
+        <div class="form-group full-width">
+          <label class="form-label">
+            Fichier principal (PDF/EPUB) <span class="required">*</span>
+          </label>
+          <div class="file-upload-area" 
+               (click)="fileInput.click()"
+               (dragover)="onDragOver($event)"
+               (drop)="onDrop($event, 'file')"
+               [class.has-file]="livreForm.get('fichierPrincipal')?.value">
+            <input 
+              type="file" 
+              #fileInput 
+              class="file-input" 
+              accept=".pdf,.epub"
+              (change)="onFileSelected($event, 'file')">
+            <div class="upload-content">
+              <i class="upload-icon">📥</i>
+              <div class="upload-text">
+                <div class="upload-main">
+                  {{ livreForm.get('fichierPrincipal')?.value ? livreForm.get('fichierPrincipal')?.value.name : 'Glissez-déposez votre fichier ici ou cliquez pour parcourir' }}
+                </div>
+                <div class="upload-sub">Formats acceptés: PDF, EPUB • Taille max: 50 MB</div>
+              </div>
+            </div>
+          </div>
+          <div class="error-message" *ngIf="showError('fichierPrincipal')">
+            {{ getError('fichierPrincipal') }}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 4: Image de couverture -->
+    <div class="form-section">
+      <div class="section-header">
+        <h3 class="section-title">
+          <i class="icon-image">🖼️</i>
+          Image de couverture
+        </h3>
+      </div>
+
+      <div class="form-grid">
+        <div class="form-group full-width">
+          <label class="form-label">Image de couverture</label>
+          <div class="image-upload-area"
+               (click)="imageInput.click()"
+               (dragover)="onDragOver($event)"
+               (drop)="onDrop($event, 'image')"
+               [class.has-file]="livreForm.get('imageCouverture')?.value">
+            <input 
+              type="file" 
+              #imageInput 
+              class="file-input" 
+              accept=".jpg,.jpeg,.png,.webp"
+              (change)="onFileSelected($event, 'image')">
+            <div class="upload-content">
+              <i class="upload-icon">🖼️</i>
+              <div class="upload-text">
+                <div class="upload-main">
+                  {{ livreForm.get('imageCouverture')?.value ? livreForm.get('imageCouverture')?.value.name : 'Glissez-déposez l\'image de couverture' }}
+                </div>
+                <div class="upload-sub">Formats: JPG, PNG, WebP • Taille max: 10 MB</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 5: Options avancées -->
+    <div class="form-section">
+      <div class="section-header">
+        <h3 class="section-title">
+          <i class="icon-settings">⚙️</i>
+          Options avancées
+        </h3>
+      </div>
+
+      <div class="form-grid">
+        <!-- Checkboxes -->
+        <div class="form-group full-width">
+          <div class="checkboxes-group">
+            <label class="checkbox-item">
+              <input 
+                type="checkbox" 
+                formControlName="lectureAuto"
+                class="checkbox-input">
+              <span class="checkbox-custom"></span>
+              <span class="checkbox-label">Activer la lecture automatique</span>
+            </label>
+            <label class="checkbox-item">
+              <input 
+                type="checkbox" 
+                formControlName="interactif"
+                class="checkbox-input">
+              <span class="checkbox-custom"></span>
+              <span class="checkbox-label">Livre interactif avec exercices intégrés</span>
+            </label>
+            <label class="checkbox-item">
+              <input 
+                type="checkbox" 
+                formControlName="telechargementHorsLigne"
+                class="checkbox-input">
+              <span class="checkbox-custom"></span>
+              <span class="checkbox-label">Autoriser le téléchargement hors ligne</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Mots-clés et Année -->
+        <div class="form-group">
+          <label for="motsCles" class="form-label">Mots-clés</label>
+          <input 
+            type="text" 
+            id="motsCles" 
+            formControlName="motsCles"
+            class="form-control"
+            placeholder="Français, Mathématiques...">
+        </div>
+
+        <div class="form-group">
+          <label for="anneePublication" class="form-label">Année de publication</label>
+          <div class="input-wrapper">
+            <input id="anneePublication"
+                   class="form-control"
+                   formControlName="anneePublication"
+                   list="anneesList"
+                   placeholder="Ex: 2024" />
+            <datalist id="anneesList">
+              <option *ngFor="let a of annees" [value]="a">{{ a }}</option>
+            </datalist>
+          </div>
+          <div class="error-message" *ngIf="showError('anneePublication')">
+            {{ getError('anneePublication') }}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="form-actions">
+      <button type="button" class="btn btn-secondary" (click)="onAnnuler()">
+        <i class="icon-cancel">✕</i>
+        Annuler
+      </button>
+      <button type="submit" class="btn btn-primary" [disabled]="!livreForm.valid || isSubmitting">
+        <i class="icon-save" [class.loading]="isSubmitting">💾</i>
+        {{ isSubmitting ? 'Enregistrement...' : 'Enregistrer le livre' }}
+      </button>
+    </div>
+  </form>
+</div>

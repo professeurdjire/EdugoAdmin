@@ -3,7 +3,9 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve",
+  "start": "ng serve",
+  "api:generate": "openapi-generator-cli generate -i http://localhost:8080/api/v3/api-docs -g typescript-angular -o src/app/api --additional-properties=ngVersion=20.3.5",
+  "start:proxy": "ng serve --proxy-config proxy.conf.json",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test"
@@ -32,6 +34,8 @@
     "@auth0/angular-jwt": "^5.2.0",
     "@fortawesome/angular-fontawesome": "^3.0.0",
     "@fortawesome/free-solid-svg-icons": "^7.1.0",
+    "apexcharts": "^5.3.5",
+    "ng-apexcharts": "^2.0.3",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.15.0"

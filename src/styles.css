@@ -45,3 +45,910 @@ button:hover {
 
 .p-1 { padding: 0.5rem; }
 .p-2 { padding: 1rem; }
+
+/* Unified table/pages styles (from utilisateur-list) */
+:root {
+  --primary-purple: #a885d8;
+  --primary-blue: #195a9d;
+  --light-grey: #d9d9d9;
+  --text-grey: #808080;
+  --white: #ffffff;
+  --black: #000000;
+  --red: #ff0000;
+  --border-color: #d9d9d9;
+  --divider-color: rgba(128, 128, 128, 0.5);
+  --main-bg: #ECF0F1;
+  --green: #28bd7f;
+  --green-tag: rgba(0, 128, 0, 0.7);
+  --blue-bright: #0000ff;
+  --blue-header: rgba(13, 166, 242, 0.8);
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+  --shadow-md: 0 2px 6px rgba(0,0,0,0.1);
+  --shadow: var(--shadow-md);
+}
+
+/* --- Structure générale --- */
+body, html {
+  margin: 0;
+  font-family: 'Roboto', -apple-system, BlinkMacSystemFont, sans-serif;
+  background-color: #ECF0F1;
+  overflow: auto;
+  height: 100%;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+button {
+  cursor: pointer;
+  border: none;
+  background: none;
+  padding: 0;
+  font-family: inherit;
+}
+
+/* --- Conteneur principal --- */
+.users-page-container,
+.form-main-container,
+.content-management,
+.livres-container,
+.challenges-management-content {
+  flex: 1;
+  /* Removed page-level offset so layout wrapper controls spacing */
+  padding: 1rem;
+  min-height: calc(100vh - 60px);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  background-color: #ECF0F1;
+  overflow-x: hidden;
+}
+
+/* The admin layout places a fixed sidebar and header; use .main-content to offset pages */
+.main-content {
+  margin-left: 210px; /* space for fixed sidebar (matches sidebar width + gap) */
+  margin-top: 60px;   /* space for top navbar/header */
+  min-height: calc(100vh - 60px);
+  padding: 1rem;
+}
+
+/* --- En-têtes de page --- */
+.page-header,
+.main-header,
+.content-header-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  background: #ffffff;
+  border-radius: 6px;
+  padding: 1rem 1.25rem;
+  box-shadow: var(--shadow-sm);
+}
+
+.page-title,
+.section-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #000000;
+  margin: 0;
+}
+
+/* User profile compact */
+.user-profile {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.notification-btn {
+  position: relative;
+  width: 2.5rem;
+  height: 2.5rem;
+  font-size: 1.1rem;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.avatar {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  background-color: #d9d9d9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #000000;
+}
+
+.user-details {
+  display: flex;
+  flex-direction: column;
+}
+
+.user-name {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #000000;
+}
+
+.user-role {
+  font-size: 0.8rem;
+  color: #808080;
+}
+
+/* Filtres compacts */
+.filters-container,
+.filters-section {
+  background-color: #ffffff;
+  border-radius: 6px;
+  box-shadow: var(--shadow-sm);
+  padding: 1rem 1.25rem;
+  margin-bottom: 1rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1rem;
+  align-items: end;
+}
+
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.filter-group label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #000000;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.input-wrapper {
+  position: relative;
+}
+
+.input-wrapper input,
+.input-wrapper select,
+.search-input,
+.form-input,
+.form-select,
+.filter-group input,
+.filter-group select {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #d9d9d9;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-family: inherit;
+  background: #ffffff;
+  transition: all 0.2s ease;
+  box-sizing: border-box;
+  color: #000000;
+  height: 2.25rem;
+}
+
+.input-wrapper input:focus,
+.input-wrapper select:focus,
+.search-input:focus,
+.form-input:focus,
+.form-select:focus,
+.filter-group input:focus,
+.filter-group select:focus {
+  outline: none;
+  border-color: #a885d8;
+  box-shadow: 0 0 0 2px rgba(168, 133, 216, 0.1);
+}
+
+.input-wrapper select,
+.filter-group select {
+  appearance: none;
+  -webkit-appearance: none;
+  padding-right: 2rem;
+}
+
+.select-arrow {
+  position: absolute;
+  right: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  color: #000000;
+  font-size: 0.7rem;
+}
+
+/* BOUTONS AMÉLIORÉS - Focus sur les boutons Ajouter */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 0.75rem 1.5rem;
+  border-radius: 5px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: none;
+  font-family: inherit;
+  text-decoration: none;
+  position: relative;
+  overflow: hidden;
+}
+
+/* --- Form layout consistency for all 'add' forms --- */
+.form-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  background: transparent;
+  padding: 0.5rem 0;
+}
+
+.form-header .page-title, .form-header h1 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.form-header .back-btn {
+  margin-left: auto;
+  height: 2.25rem;
+  padding: 0 0.75rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.form-actions {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: flex-end;
+  margin-top: 1rem;
+}
+
+/* Make form controls a bit more compact and consistent */
+.form-control,
+.form-input,
+.form-select,
+.form-textarea {
+  height: 2.25rem;
+  padding: 0.4rem 0.6rem;
+  font-size: 0.9rem;
+}
+
+.form-textarea {
+  height: auto;
+  min-height: 80px;
+  padding: 0.5rem;
+}
+
+/* Standard action buttons used across forms */
+.btn-action {
+  min-width: 9rem;
+}
+
+
+.btn-primary {
+  background: #A885D8;
+  color: var(--white);
+  box-shadow: var(--shadow);
+  padding: 0.875rem 2rem;
+  font-size: 1.1rem;
+  min-width: 160px;
+}
+
+.btn-secondary,
+.reset-btn {
+  background-color: #ffffff;
+  color: #000000;
+  border: 1px solid #d9d9d9;
+}
+
+.btn-secondary:hover,
+.reset-btn:hover {
+  background-color: #f5f5f5;
+  transform: translateY(-1px);
+}
+
+.back-btn {
+  background-color: #7c4dff;
+  color: #ffffff;
+  margin-bottom: 0.75rem;
+}
+
+.back-btn:hover {
+  background-color: #5b36c6;
+  transform: translateY(-1px);
+}
+
+/* Stronger global form rules to enforce a single compact layout for all add/edit forms */
+.form-main-container,
+.form-page-container {
+  width: 100%;
+  max-width: 1100px; /* restrain very wide forms */
+  margin: 0 auto;
+  padding: 0.5rem 0.5rem 1.25rem 0.5rem;
+  background: transparent;
+}
+
+.form-body,
+.form-main-container > .form-body,
+.form-page-container > form,
+.form-main-container > form {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+/* Compact form grid helpers */
+.form-grid,
+.form-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.form-group,
+.input-wrapper,
+.input-field,
+.select-field,
+.textarea-field {
+  display: block;
+}
+
+/* Reduce control sizes globally for consistent compact feel */
+.form-main-container .form-input,
+.form-page-container .form-input,
+.form-input,
+.form-select,
+.input-wrapper input,
+.input-wrapper select,
+.search-input,
+.input-field .placeholder {
+  height: 2rem;
+  padding: 0.35rem 0.5rem;
+  font-size: 0.85rem;
+}
+
+.form-main-container .form-textarea,
+.form-page-container .form-textarea,
+.form-textarea {
+  min-height: 64px;
+  font-size: 0.9rem;
+}
+
+/* Tighten action buttons */
+.form-actions .btn-action,
+.form-actions .btn {
+  min-width: 7rem;
+  padding: 0.35rem 0.6rem;
+  height: 2rem;
+  font-size: 0.85rem;
+}
+
+/* Ensure the header places title left and back button at the right without overlap */
+.form-header { display: flex; align-items: center; gap: 1rem; }
+.form-header .page-title,
+.form-header h1 { flex: 1 1 auto; font-size: 1.1rem; margin: 0; }
+.form-header .back-btn,
+.form-header .back-button { margin-left: auto !important; flex: 0 0 auto; position: relative; z-index: 2; }
+
+/* Prevent .main-content global offsets from affecting nested elements if used by mistake */
+.form-main-container .main-content,
+.form-page-container .main-content {
+  margin-left: 0 !important;
+  margin-top: 0 !important;
+  padding: 0 !important;
+}
+
+/* Generic fixes for overlapping images/icons in headers */
+.form-header img { max-height: 1.6rem; width: auto; display: inline-block; vertical-align: middle; }
+
+/* Make full-width fields stack on smaller screens */
+@media (max-width: 700px) {
+  .form-grid, .form-row { grid-template-columns: 1fr; }
+  .form-main-container, .form-page-container { padding: 0.5rem; }
+}
+
+/* Compact wrappers for templates that use custom input markup (placeholders inside divs) */
+.input-field,
+.select-wrapper,
+.textarea-field,
+.input-with-icon,
+.select-field,
+.placeholder-text,
+.placeholder {
+  display: flex;
+  align-items: center;
+  min-height: 2rem;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.85rem;
+  background: #fff;
+  border: 1px solid #e6e6e6;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+/* Prevent visual "double frames" when templates nest wrappers (input-container / input-field)
+   If a wrapper contains another wrapper, we visually collapse the inner border and let the outer wrapper
+   provide the visible frame. This avoids the doubled border look the user reported. */
+.input-container .input-field,
+.input-field .input-container,
+.input-container .textarea-field,
+.input-field .textarea-field,
+.select-container .select-field,
+.select-field .select-container {
+  border: none;
+  background: transparent;
+  padding: 0;
+}
+
+/* Ensure native inputs inside styled wrappers don't render their own borders so only the wrapper shows a frame */
+.input-field input,
+.input-container input,
+.input-field textarea,
+.input-container textarea,
+.select-container select,
+.select-field select {
+  border: none !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  padding: 0.15rem 0 !important;
+  width: 100%;
+}
+
+.form-group.full-width { grid-column: 1 / -1; }
+
+/* Ensure inline small buttons don't overlap labels */
+.btn-add-question,
+.btn-inline-add,
+.btn-add-question-inline {
+  height: 2rem;
+  padding: 0 .6rem;
+  font-size: 0.85rem;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.filter-actions {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+/* --- Styles pour le header du tableau --- */
+.table-header-info {
+  background: #ffffff;
+  border-radius: 6px;
+  padding: 1rem 1.25rem;
+  margin-bottom: 1rem;
+  box-shadow: var(--shadow-sm);
+}
+
+.table-header-info h2 {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #000000;
+  margin: 0;
+}
+
+/* --- Zone du tableau ultra compact --- */
+.users-table-section {
+  flex: 1;
+  background: #fff;
+  border-radius: 6px;
+  padding: 1rem;
+  box-shadow: var(--shadow-sm);
+}
+
+/* Style pour la section sans scroll */
+.no-scroll {
+  overflow: hidden;
+}
+
+.table-wrapper {
+  width: 100%;
+  position: relative;
+}
+
+/* Table ultra compact */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 700px;
+  font-size: 0.8rem;
+}
+
+thead th {
+  text-align: left;
+  padding: 0.75rem;
+  background-color: #f8f9fa;
+  color: #000000;
+  font-weight: 600;
+  border-bottom: 1px solid #e9ecef;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+tbody td {
+  padding: 0.75rem;
+  border-bottom: 1px solid #f1f3f4;
+  font-size: 0.8rem;
+  vertical-align: middle;
+}
+
+tbody tr {
+  transition: background-color 0.15s ease;
+}
+
+tbody tr:hover {
+  background-color: #f8f9fa;
+}
+
+/* Cellules utilisateurs compactes */
+.user-details-cell {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.user-initials {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  font-weight: 600;
+  font-size: 0.75rem;
+  flex-shrink: 0;
+}
+
+.user-initials.blue { background: #4b7bec; }
+.user-initials.green { background: #20bf6b; }
+.user-initials.red { background: #eb3b5a; }
+.user-initials.darkblue { background: #2c3e50; }
+
+.user-info-text .name {
+  font-weight: 600;
+  margin: 0;
+  color: #000000;
+  font-size: 0.8rem;
+  line-height: 1.2;
+}
+
+.user-info-text .email {
+  font-size: 0.7rem;
+  color: #808080;
+  margin: 0.125rem 0 0 0;
+  line-height: 1.2;
+}
+
+.level-badge {
+  background: rgba(168, 133, 216, 0.08);
+  color: #a885d8;
+  padding: 0.25rem 0.5rem;
+  border-radius: 3px;
+  font-weight: 600;
+  font-size: 0.7rem;
+  border: 1px solid rgba(168, 133, 216, 0.2);
+}
+
+.status-badge {
+  padding: 0.25rem 0.5rem;
+  border-radius: 3px;
+  font-weight: 600;
+  font-size: 0.7rem;
+  border: 1px solid transparent;
+}
+
+.status-badge.active-status {
+  background: rgba(40, 189, 127, 0.08);
+  color: #28bd7f;
+  border-color: rgba(40, 189, 127, 0.2);
+}
+
+.actions-cell {
+  text-align: center;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.action-icon-btn {
+  background: transparent;
+  border: none;
+  padding: 0.375rem;
+  margin-left: 0.25rem;
+  cursor: pointer;
+  border-radius: 3px;
+  color: #808080;
+  transition: all 0.15s ease;
+  font-size: 0.8rem;
+  width: 1.75rem;
+  height: 1.75rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.action-icon-btn:hover {
+  background: #f5f5f5;
+  color: #000000;
+  transform: scale(1.05);
+}
+
+/* --- Styles pour la pagination spécifique --- */
+.book-list__footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 15px;
+  margin-top: 15px;
+  border-top: 1px solid var(--border-color);
+}
+
+.book-list__footer p {
+  font-size: 14px;
+  color: var(--text-grey);
+  margin: 0;
+}
+
+.pagination {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.pagination__arrow,
+.pagination__number {
+  width: 32px;
+  height: 32px;
+  border-radius: 4px;
+  border: 1px solid var(--border-color);
+  background-color: white;
+  color: var(--text-grey);
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.pagination__arrow:hover,
+.pagination__number:hover {
+  border-color: var(--primary-purple);
+  color: var(--primary-purple);
+}
+
+.pagination__number.active {
+  background-color: var(--primary-blue);
+  color: white;
+  border-color: var(--primary-blue);
+  font-weight: 600;
+}
+
+.pagination__arrow img {
+  width: 16px;
+  height: 16px;
+}
+
+/* Responsive for brevity omitted */
+
+/* 🎯 STYLE GLOBAL POUR TOUS LES BOUTONS "AJOUTER" */
+.btn-add {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  /* couleurs primaires */
+  background: #A885D8;
+  color: #fff;
+
+  /* tailles */
+  min-width: 160px;
+  height: 40px;
+  padding: 10px 14px;
+  
+  /* arrondis + ombre */
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+
+  /* texte */
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+
+  /* animations */
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+
+  /* reset */
+  border: none;
+  cursor: pointer;
+  overflow: hidden;
+  gap: 8px;
+}
+
+/* effet hover */
+.btn-add:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* effet clic */
+.btn-add:active {
+  transform: scale(0.97);
+}
+
+/* === Global Back Button Styles === */
+.back-btn,
+.back-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.375rem;
+
+  height: 2rem;
+  padding: 0.35rem 0.6rem;
+
+  background-color: #a885d8;
+  color: #ffffff;
+
+  border: none;
+  border-radius: 6px;
+
+  font-size: 0.78rem;
+  font-weight: 600;
+
+  cursor: pointer;
+  text-decoration: none;
+
+  transition: all 0.2s ease;
+}
+
+/* Variante lorsqu'il est dans un header de formulaire */
+.form-header .back-btn,
+.form-header .back-button {
+  margin-left: auto;
+  flex: 0 0 auto;
+  position: relative;
+  z-index: 2;
+  margin-bottom: 0.75rem;
+}
+
+/* Effet hover */
+.back-btn:hover,
+.back-button:hover {
+  background-color: #7c4dff;
+}
+
+/* === Global Filter/Reset Buttons === */
+.filter-btn,
+.reset-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+
+  height: 34px;
+  padding: 0 12px;
+  min-width: 110px;
+
+  background: #A885D8;
+  color: #ffffff;
+
+  border: none;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+
+  cursor: pointer;
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+
+.filter-btn:hover,
+.reset-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.12);
+}
+
+.filter-btn:active,
+.reset-btn:active {
+  transform: scale(0.98);
+}
+
+/* Ensure icons inside keep spacing */
+.filter-btn .fa,
+.filter-btn .fa-solid,
+  .filter-btn fa-icon,
+  .reset-btn .fa,
+  .reset-btn .fa-solid,
+  .reset-btn fa-icon {
+    margin-right: 6px;
+  }
+
+/* === Scoped Action Icon Buttons (View/Edit/Delete) — avoid overriding dashboard quick actions === */
+.actions-cell .action-btn,
+.users-table-section .action-btn,
+.table-section .action-btn {
+  width: 28px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: 0.2s ease-in-out;
+  font-size: 12px;
+}
+
+.actions-cell .view-btn,
+.users-table-section .view-btn,
+.table-section .view-btn {
+  background: rgba(25, 90, 157, 0.15);
+  color: rgb(25, 90, 157);
+}
+.actions-cell .view-btn:hover,
+.users-table-section .view-btn:hover,
+.table-section .view-btn:hover {
+  background: rgba(25, 90, 157, 0.2);
+}
+
+.actions-cell .edit-btn,
+.users-table-section .edit-btn,
+.table-section .edit-btn {
+  background: rgba(168, 133, 216, 0.15);
+  color: rgb(168, 133, 216);
+}
+.actions-cell .edit-btn:hover,
+.users-table-section .edit-btn:hover,
+.table-section .edit-btn:hover {
+  background: rgba(168, 133, 216, 0.25);
+}
+
+.actions-cell .delete-btn,
+.users-table-section .delete-btn,
+.table-section .delete-btn {
+  background: rgba(255, 0, 0, 0.15);
+  color: rgb(180, 0, 0);
+}
+.actions-cell .delete-btn:hover,
+.users-table-section .delete-btn:hover,
+.table-section .delete-btn:hover {
+  background: rgba(255, 0, 0, 0.25);
+}

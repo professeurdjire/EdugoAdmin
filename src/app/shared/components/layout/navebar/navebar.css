@@ -47,21 +47,92 @@
   position: absolute;
   top: -5px;
   right: -5px;
-  background-color: red;
+  background-color: #A885D8;
   border-radius: 50%;
   width: 8px;
   height: 8px;
 }
 
-.user-info {
+.user-profile {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 12px;
+  cursor: pointer;
+  padding: 8px 12px;
+  border-radius: 8px;
+  transition: background-color 0.3s ease;
 }
 
-.user-circle {
+.user-profile:hover {
+  background-color: #f5f5f5;
+}
+
+.user-avatar-container {
+  position: relative;
+}
+
+.user-avatar {
   width: 40px;
   height: 40px;
-  background-color: #cfffe2;
   border-radius: 50%;
+  background: #A885D8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Roboto';
+  font-weight: 400;
+  font-size: 16px;
+  color: #000000;
+}
+
+.user-details {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.user-fullname {
+  font-family: 'Roboto';
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 16px;
+  color: #000000;
+  white-space: nowrap;
+}
+
+.user-role {
+  font-family: 'Roboto';
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 14px;
+  color: rgba(0, 0, 0, 0.5);
+  white-space: nowrap;
+}
+
+.dropdown-arrow {
+  color: #000000;
+  font-size: 12px;
+}
+
+/* Sidebar toggle button styles */
+.sidebar-toggle {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: #333;
+  padding: 10px;
+  margin-right: 10px;
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
+}
+
+.sidebar-toggle:hover {
+  background-color: #f0f0f0;
+}
+
+/* Header left section */
+.header-left {
+  display: flex;
+  align-items: center;
 }

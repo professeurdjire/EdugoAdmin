@@ -1,0 +1,16 @@
+.admin-layout {
+  display: flex;
+}
+
+/* Reserve space for sidebar width */
+.admin-layout .main-content {
+  margin-left: 190px; /* default sidebar width */
+  width: calc(100% - 190px);
+  transition: margin-left 0.2s ease, width 0.2s ease;
+}
+
+/* When collapsed */
+.admin-layout.collapsed .main-content {
+  margin-left: 60px; /* collapsed sidebar width */
+  width: calc(100% - 60px);
+}

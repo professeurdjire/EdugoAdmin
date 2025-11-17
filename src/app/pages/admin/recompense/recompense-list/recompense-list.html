@@ -1,1 +1,171 @@
-<p>recompense-list works!</p>
+<!-- recompense-list.html -->
+<div class="recompenses-page-container">
+  <!-- Header -->
+  <div class="page-header">
+    <h1 class="page-title">Récompenses</h1>
+    <a routerLink="/admin/ajouterrecompense" class="btn-add">
+      <i class="fa-solid fa-plus"></i>&nbsp;Ajouter une récompense
+    </a>
+  </div>
+
+  <!-- Message d'erreur -->
+  <div *ngIf="error" class="error-message">
+    {{ error }}
+  </div>
+
+  <!-- Indicateur de chargement -->
+  <div *ngIf="loading" class="loading-overlay">
+    <div class="loading-spinner"></div>
+    <p>Chargement des récompenses...</p>
+  </div>
+
+  <!-- Statistiques -->
+  <div class="stats-grid" *ngIf="!loading && !error">
+    <div class="stat-card" *ngFor="let stat of stats" [style.borderLeftColor]="stat.color">
+      <div class="stat-icon" [style.backgroundColor]="stat.bgColor">
+        <fa-icon [icon]="stat.icon"></fa-icon>
+      </div>
+      <div class="stat-info">
+        <h3 class="stat-value">{{ stat.value | number }}</h3>
+        <p class="stat-label">{{ stat.label }}</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filtres -->
+  <div class="filter" *ngIf="!loading && !error">
+    <section class="filters-container">
+      <div class="filter-group">
+        <label>Recherche</label>
+        <input type="text" placeholder="Nom, description..." 
+               [(ngModel)]="searchTerm" (keyup.enter)="applyFilters()" />
+      </div>
+      <div class="filter-group">
+        <label>Type</label>
+        <select [(ngModel)]="selectedType" (change)="applyFilters()">
+          <option value="">Tous les types</option>
+          <option *ngFor="let type of types" [value]="type">{{ type }}</option>
+        </select>
+      </div>
+      <div class="action-buttons">
+        <button class="filter-btn" (click)="applyFilters()">
+          <fa-icon [icon]="faFilter"></fa-icon>
+          Filtrer
+        </button>
+        <button class="reset-btn" (click)="resetFilters()">
+          <fa-icon [icon]="faRedoAlt"></fa-icon>
+          Réinitialiser
+        </button>
+      </div>
+    </section>
+  </div>
+
+  <!-- Info header -->
+  <div class="table-header-info" *ngIf="!loading && !error">
+    <h2>Liste des Récompenses ({{ totalFiltered }})</h2>
+  </div>
+
+  <!-- Section principale - Affichage tableau pour admin -->
+  <section class="recompenses-table-section" *ngIf="!loading && !error">
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>Récompense</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let recompense of pagedRecompenses">
+            <td class="recompense-details-cell">
+              <div class="recompense-info">
+                <div class="recompense-avatar">
+                  <div class="avatar-icon" [innerHTML]="recompense.icone || '🏆'"></div>
+                </div>
+                <div class="recompense-info-text">
+                  <p class="name">{{ recompense.nom }}</p>
+                  <small class="badge-id">ID: {{ recompense.id }}</small>
+                </div>
+              </div>
+            </td>
+            <td>
+              <span class="type-badge">{{ recompense.type || 'Général' }}</span>
+            </td>
+            <td class="description-cell">
+              <p class="description">{{ recompense.description || 'Aucune description' }}</p>
+            </td>
+            <td class="actions-cell">
+              <span class="action-btn view-btn" (click)="viewRecompense(recompense)" title="Voir">
+                <fa-icon [icon]="faEye"></fa-icon>
+              </span>
+              <span class="action-btn edit-btn" (click)="editRecompense(recompense)" title="Modifier">
+                <fa-icon [icon]="faPen"></fa-icon>
+              </span>
+              <span class="action-btn delete-btn" (click)="deleteRecompense(recompense)" title="Supprimer">
+                <fa-icon [icon]="faTrash"></fa-icon>
+              </span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- Pagination -->
+      <div class="table-footer" *ngIf="totalPages > 1">
+        <p>
+          Affichage de {{ ((currentPage - 1) * pageSize) + 1 }} à 
+          {{ getMinValue(currentPage * pageSize, totalFiltered) }} sur {{ totalFiltered }} Récompenses
+        </p>
+        <nav class="pagination">
+          <button class="pagination-arrow" (click)="changePage(currentPage - 1)" [disabled]="currentPage === 1">
+            <span>←</span>
+          </button>
+          <span *ngFor="let page of [].constructor(totalPages); let i = index"
+                class="pagination-number" 
+                [class.active]="(i + 1) === currentPage"
+                (click)="changePage(i + 1)">
+            {{ i + 1 }}
+          </span>
+          <button class="pagination-arrow" (click)="changePage(currentPage + 1)" [disabled]="currentPage === totalPages">
+            <span>→</span>
+          </button>
+        </nav>
+      </div>
+    </div>
+  </section>
+
+  <!-- Version alternative en cartes pour mobile -->
+  <section class="recompenses-cards-section" *ngIf="!loading && !error">
+    <div class="recompenses-grid">
+      <div class="recompense-card" *ngFor="let recompense of pagedRecompenses">
+        <div class="card-header">
+          <div class="recompense-avatar">
+            <div class="avatar-icon" [innerHTML]="recompense.icone || '🏆'"></div>
+          </div>
+          <div class="recompense-title">
+            <h3>{{ recompense.nom }}</h3>
+            <span class="type-badge">{{ recompense.type || 'Général' }}</span>
+          </div>
+        </div>
+        <div class="card-content">
+          <p class="description">{{ recompense.description || 'Aucune description' }}</p>
+          <div class="card-meta">
+            <span class="badge-id">ID: {{ recompense.id }}</span>
+          </div>
+        </div>
+        <div class="card-actions">
+          <span class="action-btn view-btn" (click)="viewRecompense(recompense)" title="Voir">
+            <fa-icon [icon]="faEye"></fa-icon>
+          </span>
+          <span class="action-btn edit-btn" (click)="editRecompense(recompense)" title="Modifier">
+            <fa-icon [icon]="faPen"></fa-icon>
+          </span>
+          <span class="action-btn delete-btn" (click)="deleteRecompense(recompense)" title="Supprimer">
+            <fa-icon [icon]="faTrash"></fa-icon>
+          </span>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>

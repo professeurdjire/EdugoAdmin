@@ -1,1 +1,114 @@
-<p>exercice-list works!</p>
+<div class="users-page-container">
+  <div class="page-header">
+    <h1 class="page-title">Exercices</h1>
+    <a routerLink="/admin/ajouterexercice" class="btn-add"><i class="fa-solid fa-plus"></i>&nbsp;Ajouter un exercice</a>
+  </div>
+
+  <!-- Message d'erreur -->
+  <div *ngIf="error" class="error-message">
+    {{ error }}
+  </div>
+
+  <!-- Indicateur de chargement -->
+  <div *ngIf="loading" class="loading-overlay">
+    <div class="loading-spinner"></div>
+    <p>Chargement des exercices...</p>
+  </div>
+
+  <!-- Filters -->
+  <section class="filters-container" *ngIf="!loading && !error">
+    <div class="filter-group">
+      <label>Recherche</label>
+      <input placeholder="Rechercher un exercice" [(ngModel)]="searchTerm" (keyup.enter)="applyFilters()" />
+    </div>
+    <div class="filter-group">
+      <label>Difficulté</label>
+      <select [(ngModel)]="selectedDifficulty" (change)="applyFilters()">
+        <option value="">Toutes les difficultés</option>
+        <option value="1">Facile</option>
+        <option value="2">Moyenne</option>
+        <option value="3">Difficile</option>
+      </select>
+    </div>
+    <div class="action-buttons">
+        <button class="filter-btn" (click)="applyFilters()">
+          <fa-icon [icon]="faFilter"></fa-icon>
+          Filtrer
+        </button>
+        <button class="reset-btn" (click)="resetFilters()">
+          <fa-icon [icon]="faRedoAlt"></fa-icon>
+          Réinitialiser
+        </button>
+      </div>
+  </section>
+
+  <div class="table-header-info" *ngIf="!loading && !error">
+    <h2>Liste des Exercices ({{ totalFiltered }})</h2>
+  </div>
+
+  <section class="users-table-section" *ngIf="!loading && !error">
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>Exercice</th>
+            <th>Difficulté</th>
+            <th>Matière</th>
+            <th>Date</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let exercice of pagedExercices">
+            <td class="user-details-cell">
+              <div class="exercice-details">
+                <div class="exercice-icon">E</div>
+                <div class="text-details">
+                  <p class="exercice-title">{{ exercice.titre }}</p>
+                  <small class="exercice-description">{{ exercice.description }}</small>
+                </div>
+              </div>
+            </td>
+            <td>
+              <span class="badge badge-difficulte diff-{{ exercice.niveauDifficulte }}">
+                {{ exercice.niveauDifficulte === 1 ? 'Facile' : exercice.niveauDifficulte === 2 ? 'Moyenne' : 'Difficile' }}
+              </span>
+            </td>
+            <td>{{ exercice.matiere }}</td>
+            <td>{{ exercice.dateCreation }}</td>
+            <td class="actions-cell">
+              <span class="action-btn view-btn" (click)="viewExercice(exercice)">
+                <fa-icon [icon]="faEye"></fa-icon>
+              </span>
+              <span class="action-btn edit-btn" (click)="editExercice(exercice)">
+                <fa-icon [icon]="faPen"></fa-icon>
+              </span>
+              <span class="action-btn delete-btn" (click)="deleteExercice(exercice)">
+                <fa-icon [icon]="faTrash"></fa-icon>
+              </span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- Pagination -->
+      <div class="book-list__footer" *ngIf="totalPages > 1">
+        <p>Affichage de {{ ((currentPage - 1) * pageSize) + 1 }} à {{ getMinValue(currentPage * pageSize, totalFiltered) }} sur {{ totalFiltered }} Exercices</p>
+        <nav class="pagination">
+          <button class="pagination__arrow" (click)="changePage(currentPage - 1)" [disabled]="currentPage === 1">
+            <span>←</span>
+          </button>
+          <span *ngFor="let page of [].constructor(totalPages); let i = index"
+                class="pagination__number" 
+                [class.active]="(i + 1) === currentPage"
+                (click)="changePage(i + 1)">
+            {{ i + 1 }}
+          </span>
+          <button class="pagination__arrow" (click)="changePage(currentPage + 1)" [disabled]="currentPage === totalPages">
+            <span>→</span>
+          </button>
+        </nav>
+      </div>
+    </div>
+  </section>
+</div>

@@ -1,11 +1,12 @@
 import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-utilisateur-form',
   standalone: true,
-  imports: [],
+  imports: [CommonModule],
   templateUrl: './utilisateur-form.html',
-  styleUrl: './utilisateur-form.css'
+  styleUrls: ['./utilisateur-form.css']
 })
 export class UtilisateurForm {
 

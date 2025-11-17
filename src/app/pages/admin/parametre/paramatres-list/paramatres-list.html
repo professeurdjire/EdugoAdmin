@@ -1,1 +1,213 @@
-<p>paramatres-list works!</p>
+<div class="parametres-management-content">
+  <!-- Message d'erreur d'authentification -->
+  <div *ngIf="error" class="error-message global-error">
+    {{ error }}
+  </div>
+
+  <div *ngIf="!error">
+    <!-- En-tête de page -->
+    <div class="settings-header">
+      <h1 class="page-title">Paramètres</h1>
+      <p class="page-subtitle">Gérez les paramètres généraux de votre plateforme</p>
+    </div>
+
+    <div class="settings-container">
+      <!-- En-tête avec logo -->
+      <div class="settings-hero">
+        <div class="logo-section">
+          <div class="logo-wrapper">
+            <img src="/images/logo1.png" alt="Logo Edugo" class="logo-img" />
+          </div>
+          <div class="hero-content">
+            <h3 class="hero-title">Configuration de la plateforme</h3>
+            <p class="hero-description">Personnalisez les paramètres généraux de votre environnement EDUGO</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Indicateur de chargement -->
+      <div *ngIf="isLoading" class="loading-overlay">
+        <div class="loading-spinner"></div>
+        <p>Chargement des paramètres...</p>
+      </div>
+
+      <!-- Formulaire de paramètres -->
+      <form class="settings-form" [formGroup]="settingsForm" (ngSubmit)="onSubmit()" *ngIf="!isLoading">
+        
+        <!-- Section Informations générales -->
+        <div class="form-section">
+          <h4 class="section-title">Informations générales</h4>
+          <div class="form-grid">
+            
+            <!-- Nom de la plateforme -->
+            <div class="form-group">
+              <label for="nomPlateforme" class="form-label">
+                Nom de la plateforme
+                <span class="required">*</span>
+              </label>
+              <input 
+                type="text" 
+                id="nomPlateforme" 
+                formControlName="platformName"
+                class="form-control"
+                [class.error]="isFieldInvalid('platformName')"
+                placeholder="Entrez le nom de la plateforme">
+              <div class="error-message" *ngIf="isFieldInvalid('platformName')">
+                {{ getFieldError('platformName') }}
+              </div>
+              <div class="form-hint">Nom public de votre plateforme éducative</div>
+            </div>
+
+            <!-- URL de la plateforme -->
+            <div class="form-group">
+              <label for="uriPlateforme" class="form-label">
+                URL de la plateforme
+                <span class="required">*</span>
+              </label>
+              <div class="input-with-prefix">
+                <span class="input-prefix">https://</span>
+                <input 
+                  type="text" 
+                  id="uriPlateforme" 
+                  formControlName="platformUrl"
+                  class="form-control"
+                  [class.error]="isFieldInvalid('platformUrl')"
+                  placeholder="votre-domaine.ml">
+              </div>
+              <div class="error-message" *ngIf="isFieldInvalid('platformUrl')">
+                {{ getFieldError('platformUrl') }}
+              </div>
+              <div class="form-hint">Adresse principale d'accès à la plateforme</div>
+            </div>
+
+            <!-- Description -->
+            <div class="form-group full-width">
+              <label for="descriptionPlateforme" class="form-label">Description</label>
+              <textarea 
+                id="descriptionPlateforme" 
+                formControlName="description"
+                rows="3" 
+                class="form-control"
+                [class.error]="isFieldInvalid('description')"
+                placeholder="Décrivez votre plateforme..."></textarea>
+              <div class="form-counter">
+                {{ description?.value?.length || 0 }}/500
+              </div>
+              <div class="error-message" *ngIf="isFieldInvalid('description')">
+                {{ getFieldError('description') }}
+              </div>
+              <div class="form-hint">Cette description sera utilisée pour le référencement</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section Coordonnées -->
+        <div class="form-section">
+          <h4 class="section-title">Coordonnées</h4>
+          <div class="form-grid">
+            
+            <!-- Email de contact -->
+            <div class="form-group">
+              <label for="emailContact" class="form-label">
+                Email de contact
+                <span class="required">*</span>
+              </label>
+              <div class="input-with-icon">
+                <i class="icon-mail"></i>
+                <input 
+                  type="email" 
+                  id="emailContact" 
+                  formControlName="contactEmail"
+                  class="form-control"
+                  [class.error]="isFieldInvalid('contactEmail')"
+                  placeholder="contact@exemple.ml">
+              </div>
+              <div class="error-message" *ngIf="isFieldInvalid('contactEmail')">
+                {{ getFieldError('contactEmail') }}
+              </div>
+              <div class="form-hint">Email principal pour les communications</div>
+            </div>
+
+            <!-- Téléphone de support -->
+            <div class="form-group">
+              <label for="telephoneSupport" class="form-label">Téléphone de support</label>
+              <div class="input-with-icon">
+                <i class="icon-phone"></i>
+                <input 
+                  type="tel" 
+                  id="telephoneSupport" 
+                  formControlName="supportPhone"
+                  class="form-control"
+                  [class.error]="isFieldInvalid('supportPhone')"
+                  placeholder="+223 XX XX XX XX">
+              </div>
+              <div class="error-message" *ngIf="isFieldInvalid('supportPhone')">
+                {{ getFieldError('supportPhone') }}
+              </div>
+              <div class="form-hint">Numéro de support pour les utilisateurs</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section Préférences régionales -->
+        <div class="form-section">
+          <h4 class="section-title">Préférences régionales</h4>
+          <div class="form-grid">
+            
+            <!-- Fuseau horaire -->
+            <div class="form-group">
+              <label for="fuseauHoraire" class="form-label">Fuseau horaire</label>
+              <select id="fuseauHoraire" formControlName="timezone" class="form-control">
+                <option *ngFor="let tz of timezones" [value]="tz.value">
+                  {{ tz.label }}
+                </option>
+              </select>
+              <div class="form-hint">Fuseau horaire par défaut du système</div>
+            </div>
+
+            <!-- Langue par défaut -->
+            <div class="form-group">
+              <label for="langueDefaut" class="form-label">Langue par défaut</label>
+              <select id="langueDefaut" formControlName="defaultLanguage" class="form-control">
+                <option *ngFor="let lang of languages" [value]="lang.value">
+                  {{ lang.label }}
+                </option>
+              </select>
+              <div class="form-hint">Langue d'affichage principale</div>
+            </div>
+
+            <!-- Devise par défaut -->
+            <div class="form-group">
+              <label for="devise" class="form-label">Devise par défaut</label>
+              <select id="devise" formControlName="currency" class="form-control">
+                <option *ngFor="let curr of currencies" [value]="curr.value">
+                  {{ curr.label }}
+                </option>
+              </select>
+              <div class="form-hint">Devise utilisée pour les transactions</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Actions du formulaire -->
+        <div class="form-actions">
+          <button 
+            type="button" 
+            class="btn btn-secondary"
+            (click)="onCancel()"
+            [disabled]="isSaving">
+            <i class="icon-close"></i>
+            Annuler
+          </button>
+          <button 
+            type="submit" 
+            class="btn btn-primary"
+            [disabled]="!settingsForm.valid || isSaving || !settingsForm.dirty">
+            <i class="icon-save" [class.loading]="isSaving"></i>
+            {{ isSaving ? 'Enregistrement...' : 'Enregistrer les modifications' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

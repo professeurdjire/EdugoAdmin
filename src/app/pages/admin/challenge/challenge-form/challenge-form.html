@@ -1,1 +1,191 @@
-<p>challenge-form works!</p>
+<div class="form-page-container">
+  <header class="form-header">
+    <h1 class="page-title">Ajouter un challenge</h1>
+    <a routerLink="/admin/challengelist" class="back-btn">
+      <img src="images/832_8591.svg" alt="Back icon">
+      <span>Retour</span>
+    </a>
+  </header>
+  <div class="form-subtitle">Remplissez les informations suivantes pour ajouter un challenge dans votre plateforme!</div>
+
+  <div class="form-body">
+    <form class="challenge-form-body" [formGroup]="form" (ngSubmit)="onSubmit()">
+      <fieldset class="form-section">
+        <legend class="section-title">
+          <img src="images/816_4202.svg" alt="Info icon">
+          <h2>Information de bases</h2>
+        </legend>
+        <hr class="divider">
+
+        <div class="form-group full-width">
+          <label for="type-challenge">Type Challenge <span class="required">*</span></label>
+          <div class="select-wrapper">
+            <select id="type-challenge" formControlName="typeChallenge">
+              <option *ngFor="let opt of typeOptions" [ngValue]="opt.value">{{ opt.label }}</option>
+            </select>
+            <img src="images/829_6592.svg" alt="Dropdown arrow" class="select-arrow">
+          </div>
+        </div>
+
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="niveau">Niveau <span class="required">*</span></label>
+            <div class="select-wrapper">
+              <select id="niveau" formControlName="niveauId">
+                <option [ngValue]="null">Sélectionner un niveau</option>
+                <option *ngFor="let n of niveaux" [ngValue]="n.id">{{ $any(n).nom || ('Niveau ' + n.id) }}</option>
+              </select>
+              <img src="images/816_4265.svg" alt="Dropdown arrow" class="select-arrow">
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="titre-challenge">Titre du challenge <span class="required">*</span></label>
+            <input type="text" id="titre-challenge" placeholder="Donnez un titre" formControlName="titre">
+          </div>
+        </div>
+
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="classe">Classe</label>
+            <div class="select-wrapper">
+              <select id="classe" formControlName="classeId">
+                <option [ngValue]="null">Sélectionner une classe</option>
+                <option *ngFor="let c of classes" [ngValue]="c.id">{{ $any(c).nom || ('Classe ' + c.id) }}</option>
+              </select>
+              <img src="images/816_4265.svg" alt="Dropdown arrow" class="select-arrow">
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group full-width">
+          <label for="description">Description</label>
+          <textarea id="description" placeholder="Description detaillée du défis..." rows="2" formControlName="description"></textarea>
+        </div>
+
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="date-debut">Date début <span class="required">*</span></label>
+            <div class="input-with-icon">
+              <input type="datetime-local" id="date-debut" formControlName="dateDebut">
+              <img src="images/816_4260.svg" alt="Calendar icon" class="input-icon">
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="date-fin">Date fin <span class="required">*</span></label>
+            <div class="input-with-icon">
+              <input type="datetime-local" id="date-fin" formControlName="dateFin">
+              <img src="images/816_4309.svg" alt="Calendar icon" class="input-icon">
+            </div>
+          </div>
+        </div>
+
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="recompenses">Systeme de recompenses <span class="required">*</span></label>
+            <div class="select-wrapper">
+              <select id="recompenses" formControlName="rewardMode">
+                <option *ngFor="let m of rewardModes" [ngValue]="m.value">{{ m.label }}</option>
+              </select>
+              <img src="images/816_4332.svg" alt="Dropdown arrow" class="select-arrow">
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="personnes">Combien de personnes <span class="required">*</span></label>
+            <div class="select-wrapper">
+              <select id="personnes" formControlName="winnersCount">
+                <option [ngValue]="1">Le premier</option>
+                <option [ngValue]="3">Les trois premiers</option>
+              </select>
+              <img src="images/816_4377.svg" alt="Dropdown arrow" class="select-arrow">
+            </div>
+          </div>
+        </div>
+      </fieldset>
+
+      <fieldset class="form-section">
+        <legend class="section-title with-button">
+          <div class="title-content">
+            <img src="images/816_4206.svg" alt="Questions icon">
+            <h2>Questions de l”exercice</h2>
+          </div>
+          <!--merged image-->
+          <button type="button" class="btn-inline-add" (click)="ajouterQuestion()">
+            <img src="images/816_4280.svg" alt="Add icon">
+            <span>Ajouter une question</span>
+          </button>
+        </legend>
+        <hr class="divider">
+
+        <div formArrayName="questions">
+          <div class="question-block" *ngFor="let q of questions.controls; let i = index" [formGroupName]="i">
+            <div class="form-grid">
+              <div class="form-group">
+                <label [for]="'type-questions-' + i">Type de questions <span class="required">*</span></label>
+                <div class="select-wrapper">
+                  <select [id]="'type-questions-' + i" formControlName="typeQuestion">
+                    <option value="choix_multiple">Question à choix multiples</option>
+                    <option value="vrai_faux">Vrai/Faux</option>
+                    <option value="appariement">Appariement</option>
+                  </select>
+                  <img src="images/816_4223.svg" alt="Dropdown arrow" class="select-arrow rotated">
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group full-width">
+              <label [for]="'question-' + i">Question {{ i + 1 }} <span class="required">*</span></label>
+              <input type="text" [id]="'question-' + i" placeholder="Saisissez la question..." formControlName="question">
+            </div>
+
+            <!-- Réponses QCM/QCU -->
+            <div class="form-group full-width" *ngIf="questions.at(i).get('typeQuestion')?.value !== 'appariement'">
+              <div class="answers-list" formArrayName="reponses">
+                <div class="answer-row" *ngFor="let rep of getReponses(i).controls; let j = index" [formGroupName]="j">
+                  <div class="answer-label">{{ rep.get('lettre')?.value }}</div>
+                  <input type="text" formControlName="texte" [placeholder]="'Reponse ' + rep.get('lettre')?.value">
+                  <button type="button" class="btn-checkbox" [class.correct]="rep.get('correcte')?.value" (click)="onReponseCorrecteChange(i, j)">🔘</button>
+                  <button type="button" class="btn-action btn-danger" (click)="supprimerReponse(i, j)" [disabled]="getReponses(i).length <= 2">🗑️</button>
+                </div>
+                <div class="answers-actions">
+                  <button type="button" class="btn-inline-add" (click)="ajouterReponse(i)" [disabled]="getReponses(i).length >= 6">Ajouter une réponse</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Appariement -->
+            <div class="form-group full-width" *ngIf="questions.at(i).get('typeQuestion')?.value === 'appariement'">
+              <div class="appariement-grid" formArrayName="pairesAppariement">
+                <div class="appariement-row" *ngFor="let p of getPaires(i).controls; let j = index" [formGroupName]="j">
+                  <input type="text" formControlName="elementGauche" placeholder="Élément de gauche">
+                  <input type="text" formControlName="elementDroit" placeholder="Élément de droite">
+                  <button type="button" class="btn-action btn-danger" (click)="supprimerPaireAppariement(i, j)" [disabled]="getPaires(i).length <= 2">🗑️</button>
+                </div>
+              </div>
+              <button type="button" class="btn-inline-add" (click)="ajouterPaireAppariement(i)">Ajouter une paire</button>
+            </div>
+
+            <hr class="divider" *ngIf="i < questions.length - 1">
+          </div>
+        </div>
+      </fieldset>
+
+      <div class="form-actions">
+        <!--merged image-->
+        <button type="button" class="btn btn-cancel" (click)="onAnnuler()">
+          <img src="images/816_4275.svg" alt="Cancel icon">
+          <span>Annuler</span>
+        </button>
+        <!--merged image-->
+        <button type="button" class="btn btn-add-question">
+          <img src="images/816_4229.svg" alt="Add icon">
+          <span>Ajouter une question</span>
+        </button>
+        <!--merged image-->
+        <button type="submit" class="btn btn-submit">
+          <img src="images/816_4271.svg" alt="Save icon">
+          <span>Enregistrer le challenge</span>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

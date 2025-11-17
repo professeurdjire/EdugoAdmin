@@ -1,1 +1,115 @@
-<p>livre-list works!</p>
+<div class="users-page-container">
+  <div class="page-header">
+    <h1 class="page-title">Livres</h1>
+    <a routerLink="/admin/ajouterlivre" class="btn-add"><i class="fa-solid fa-plus"></i>&nbsp;Ajouter un livre</a>
+  </div>
+
+  <!-- Message d'erreur -->
+  <div *ngIf="error" class="error-message">
+    {{ error }}
+  </div>
+
+  <!-- Indicateur de chargement -->
+  <div *ngIf="loading" class="loading-overlay">
+    <div class="loading-spinner"></div>
+    <p>Chargement des livres...</p>
+  </div>
+
+  <!-- Filtres -->
+  <div class="filter" *ngIf="!loading && !error">
+    <section class="filters-container">
+      <div class="filter-group">
+        <label>Recherche</label>
+        <input type="text" placeholder="Titre, auteur..." [(ngModel)]="searchTerm" (keyup.enter)="applyFilters()" />
+      </div>
+
+      <div class="filter-group">
+        <label>Matière</label>
+        <select [(ngModel)]="selectedSubject" (change)="applyFilters()">
+          <option value="">Toutes les matières</option>
+          <option value="Mathématiques">Mathématiques</option>
+          <option value="Français">Français</option>
+          <option value="Anglais">Anglais</option>
+          <option value="Histoire">Histoire</option>
+        </select>
+      </div>
+
+      <div class="action-buttons">
+        <button class="filter-btn" (click)="applyFilters()">
+          <fa-icon [icon]="faFilter"></fa-icon>
+          Filtrer
+        </button>
+        <button class="reset-btn" (click)="resetFilters()">
+          <fa-icon [icon]="faRedoAlt"></fa-icon>
+          Réinitialiser
+        </button>
+      </div>
+    </section>
+  </div>
+
+  <div class="table-header-info" *ngIf="!loading && !error">
+    <h2>Liste des livres ({{ totalFiltered }})</h2>
+  </div>
+
+  <section class="users-table-section" *ngIf="!loading && !error">
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>Livre</th>
+            <th>Année</th>
+            <th>Matière</th>
+            <th>Langue</th>
+            <th>Statut</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let livre of pagedLivres">
+            <td class="user-details-cell">
+              <div class="user-initials blue">BK</div>
+              <div class="user-info-text">
+                <p class="name">{{ livre.titre }}</p>
+                <small class="email">Par {{ livre.auteur }}</small>
+              </div>
+            </td>
+            <td>{{ livre.anneePublication }}</td>
+            <td>{{ livre.matiere }}</td>
+            <td>{{ livre.langue }}</td>
+            <td><span class="status-badge active-status">Actif</span></td>
+            <td class="actions-cell">
+              <span class="action-btn view-btn" (click)="viewLivre(livre)">
+                <fa-icon [icon]="faEye"></fa-icon>
+              </span>
+              <span class="action-btn edit-btn" (click)="editLivre(livre)">
+                <fa-icon [icon]="faPen"></fa-icon>
+              </span>
+              <span class="action-btn delete-btn" (click)="deleteLivre(livre)">
+                <fa-icon [icon]="faTrash"></fa-icon>
+              </span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- Pagination -->
+      <div class="book-list__footer" *ngIf="totalPages > 1">
+        <p>Affichage de {{ ((currentPage - 1) * pageSize) + 1 }} à {{ getMinValue(currentPage * pageSize, totalFiltered) }} sur {{ totalFiltered }} Livres</p>
+        <nav class="pagination">
+          <button class="pagination__arrow" (click)="changePage(currentPage - 1)" [disabled]="currentPage === 1">
+            <span>←</span>
+          </button>
+          <span *ngFor="let page of [].constructor(totalPages); let i = index"
+                class="pagination__number" 
+                [class.active]="(i + 1) === currentPage"
+                (click)="changePage(i + 1)">
+            {{ i + 1 }}
+          </span>
+          <button class="pagination__arrow" (click)="changePage(currentPage + 1)" [disabled]="currentPage === totalPages">
+            <span>→</span>
+          </button>
+        </nav>
+      </div>
+    </div>
+  </section>
+</div>

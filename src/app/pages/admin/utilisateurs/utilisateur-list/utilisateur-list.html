@@ -1,8 +1,19 @@
-
 <div class="users-page-container">
   <h1 class="page-title">Utilisateurs</h1>
+  
+  <!-- Loading indicator -->
+  <div *ngIf="loading" class="loading-indicator">
+    <p>Chargement des utilisateurs...</p>
+  </div>
+  
+  <!-- Error message -->
+  <div *ngIf="error" class="error-message">
+    <p>{{ error }}</p>
+    <button class="retry-btn" (click)="loadUsers()">Réessayer</button>
+  </div>
+  
   <!-- Filtres -->
-  <div class="filter">
+  <div class="filter" *ngIf="!loading && !error">
     <section class="filters-container">
       <div class="filter-group">
         <label>Recherche</label>
@@ -40,12 +51,13 @@
       </div>
     </section>
   </div>
-  <div class="table-header-info">
+  
+  <div class="table-header-info" *ngIf="!loading && !error">
     <h2>Liste des utilisateurs ({{ filteredUsers.length }})</h2>
   </div>
 
   <!-- Tableau sans pagination -->
-  <section class="users-table-section no-scroll">
+  <section class="users-table-section no-scroll" *ngIf="!loading && !error">
     <div class="table-wrapper">
       <table>
         <thead>
@@ -60,7 +72,7 @@
         </tr>
         </thead>
         <tbody>
-        <tr *ngFor="let user of filteredUsers">
+        <tr *ngFor="let user of pagedUsers">
           <td class="user-details-cell">
             <div class="user-initials" [ngClass]="user.color">{{ user.initials }}</div>
             <div class="user-info-text">
@@ -78,16 +90,44 @@
               </span>
           </td>
           <td class="actions-cell">
-            <button class="action-icon-btn" (click)="viewUser(user)">
+            <span class="action-btn view-btn" (click)="viewUser(user)">
               <fa-icon [icon]="faEye"></fa-icon>
-            </button>
-            <button class="action-icon-btn" (click)="editUser(user)">
+            </span>
+            <span class="action-btn edit-btn" (click)="editUser(user)">
               <fa-icon [icon]="faPen"></fa-icon>
-            </button>
+            </span>
           </td>
         </tr>
         </tbody>
       </table>
+      
+      <!-- Pagination -->
+      <div class="book-list__footer" *ngIf="totalPages > 1">
+        <p>Affichage de {{ displayedFrom }} à {{ displayedTo }} sur {{ totalFiltered }} utilisateurs</p>
+        <nav class="pagination">
+          <button class="pagination__arrow" (click)="changePage(currentPage - 1)" [disabled]="currentPage === 1">
+            <img src="/images/430_2316.svg" alt="Previous">
+          </button>
+          
+          <ng-container *ngFor="let page of pageNumbers">
+            <button 
+              class="pagination__number" 
+              [class.active]="page === currentPage"
+              (click)="changePage(page)">
+              {{ page }}
+            </button>
+          </ng-container>
+          
+          <button class="pagination__arrow" (click)="changePage(currentPage + 1)" [disabled]="currentPage === totalPages">
+            <img src="/images/430_2314.svg" alt="Next">
+          </button>
+        </nav>
+      </div>
+      
+      <!-- No data message -->
+      <div class="no-data-message" *ngIf="filteredUsers.length === 0">
+        <p>Aucun utilisateur trouvé.</p>
+      </div>
     </div>
   </section>
 </div>

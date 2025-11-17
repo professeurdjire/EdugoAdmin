@@ -1,1 +1,92 @@
-<p>livre-details works!</p>
+<div class="users-page-container">
+  <div class="page-header">
+    <h1 class="page-title">Détails du livre</h1>
+    <button class="back-btn" (click)="goBack()">← Retour</button>
+  </div>
+
+  <!-- Loading indicator -->
+  <div *ngIf="loading" class="loading-indicator">
+    <p>Chargement des détails du livre...</p>
+  </div>
+  
+  <!-- Error message -->
+  <div *ngIf="error" class="error-message">
+    <p>{{ error }}</p>
+    <button class="retry-btn" (click)="loadLivreDetails(livreId!)">Réessayer</button>
+  </div>
+
+  <!-- Livre details -->
+  <div *ngIf="livre && !loading && !error" class="livre-details-container">
+    <div class="livre-header">
+      <div class="livre-cover" *ngIf="livre.imageCouverture">
+        <img [src]="livre.imageCouverture" alt="Couverture du livre" class="cover-image">
+      </div>
+      <div class="livre-cover-placeholder" *ngIf="!livre.imageCouverture">
+        <div class="cover-placeholder">Aucune image</div>
+      </div>
+      
+      <div class="livre-info">
+        <h2>{{ livre.titre }}</h2>
+        <p class="livre-author">Par {{ livre.auteur }}</p>
+        <p class="livre-description">{{ livre.description }}</p>
+        
+        <div class="livre-meta">
+          <div class="meta-item">
+            <span class="label">Éditeur:</span>
+            <span class="value">{{ livre.editeur || 'Non spécifié' }}</span>
+          </div>
+          <div class="meta-item">
+            <span class="label">Année de publication:</span>
+            <span class="value">{{ livre.anneePublication || 'Non spécifiée' }}</span>
+          </div>
+          <div class="meta-item">
+            <span class="label">Pages:</span>
+            <span class="value">{{ livre.totalPages || 'Non spécifié' }}</span>
+          </div>
+          <div class="meta-item">
+            <span class="label">ISBN:</span>
+            <span class="value">{{ livre.isbn || 'Non spécifié' }}</span>
+          </div>
+        </div>
+      </div>
+      
+      <div class="livre-actions">
+        <button class="edit-btn" (click)="editLivre()">Modifier</button>
+      </div>
+    </div>
+
+    <div class="livre-details-grid">
+      <div class="detail-card">
+        <h3>Informations pédagogiques</h3>
+        <div class="detail-row">
+          <span class="label">Niveau:</span>
+          <span class="value">{{ livre.niveau?.nom || 'Non spécifié' }}</span>
+        </div>
+        <div class="detail-row">
+          <span class="label">Matière:</span>
+          <span class="value">{{ livre.matiere?.nom || 'Non spécifiée' }}</span>
+        </div>
+        <div class="detail-row">
+          <span class="label">Classe:</span>
+          <span class="value">{{ livre.classe?.nom || 'Non spécifiée' }}</span>
+        </div>
+      </div>
+
+      <div class="detail-card">
+        <h3>Caractéristiques</h3>
+        <div class="detail-row">
+          <span class="label">Lecture automatique:</span>
+          <span class="value">{{ livre.lectureAuto ? 'Oui' : 'Non' }}</span>
+        </div>
+        <div class="detail-row">
+          <span class="label">Interactif:</span>
+          <span class="value">{{ livre.interactif ? 'Oui' : 'Non' }}</span>
+        </div>
+        <div class="detail-row">
+          <span class="label">Langue:</span>
+          <span class="value">{{ livre.langue || 'Non spécifiée' }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

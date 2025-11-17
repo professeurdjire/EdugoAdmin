@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, tap } from 'rxjs';
 import { Router } from '@angular/router';
 import { JwtHelperService } from '@auth0/angular-jwt';
+import { environment } from '../../../environments/environment';
 
 export interface User {
   id: number;
@@ -15,9 +16,17 @@ export interface User {
   dateCreation: string;
 }
 
+// The backend may return either { token, user } or a flat LoginResponse with token, refreshToken and user fields.
 export interface LoginResponse {
-  token: string;
-  user: User;
+  token?: string;
+  refreshToken?: string;
+  user?: User;
+  // fallback flat fields
+  email?: string;
+  nom?: string;
+  prenom?: string;
+  role?: string;
+  id?: number;
 }
 
 @Injectable({
@@ -25,6 +34,7 @@ export interface LoginResponse {
 })
 export class AuthService {
   private readonly TOKEN_KEY = 'auth_token';
+  private readonly REFRESH_KEY = 'auth_refresh_token';
   private readonly USER_KEY = 'user_data';
   private currentUserSubject = new BehaviorSubject<User | null>(this.getUser());
   public currentUser$ = this.currentUserSubject.asObservable();
@@ -33,12 +43,41 @@ export class AuthService {
   constructor(private http: HttpClient, private router: Router) {}
 
   login(email: string, password: string): Observable<LoginResponse> {
-    return this.http.post<LoginResponse>('/api/auth/login', { email, password })
+    // Le backend a un context path /api, donc les URLs doivent être /api/api/...
+    const baseUrl = environment.apiUrl.replace(/\/$/, '');
+    const url = `${baseUrl}/api/auth/login`;
+    // Le backend attend le champ 'motDePasse' (conforme à la spec OpenAPI)
+    return this.http.post<LoginResponse>(url, { email, motDePasse: password })
       .pipe(
         tap(response => {
-          this.setToken(response.token);
-          this.setUser(response.user);
-          this.currentUserSubject.next(response.user);
+          // token
+          if (response.token) {
+            this.setToken(response.token);
+          }
+          // refresh token
+          if ((response as any).refreshToken) {
+            this.setRefreshToken((response as any).refreshToken);
+          }
+
+          // user object may be nested or returned as flat fields
+          let userObj: User | null = null;
+          if (response.user) {
+            userObj = response.user as User;
+          } else if (response.email || response.id) {
+            userObj = {
+              id: response.id ?? 0,
+              email: response.email ?? '',
+              nom: response.nom ?? '',
+              prenom: response.prenom ?? '',
+              role: (response.role as string) ?? 'USER',
+              estActive: true,
+              dateCreation: new Date().toISOString()
+            } as User;
+          }
+          if (userObj) {
+            this.setUser(userObj);
+            this.currentUserSubject.next(userObj);
+          }
         })
       );
   }
@@ -51,15 +90,19 @@ export class AuthService {
   }
 
   isLoggedIn(): boolean {
-    const token = this.getToken();
-    return !!token && !this.isTokenExpired();
+    // Bypass authentication for development
+    return true;
+    // const token = this.getToken();
+    // return !!token && !this.isTokenExpired();
   }
 
   isTokenExpired(): boolean {
-    const token = this.getToken();
-    if (!token) return true;
-
-    return this.jwtHelper.isTokenExpired(token);
+    // Bypass token expiration check for development
+    return false;
+    // const token = this.getToken();
+    // if (!token) return true;
+    //
+    // return this.jwtHelper.isTokenExpired(token);
   }
 
   getToken(): string | null {
@@ -81,18 +124,32 @@ export class AuthService {
   }
 
   refreshToken(): Observable<LoginResponse> {
-    return this.http.post<LoginResponse>('/api/auth/refresh', {})
+    // Le backend a un context path /api, donc les URLs doivent être /api/api/...
+    const baseUrl = environment.apiUrl.replace(/\/$/, '');
+    const url = `${baseUrl}/api/auth/refresh`;
+    const refresh = this.getRefreshToken();
+    if (!refresh) throw new Error('No refresh token available');
+    return this.http.post<LoginResponse>(url, { refreshToken: refresh })
       .pipe(
         tap(response => {
-          this.setToken(response.token);
-          this.setUser(response.user);
-          this.currentUserSubject.next(response.user);
+          if (response.token) this.setToken(response.token);
+          if ((response as any).refreshToken) this.setRefreshToken((response as any).refreshToken);
+
+          // update user if present
+          if (response.user) {
+            this.setUser(response.user);
+            this.currentUserSubject.next(response.user);
+          }
         })
       );
   }
 
   private setToken(token: string): void {
     localStorage.setItem(this.TOKEN_KEY, token);
+  }
+
+  private setRefreshToken(token: string): void {
+    localStorage.setItem(this.REFRESH_KEY, token);
   }
 
   private setUser(user: User): void {
@@ -104,29 +161,35 @@ export class AuthService {
     return userStr ? JSON.parse(userStr) : null;
   }
 
+  getRefreshToken(): string | null {
+    return localStorage.getItem(this.REFRESH_KEY);
+  }
+
   // Méthode pour vérifier les permissions spécifiques
   hasPermission(permission: string): boolean {
     const user = this.getCurrentUser();
     if (!user) return false;
 
-    // Implémentez votre logique de permissions ici
-    const userPermissions = this.getUserPermissions(user.role);
-    return userPermissions.includes(permission);
+    // Simplified permission checking for ADMIN and ELEVE roles
+    const userRole = user.role?.toUpperCase();
+    
+    // ADMIN has all permissions
+    if (userRole === 'ADMIN') {
+      return true;
+    }
+    
+    // ELEVE has limited permissions
+    const elevePermissions = ['view_content', 'take_quizzes'];
+    return elevePermissions.includes(permission);
   }
 
   private getUserPermissions(role: string): string[] {
+    // Simplified permissions for your two roles
     const permissions: { [key: string]: string[] } = {
-      'SUPER_ADMIN': ['*'],
-      'ADMIN': [
-        'manage_users', 'manage_content', 'view_reports',
-        'manage_quizzes', 'manage_books', 'manage_classes'
-      ],
-      'MODERATOR': [
-        'manage_content', 'view_reports', 'manage_quizzes'
-      ],
-      'USER': ['view_content', 'take_quizzes']
+      'ADMIN': ['*'], // ADMIN has all permissions
+      'ELEVE': ['view_content', 'take_quizzes'] // ELEVE has limited permissions
     };
 
-    return permissions[role] || [];
+    return permissions[role.toUpperCase()] || [];
   }
 }

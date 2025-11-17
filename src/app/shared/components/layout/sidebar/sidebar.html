@@ -1,45 +1,58 @@
 <!-- Sidebar -->
-<aside class="sidebar" role="navigation" aria-label="Menu principal">
+<aside class="sidebar" [class.collapsed]="isCollapsed" role="navigation" aria-label="Menu principal">
   <nav class="menu">
-    <a routerLink="/admin/dashboard" routerLinkActive="active" class="menu-item" [routerLinkActiveOptions]="{ exact: true }">
-      <i class="fa-solid fa-gauge-high"></i> Dashboard
+    <a routerLink="/admin/dashboard" routerLinkActive="active" class="menu-item" [routerLinkActiveOptions]="{ exact: true }" [attr.title]="isCollapsed ? 'Dashboard' : null" [attr.aria-label]="'Dashboard'">
+      <i class="fa-solid fa-gauge-high"></i>
+      <span class="label-text">Dashboard</span>
     </a>
-    <a routerLink="/admin/utilisateurList" routerLinkActive="active" class="menu-item">
-      <i class="fa-solid fa-users"></i> Utilisateurs
+    <a routerLink="/admin/utilisateurs" routerLinkActive="active" class="menu-item" [attr.title]="isCollapsed ? 'Utilisateurs' : null" [attr.aria-label]="'Utilisateurs'">
+      <i class="fa-solid fa-users"></i>
+      <span class="label-text">Utilisateurs</span>
     </a>
-    <a routerLink="/admin/niveaux" routerLinkActive="active" class="menu-item">
-      <i class="fa-solid fa-layer-group"></i> Contenu
+    <a routerLink="/admin/contenus" routerLinkActive="active" class="menu-item" [attr.title]="isCollapsed ? 'Contenu' : null" [attr.aria-label]="'Contenu'">
+      <i class="fa-solid fa-layer-group"></i>
+      <span class="label-text">Contenu</span>
     </a>
-    <a routerLink="/admin/livreList" routerLinkActive="active" class="menu-item">
-      <i class="fa-solid fa-book"></i> Livre
+    <a routerLink="/admin/livrelist" routerLinkActive="active" class="menu-item" [attr.title]="isCollapsed ? 'Livres' : null" [attr.aria-label]="'Livres'">
+      <i class="fa-solid fa-book"></i>
+      <span class="label-text">Livres</span>
     </a>
-    <a routerLink="/admin/quizList" routerLinkActive="active" class="menu-item">
-      <i class="fa-solid fa-question-circle"></i> Quiz
+    <a routerLink="/admin/quizlist" routerLinkActive="active" class="menu-item" [attr.title]="isCollapsed ? 'Quiz' : null" [attr.aria-label]="'Quiz'">
+      <i class="fa-solid fa-question-circle"></i>
+      <span class="label-text">Quiz</span>
     </a>
-    <a routerLink="/admin/defiList" routerLinkActive="active" class="menu-item">
-      <i class="fa-solid fa-flag"></i> Défis
+    <a routerLink="/admin/defilist" routerLinkActive="active" class="menu-item" [attr.title]="isCollapsed ? 'Défis' : null" [attr.aria-label]="'Défis'">
+      <i class="fa-solid fa-flag"></i>
+      <span class="label-text">Défis</span>
     </a>
-    <a routerLink="/admin/challengeList" routerLinkActive="active" class="menu-item">
-      <i class="fa-solid fa-trophy"></i> Challenge
+    <a routerLink="/admin/challengelist" routerLinkActive="active" class="menu-item" [attr.title]="isCollapsed ? 'Challenge' : null" [attr.aria-label]="'Challenge'">
+      <i class="fa-solid fa-trophy"></i>
+      <span class="label-text">Challenge</span>
     </a>
-    <a routerLink="/admin/exerciceList" routerLinkActive="active" class="menu-item">
-      <i class="fa-solid fa-dumbbell"></i> Exercice
+    <a routerLink="/admin/exercicelist" routerLinkActive="active" class="menu-item" [attr.title]="isCollapsed ? 'Exercices' : null" [attr.aria-label]="'Exercices'">
+      <i class="fa-solid fa-dumbbell"></i>
+      <span class="label-text">Exercices</span>
     </a>
-    <a routerLink="/admin/recompenseList" routerLinkActive="active" class="menu-item">
-      <i class="fa-solid fa-gift"></i> Recompense
+    <a routerLink="/admin/recompenselist" routerLinkActive="active" class="menu-item" [attr.title]="isCollapsed ? 'Récompenses' : null" [attr.aria-label]="'Récompenses'">
+      <i class="fa-solid fa-gift"></i>
+      <span class="label-text">Récompenses</span>
     </a>
-    <a routerLink="/admin/paramatresList" routerLinkActive="active" class="menu-item">
-      <i class="fa-solid fa-sliders"></i> Parametre
+    <a routerLink="/admin/partenaire" routerLinkActive="active" class="menu-item" [attr.title]="isCollapsed ? 'Partenaires' : null" [attr.aria-label]="'Partenaires'">
+      <i class="fa-solid fa-handshake"></i>
+      <span class="label-text">Partenaires</span>
+    </a>
+    <a routerLink="/admin/paramatresList" routerLinkActive="active" class="menu-item" [attr.title]="isCollapsed ? 'Paramètres' : null" [attr.aria-label]="'Paramètres'">
+      <i class="fa-solid fa-sliders"></i>
+      <span class="label-text">Paramètres</span>
     </a>
   </nav>
 
 
-
   <div class="deconnexion">
-    <a routerLink="/login" class="menu-item">
-      <i class="fa-solid fa-right-from-bracket"></i>
-      <span>Déconnexion</span>
-    </a>
+      <button type="button" (click)="logout()" class="logout-btn">
+        <i class="fa-solid fa-right-from-bracket"></i>
+        <span>Déconnexion</span>
+      </button>
   </div>
 
 
