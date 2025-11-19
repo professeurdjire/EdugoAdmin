@@ -61,16 +61,18 @@ ul {
 }
 
 .back-btn {
-  background-color: #f0f0f0;
+  background-color: var(--primary-purple);
+  color: #ffffff;
   border: none;
   padding: 8px 16px;
   border-radius: 4px;
   cursor: pointer;
   font-size: 14px;
+  font-weight: 600;
 }
 
 .back-btn:hover {
-  background-color: #e0e0e0;
+  background-color: #8c6bb8;
 }
 
 .loading-indicator, .error-message {
@@ -91,17 +93,18 @@ ul {
 }
 
 .retry-btn {
-  background-color: #007bff;
-  color: white;
+  background-color: var(--primary-purple);
+  color: #ffffff;
   border: none;
   padding: 8px 16px;
   border-radius: 4px;
   cursor: pointer;
   margin-top: 10px;
+  font-weight: 600;
 }
 
 .retry-btn:hover {
-  background-color: #0056b3;
+  background-color: #8c6bb8;
 }
 
 .livre-details-container {
@@ -194,17 +197,18 @@ ul {
 }
 
 .edit-btn {
-  background-color: #007bff;
-  color: white;
+  background-color: var(--primary-purple);
+  color: #ffffff;
   border: none;
   padding: 10px 20px;
   border-radius: 4px;
   cursor: pointer;
   font-size: 16px;
+  font-weight: 600;
 }
 
 .edit-btn:hover {
-  background-color: #0056b3;
+  background-color: #8c6bb8;
 }
 
 .livre-details-grid {
@@ -870,9 +874,9 @@ tbody tr:hover {
 }
 
 .pagination__number.active {
-  background-color: var(--primary-blue);
+  background-color: var(--primary-purple);
   color: white;
-  border-color: var(--primary-blue);
+  border-color: var(--primary-purple);
   font-weight: 600;
 }
 

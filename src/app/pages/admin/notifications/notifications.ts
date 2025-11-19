@@ -1,7 +1,8 @@
 import { Component, Output, EventEmitter, OnInit, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { TimeAgoPipe } from "./time-ago.pipe";
+import { TimeAgoPipe } from './time-ago.pipe';
+import { AdminAccountService, AdminNotification } from '../../../services/api/admin/admin-account.service';
 
 interface Notification {
   id: number;
@@ -24,72 +25,38 @@ interface Notification {
 })
 export class NotificationsModalComponent implements OnInit {
   @Output() close = new EventEmitter<void>();
-  
+  @Output() unreadCountChange = new EventEmitter<number>();
+
   notifications: Notification[] = [];
   filteredNotifications: Notification[] = [];
   currentFilter: string = 'all';
 
-  constructor() {}
+  constructor(private adminAccount: AdminAccountService) {}
 
   ngOnInit() {
-    this.loadSampleNotifications();
-    this.applyFilter('all');
+    this.loadNotifications();
   }
 
-  loadSampleNotifications() {
-    this.notifications = [
-      {
-        id: 1,
-        type: 'suggestion',
-        category: 'suggestion',
-        senderName: 'Marie Dubois',
-        message: 'Suggère d\'ajouter des exercices interactifs en mathématiques pour le niveau 6ème',
-        timestamp: new Date(Date.now() - 1000 * 60 * 5), // 5 minutes ago
-        read: false,
-        priority: 'medium',
-        attachment: true
+  private loadNotifications() {
+    this.adminAccount.getNotifications().subscribe({
+      next: (items: AdminNotification[]) => {
+        this.notifications = items.map(n => ({
+          id: n.id,
+          type: (n.type as any) || 'system',
+          category: n.type || 'system',
+          senderName: '',
+          message: n.message,
+          timestamp: new Date(n.dateCreation),
+          read: n.lu,
+          priority: 'low'
+        }));
+        this.applyFilter(this.currentFilter || 'all');
+        this.emitUnreadCount();
       },
-      {
-        id: 2,
-        type: 'message',
-        category: 'message',
-        senderName: 'Support Technique',
-        message: 'Votre demande de maintenance a été traitée. Le serveur est maintenant opérationnel.',
-        timestamp: new Date(Date.now() - 1000 * 60 * 30), // 30 minutes ago
-        read: true,
-        priority: 'high'
-      },
-      {
-        id: 3,
-        type: 'user',
-        category: 'feedback',
-        senderName: 'Jean Martin',
-        message: 'Nouveau feedback reçu sur le module de physique-chimie : "Interface très intuitive !"',
-        timestamp: new Date(Date.now() - 1000 * 60 * 60 * 2), // 2 hours ago
-        read: false,
-        priority: 'low'
-      },
-      {
-        id: 4,
-        type: 'system',
-        category: 'update',
-        senderName: 'Système',
-        message: 'Mise à jour automatique terminée. Version 2.1.4 déployée avec succès.',
-        timestamp: new Date(Date.now() - 1000 * 60 * 60 * 24), // 1 day ago
-        read: true,
-        priority: 'medium'
-      },
-      {
-        id: 5,
-        type: 'alert',
-        category: 'security',
-        senderName: 'Sécurité',
-        message: 'Connexion détectée depuis un nouvel appareil. Veuillez vérifier votre activité.',
-        timestamp: new Date(Date.now() - 1000 * 60 * 60 * 24 * 2), // 2 days ago
-        read: false,
-        priority: 'high'
+      error: (err) => {
+        console.error('Erreur chargement notifications admin:', err);
       }
-    ];
+    });
   }
 
   applyFilter(filter: string) {
@@ -111,6 +78,7 @@ export class NotificationsModalComponent implements OnInit {
     
     // Trier par date (plus récent en premier)
     this.filteredNotifications.sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
+    this.emitUnreadCount();
   }
 
   setFilter(filter: string) {
@@ -124,14 +92,33 @@ export class NotificationsModalComponent implements OnInit {
   markAsRead(notificationId: number) {
     const notification = this.notifications.find(n => n.id === notificationId);
     if (notification) {
-      notification.read = true;
-      this.applyFilter(this.currentFilter);
+      this.adminAccount.markNotificationAsRead(notificationId).subscribe({
+        next: () => {
+          notification.read = true;
+          this.applyFilter(this.currentFilter);
+        },
+        error: (err) => {
+          console.error('Erreur marquage notification comme lue:', err);
+        }
+      });
     }
   }
 
   markAllAsRead() {
-    this.notifications.forEach(notification => notification.read = true);
-    this.applyFilter(this.currentFilter);
+    const unread = this.notifications.filter(n => !n.read);
+    if (unread.length === 0) {
+      return;
+    }
+    // Marquer chaque notification non lue côté backend
+    unread.forEach(n => {
+      this.adminAccount.markNotificationAsRead(n.id).subscribe({
+        next: () => {
+          n.read = true;
+          this.applyFilter(this.currentFilter);
+        },
+        error: (err) => console.error('Erreur marquage notification comme lue:', err)
+      });
+    });
   }
 
   archiveNotification(notificationId: number) {
@@ -164,6 +151,10 @@ export class NotificationsModalComponent implements OnInit {
 
   getUnreadCount(): number {
     return this.notifications.filter(n => !n.read).length;
+  }
+
+  private emitUnreadCount() {
+    this.unreadCountChange.emit(this.getUnreadCount());
   }
 
   @HostListener('document:keydown.escape')

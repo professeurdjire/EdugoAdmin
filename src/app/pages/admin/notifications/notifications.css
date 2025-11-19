@@ -6,15 +6,17 @@
   right: 0;
   bottom: 0;
   background: rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(4px);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
   display: flex;
-  align-items: flex-start;
-  justify-content: flex-end;
+  align-items: center;
+  justify-content: center;
   z-index: 1002;
-  padding: 80px 20px 20px 20px;
+  padding: 80px 20px;
   animation: fadeIn 0.3s ease-out;
 }
 
+/* Container de la carte de notifications */
 .notifications-container {
   width: 420px;
   max-height: 80vh;

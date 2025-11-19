@@ -28,6 +28,19 @@
           </div>
         </div>
         <div class="form-group">
+          <label for="niveau-scolaire">Niveau scolaire <span class="required-star">*</span></label>
+          <div class="input-wrapper">
+            <select id="niveau-scolaire" formControlName="niveauId" class="form-input">
+              <option [ngValue]="null" disabled>Sélectionner un niveau</option>
+              <option *ngFor="let n of niveaux" [ngValue]="n.id">{{ n.nom || ('Niveau ' + n.id) }}</option>
+            </select>
+            <span class="input-icon dropdown-arrow-90">▼</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
           <label for="exercice-title">Titre de l'exercice <span class="required-star">*</span></label>
           <input type="text" id="exercice-title"
                  formControlName="titre"

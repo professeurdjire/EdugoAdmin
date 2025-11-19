@@ -18,7 +18,8 @@
       </a>
       <app-notifications-modal 
         *ngIf="showNotifications"
-        (close)="showNotifications = false">
+        (close)="showNotifications = false"
+        (unreadCountChange)="onUnreadCountChange($event)">
       </app-notifications-modal>
     </div>
 

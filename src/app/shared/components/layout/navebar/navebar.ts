@@ -4,6 +4,7 @@ import { NotificationsModalComponent } from '../../../../pages/admin/notificatio
 import { UserProfileDropdownComponent } from '../../../../pages/admin/user-profile/user-profile';
 import { AuthService } from '../../../../services/api/auth.service';
 import { SidebarStateService } from '../sidebar/sidebar-state.service';
+import { AdminAccountService } from '../../../../services/api/admin/admin-account.service';
 
 @Component({
   selector: 'app-navebar',
@@ -21,7 +22,11 @@ export class Navebar {
 
   unreadCount = 0;
 
-  constructor(private auth: AuthService, private sidebarState: SidebarStateService) {
+  constructor(
+    private auth: AuthService,
+    private sidebarState: SidebarStateService,
+    private adminAccount: AdminAccountService
+  ) {
     const u = this.auth.getCurrentUser();
     if (u) {
       this.user = this.toProfileUser(u);
@@ -29,6 +34,16 @@ export class Navebar {
     // Option: s'abonner pour réagir aux changements
     this.auth.currentUser$.subscribe((usr) => {
       this.user = usr ? this.toProfileUser(usr) : null;
+    });
+
+    // Initialiser le nombre de notifications non lues
+    this.adminAccount.getUnreadNotifications().subscribe({
+      next: (items) => {
+        this.unreadCount = Array.isArray(items) ? items.length : 0;
+      },
+      error: () => {
+        // Non bloquant si les notifications non lues ne se chargent pas
+      }
     });
   }
 
@@ -78,11 +93,15 @@ export class Navebar {
     return map[this.user.role] ?? 'Utilisateur';
   }
 
+  onUnreadCountChange(count: number) {
+    this.unreadCount = count;
+  }
+
   handleProfileAction(action: string) {
-    // Gérer les actions du dropdown profil si nécessaire
+    // Gérer les actions du dropdown profil (profil, préférences, déconnexion, ...)
     console.debug('Profile action:', action);
     if (action === 'logout') {
-      // Implémenter la déconnexion si besoin
+      this.auth.logout();
     }
   }
 }

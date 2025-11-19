@@ -1,4 +1,4 @@
-<div class="users-page-container">
+<div class="users-page-container exercices-list-container">
   <div class="page-header">
     <h1 class="page-title">Exercices</h1>
     <a routerLink="/admin/ajouterexercice" class="btn-add"><i class="fa-solid fa-plus"></i>&nbsp;Ajouter un exercice</a>
@@ -46,9 +46,9 @@
     <h2>Liste des Exercices ({{ totalFiltered }})</h2>
   </div>
 
-  <section class="users-table-section" *ngIf="!loading && !error">
+  <section class="users-table-section exercices-list-section" *ngIf="!loading && !error">
     <div class="table-wrapper">
-      <table>
+      <table class="exercices-table">
         <thead>
           <tr>
             <th>Exercice</th>
@@ -92,7 +92,7 @@
       </table>
 
       <!-- Pagination -->
-      <div class="book-list__footer" *ngIf="totalPages > 1">
+      <div class="book-list__footer table-footer" *ngIf="totalPages > 1">
         <p>Affichage de {{ ((currentPage - 1) * pageSize) + 1 }} à {{ getMinValue(currentPage * pageSize, totalFiltered) }} sur {{ totalFiltered }} Exercices</p>
         <nav class="pagination">
           <button class="pagination__arrow" (click)="changePage(currentPage - 1)" [disabled]="currentPage === 1">

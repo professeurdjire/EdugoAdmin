@@ -35,7 +35,6 @@ export class UtilisateurForm implements OnInit {
       classe: [''],
       pointAccumule: [0],
       estActive: [true],
-      // Champs Eleve supplémentaires
       dateNaissance: [''],
       photoProfil: [''],
       dateCreation: [''],
@@ -113,7 +112,6 @@ export class UtilisateurForm implements OnInit {
       nom: this.form.value.nom,
       email: this.form.value.email,
       estActive: this.form.value.estActive,
-      // Champs étendus pour Eleve (le backend devra les accepter sur l'entité cible)
       ...(this.form.value.telephone ? { telephone: this.form.value.telephone } as any : {}),
       ...(this.form.value.niveau ? { niveau: this.form.value.niveau } as any : {}),
       ...(this.form.value.classe ? { classe: this.form.value.classe } as any : {}),

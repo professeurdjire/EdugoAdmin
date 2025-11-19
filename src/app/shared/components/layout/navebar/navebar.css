@@ -3,7 +3,7 @@
   top: 0;
   left: 0; /* laisse la place pour la sidebar */
   right: 0;
-  height: 60px;
+  height: 56px;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -11,6 +11,12 @@
   background-color: #fff;
   border-bottom: 1px solid #d9d9d9;
   z-index: 999;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
 .logo {
@@ -22,13 +28,32 @@
 }
 
 .logo-img {
-  width: 160px; /* ajuste selon la taille de ton logo */
-  height: 160px;
+  height: 40px;
+  width: auto;
   object-fit: contain;
 }
 
 .logo-heart {
   color: #333;
+}
+
+.sidebar-toggle {
+  border: none;
+  background: transparent;
+  padding: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sidebar-toggle i {
+  font-size: 20px;
+  color: #333;
+}
+
+.sidebar-toggle:hover i {
+  color: #a885d8; /* violet principal */
 }
 
 .header-right {
@@ -47,12 +72,26 @@
   position: absolute;
   top: -5px;
   right: -5px;
-  background-color: #A885D8;
+  background-color: red;
   border-radius: 50%;
   width: 8px;
   height: 8px;
 }
 
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.user-circle {
+  width: 40px;
+  height: 40px;
+  background-color: #cfffe2;
+  border-radius: 50%;
+}
+
+/* Styles pour la partie utilisateur */
 .user-profile {
   display: flex;
   align-items: center;
@@ -114,25 +153,25 @@
   font-size: 12px;
 }
 
-/* Sidebar toggle button styles */
-.sidebar-toggle {
-  background: none;
-  border: none;
-  font-size: 1.5rem;
-  cursor: pointer;
-  color: #333;
-  padding: 10px;
-  margin-right: 10px;
-  border-radius: 4px;
-  transition: background-color 0.3s ease;
-}
-
-.sidebar-toggle:hover {
-  background-color: #f0f0f0;
-}
-
-/* Header left section */
-.header-left {
+/* Ajustement de l'espacement dans header-right */
+.header-right {
   display: flex;
   align-items: center;
+  gap: 20px;
+}
+
+.notification-icon {
+  position: relative;
+  font-size: 1.2rem;
+  color: #666;
+}
+
+.notification-badge {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background-color: #A885D8;
+  border-radius: 50%;
+  width: 8px;
+  height: 8px;
 }

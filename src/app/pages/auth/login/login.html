@@ -4,7 +4,7 @@
       <header class="login-header">
         <!--merged image-->
        <div class="logo">
-  <img src="/icones/logo.png" alt="EDUGO Logo" class="logo-full">
+  <img src="/icones/logofoncev.png" alt="EDUGO Logo" class="logo-full">
 </div>
         <h1 class="title">Connexion Administrateur</h1>
         <p class="subtitle">Acceder à votre tableau de bord</p>
@@ -26,17 +26,8 @@
         <div class="form-group">
           <label for="password">Mot de passe</label>
           <div class="input-wrapper">
-            <input
-              [type]="showPassword ? 'text' : 'password'"
-              id="password"
-              formControlName="password"
-              placeholder="Votre mot de passe">
-            <img
-              src="/images/I520_1781_191_24.svg"
-              alt="Afficher / masquer le mot de passe"
-              class="input-icon"
-              [class.visible]="showPassword"
-              (click)="togglePasswordVisibility()">
+            <input type="password" id="password" formControlName="password" placeholder="Votre mot de passe">
+            <img src="/images/I520_1781_191_24.svg" alt="Password Icon" class="input-icon">
           </div>
           <div class="field-error" *ngIf="password.touched && password.invalid">
             <small *ngIf="password.hasError('required')">Le mot de passe est requis.</small>

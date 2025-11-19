@@ -13,15 +13,21 @@
 
     <!-- Filtres rapides -->
     <div class="notifications-filters">
-      <button class="filter-btn active" (click)="setFilter('all')">
+      <button class="filter-btn" 
+              [class.active]="currentFilter === 'all'" 
+              (click)="setFilter('all')">
         <i class="fas fa-layer-group"></i>
         Tous
       </button>
-      <button class="filter-btn" (click)="setFilter('unread')">
+      <button class="filter-btn" 
+              [class.active]="currentFilter === 'unread'" 
+              (click)="setFilter('unread')">
         <i class="fas fa-envelope"></i>
         Non lus
       </button>
-      <button class="filter-btn" (click)="setFilter('suggestions')">
+      <button class="filter-btn" 
+              [class.active]="currentFilter === 'suggestions'" 
+              (click)="setFilter('suggestions')">
         <i class="fas fa-lightbulb"></i>
         Suggestions
       </button>

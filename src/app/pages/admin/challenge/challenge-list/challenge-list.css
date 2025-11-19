@@ -10,6 +10,18 @@
   overflow-x: hidden;
 }
 
+/* Wrapper de tableau utilisé dans challenge-list.html */
+.table-wrapper {
+  width: 100%;
+  overflow-x: auto; /* scroll horizontal sur petits écrans */
+}
+
+.table-container table {
+  width: 100%;
+  min-width: 700px; /* évite que les colonnes se cassent trop */
+  border-collapse: collapse;
+}
+
 /* Header */
 .header {
   width: 100%;

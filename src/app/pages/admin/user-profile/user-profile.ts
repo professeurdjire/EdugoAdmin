@@ -1,6 +1,8 @@
 import { Component, Input, Output, EventEmitter, HostListener, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { AdminAccountService, AdminPreferencesDto, ChangePasswordRequest } from '../../../services/api/admin/admin-account.service';
+import { ToastService } from '../../../shared/ui/toast/toast.service';
 
 @Component({
   selector: 'app-user-profile-dropdown',
@@ -39,6 +41,11 @@ export class UserProfileDropdownComponent implements OnInit {
     language: 'fr'
   };
 
+  constructor(
+    private adminAccount: AdminAccountService,
+    private toast: ToastService
+  ) {}
+
   ngOnInit() {
     // Initialiser avec les données utilisateur
     if (this.user) {
@@ -49,6 +56,21 @@ export class UserProfileDropdownComponent implements OnInit {
         telephone: this.user.telephone || ''
       };
     }
+
+    // Charger les préférences de l'admin courant
+    this.adminAccount.getPreferences().subscribe({
+      next: (prefs: AdminPreferencesDto) => {
+        this.preferences = {
+          emailNotifications: prefs.notificationsEmail ?? this.preferences.emailNotifications,
+          pushNotifications: prefs.notificationsInApp ?? this.preferences.pushNotifications,
+          theme: prefs.theme ?? this.preferences.theme,
+          language: prefs.langueInterface ?? this.preferences.language
+        };
+      },
+      error: () => {
+        // Pas bloquant si les préférences ne se chargent pas
+      }
+    });
   }
 
   // Gestion des modals Profil
@@ -61,10 +83,23 @@ export class UserProfileDropdownComponent implements OnInit {
   }
 
   updateProfile() {
-    console.log('Profil mis à jour:', this.profileData);
-    // Implémentez l'appel API pour mettre à jour le profil
-    this.closeProfileModal();
-    this.close.emit();
+    const payload: Partial<any> = {
+      prenom: this.profileData.prenom,
+      nom: this.profileData.nom,
+      email: this.profileData.email,
+      telephone: this.profileData.telephone
+    };
+
+    this.adminAccount.updateMe(payload).subscribe({
+      next: () => {
+        this.toast.success('Profil mis à jour avec succès.');
+        this.closeProfileModal();
+        this.close.emit();
+      },
+      error: () => {
+        this.toast.error('Une erreur est survenue lors de la mise à jour du profil.');
+      }
+    });
   }
 
   // Gestion des modals Mot de Passe
@@ -89,10 +124,22 @@ export class UserProfileDropdownComponent implements OnInit {
   }
 
   changePassword() {
-    console.log('Changement de mot de passe:', this.passwordData);
-    // Implémentez l'appel API pour changer le mot de passe
-    this.closePasswordModal();
-    this.close.emit();
+    const payload: ChangePasswordRequest = {
+      oldPassword: this.passwordData.currentPassword,
+      newPassword: this.passwordData.newPassword
+    };
+
+    this.adminAccount.changePassword(payload).subscribe({
+      next: () => {
+        this.toast.success('Mot de passe mis à jour avec succès.');
+        this.closePasswordModal();
+        this.close.emit();
+      },
+      error: (err) => {
+        console.error('Erreur changement mot de passe:', err);
+        this.toast.error('Impossible de changer le mot de passe. Vérifiez l\'ancien mot de passe.');
+      }
+    });
   }
 
   // Gestion des modals Préférences
@@ -105,10 +152,24 @@ export class UserProfileDropdownComponent implements OnInit {
   }
 
   updatePreferences() {
-    console.log('Préférences mises à jour:', this.preferences);
-    // Implémentez l'appel API pour sauvegarder les préférences
-    this.closePreferencesModal();
-    this.close.emit();
+    const prefs: AdminPreferencesDto = {
+      notificationsEmail: this.preferences.emailNotifications,
+      notificationsInApp: this.preferences.pushNotifications,
+      theme: this.preferences.theme,
+      langueInterface: this.preferences.language
+    };
+
+    this.adminAccount.updatePreferences(prefs).subscribe({
+      next: () => {
+        this.toast.success('Préférences mises à jour avec succès.');
+        this.closePreferencesModal();
+        this.close.emit();
+      },
+      error: (err) => {
+        console.error('Erreur mise à jour préférences:', err);
+        this.toast.error('Une erreur est survenue lors de la mise à jour des préférences.');
+      }
+    });
   }
 
   // Actions générales

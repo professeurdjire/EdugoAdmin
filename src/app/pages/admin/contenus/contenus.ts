@@ -7,6 +7,9 @@ import { MatieresService } from '../../../services/api/admin/matieres.service';
 import { Niveau } from '../../../api/model/niveau';
 import { Classe } from '../../../api/model/classe';
 import { Matiere } from '../../../api/model/matiere';
+import { StatistiquesService } from '../../../api/api/statistiques.service';
+import { StatistiquesNiveauResponse } from '../../../api/model/statistiquesNiveauResponse';
+import { StatistiquesClasseResponse } from '../../../api/model/statistiquesClasseResponse';
 import { ToastService } from '../../../shared/ui/toast/toast.service';
 import { ConfirmService } from '../../../shared/ui/confirm/confirm.service';
 
@@ -53,6 +56,10 @@ export class Contenus implements OnInit {
   levels: LevelDisplay[] = [];
   classes: ClassDisplay[] = [];
 
+  // Statistiques globales par niveau et par classe
+  statsParNiveau: StatistiquesNiveauResponse[] = [];
+  statsParClasse: StatistiquesClasseResponse[] = [];
+
   // Données du formulaire
   formData = {
     name: '',
@@ -65,6 +72,7 @@ export class Contenus implements OnInit {
     private niveauxService: NiveauxService,
     private classesService: ClassesService,
     private matieresService: MatieresService,
+    private statistiquesService: StatistiquesService,
     private toast: ToastService,
     private confirm: ConfirmService
   ) {}
@@ -76,11 +84,29 @@ export class Contenus implements OnInit {
   loadData() {
     this.loading = true;
     this.error = null;
-    
-    // Charger toutes les données
+    this.loadedCount = 0;
+
+    // Charger les statistiques globales (par niveau / par classe)
+    this.loadGlobalStats();
+
+    // Charger les données de base
     this.loadSubjects();
     this.loadLevels();
     this.loadClasses();
+  }
+
+  private loadGlobalStats() {
+    this.statistiquesService.getStatistiquesPlateforme().subscribe({
+      next: (stats) => {
+        this.statsParNiveau = stats.statistiquesParNiveau || [];
+        this.statsParClasse = stats.statistiquesParClasse || [];
+        this.checkLoadingComplete();
+      },
+      error: (err) => {
+        console.error('Erreur chargement statistiques contenus:', err);
+        this.handleError(err, 'statistiques');
+      }
+    });
   }
 
   loadSubjects() {
@@ -107,13 +133,17 @@ export class Contenus implements OnInit {
     this.niveauxService.list().subscribe({
       next: (niveaux: Niveau[]) => {
         console.log('Niveaux chargés:', niveaux);
-        this.levels = niveaux.map(niveau => ({
-          id: niveau.id || 0,
-          name: niveau.nom || 'Sans nom',
-          cycle: this.determineCycle(niveau.nom || ''),
-          classesCount: (niveau as any).classes?.length || 0,
-          studentsCount: this.calculateStudentsCountForLevel(niveau)
-        }));
+        this.levels = niveaux.map(niveau => {
+          const baseId = niveau.id || 0;
+          const stats = this.statsParNiveau.find(s => s.niveauId === baseId);
+          return {
+            id: baseId,
+            name: niveau.nom || 'Sans nom',
+            cycle: this.determineCycle(niveau.nom || ''),
+            classesCount: stats?.nombreClasses ?? ((niveau as any).classes?.length || 0),
+            studentsCount: stats?.nombreEleves ?? 0
+          } as LevelDisplay;
+        });
         
         // Mettre à jour le niveau par défaut dans le formulaire
         if (this.levels.length > 0) {
@@ -133,12 +163,16 @@ export class Contenus implements OnInit {
     this.classesService.list().subscribe({
       next: (classes: Classe[]) => {
         console.log('Classes chargées:', classes);
-        this.classes = classes.map(classe => ({
-          id: classe.id || 0,
-          name: classe.nom || 'Sans nom',
-          level: classe.niveau?.nom || 'Non assigné',
-          studentsCount: (classe as any).eleves?.length || 0
-        }));
+        this.classes = classes.map(classe => {
+          const baseId = classe.id || 0;
+          const stats = this.statsParClasse.find(s => s.classeId === baseId);
+          return {
+            id: baseId,
+            name: classe.nom || 'Sans nom',
+            level: classe.niveau?.nom || 'Non assigné',
+            studentsCount: stats?.nombreEleves ?? ((classe as any).eleves?.length || 0)
+          } as ClassDisplay;
+        });
         this.checkLoadingComplete();
       },
       error: (err) => {
@@ -154,16 +188,8 @@ export class Contenus implements OnInit {
   }
 
   private calculateStudentsCountForSubject(matiere: Matiere): number {
-    // Implémentation basique - à adapter selon votre logique métier
-    return Math.floor(Math.random() * 200) + 50;
-  }
-
-  private calculateStudentsCountForLevel(niveau: Niveau): number {
-    let totalStudents = 0;
-    (niveau as any).classes?.forEach((classe: any) => {
-      totalStudents += classe?.eleves?.length || 0;
-    });
-    return totalStudents;
+    // En attente de statistiques dédiées par matière côté backend
+    return 0;
   }
 
   // Méthode pour déterminer le cycle basé sur le nom du niveau
@@ -186,7 +212,7 @@ export class Contenus implements OnInit {
 
   // Gestion du chargement
   private loadedCount = 0;
-  private readonly totalRequests = 3;
+  private readonly totalRequests = 4;
 
   private checkLoadingComplete() {
     this.loadedCount++;
@@ -407,7 +433,8 @@ export class Contenus implements OnInit {
 
     const payload = { 
       nom: this.formData.name.trim(),
-      niveau: niveau ? { id: niveau.id } : undefined
+      // Utiliser l'ID du niveau pour correspondre à ClasseRequest.niveauId côté backend
+      niveauId: niveau?.id
     };
 
     if (this.editingId) {

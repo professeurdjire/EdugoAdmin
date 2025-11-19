@@ -38,33 +38,46 @@
 }
 
 .users-page-container {
-  padding: 20px;
+  flex: 1;
+  min-height: calc(100vh - 60px);
+  background-color: var(--main-bg);
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
 }
 
 .page-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
+  margin-bottom: 1.5rem;
+  background: var(--white);
+  border-radius: 6px;
+  padding: 1rem 1.25rem;
+  box-shadow: var(--shadow-sm);
 }
 
 .page-title {
-  font-size: 24px;
-  font-weight: bold;
-  color: #333;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--black);
+  margin: 0;
 }
 
 .back-btn {
-  background-color: #f0f0f0;
+  background-color: var(--primary-purple);
+  color: #ffffff;
   border: none;
   padding: 8px 16px;
   border-radius: 4px;
   cursor: pointer;
   font-size: 14px;
+  font-weight: 600;
 }
 
 .back-btn:hover {
-  background-color: #e0e0e0;
+  background-color: #8c6bb8;
 }
 
 .loading-indicator, .error-message {
@@ -85,24 +98,25 @@
 }
 
 .retry-btn {
-  background-color: #007bff;
-  color: white;
+  background-color: var(--primary-purple);
+  color: #ffffff;
   border: none;
   padding: 8px 16px;
   border-radius: 4px;
   cursor: pointer;
   margin-top: 10px;
+  font-weight: 600;
 }
 
 .retry-btn:hover {
-  background-color: #0056b3;
+  background-color: #8c6bb8;
 }
 
 .quiz-details-container {
-  background-color: white;
+  background-color: var(--white);
   border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  padding: 20px;
+  box-shadow: var(--shadow-sm);
+  padding: 1.5rem;
 }
 
 .quiz-header {
@@ -156,17 +170,18 @@
 }
 
 .edit-btn {
-  background-color: #007bff;
-  color: white;
+  background-color: var(--primary-purple);
+  color: #ffffff;
   border: none;
   padding: 10px 20px;
   border-radius: 4px;
   cursor: pointer;
   font-size: 16px;
+  font-weight: 600;
 }
 
 .edit-btn:hover {
-  background-color: #0056b3;
+  background-color: #8c6bb8;
 }
 
 .quiz-details-grid {
@@ -689,9 +704,9 @@ tbody tr:hover {
 
 .page-number.active,
 .pagination__number.active {
-  background-color: var(--primary-blue);
+  background-color: var(--primary-purple);
   color: white;
-  border-color: var(--primary-blue);
+  border-color: var(--primary-purple);
   font-weight: 600;
 }
 

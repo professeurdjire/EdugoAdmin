@@ -10,6 +10,8 @@ import { QuestionsService, CreateQuestionRequest } from '../../../../services/ap
 import { forkJoin } from 'rxjs';
 import { MatieresService } from '../../../../services/api/admin/matieres.service';
 import { Matiere } from '../../../../api/model/matiere';
+import { NiveauxService } from '../../../../services/api/admin/niveaux.service';
+import { Niveau } from '../../../../api/model/niveau';
 
 @Component({
   selector: 'app-exercice-form',
@@ -29,6 +31,7 @@ export class ExerciceForm implements OnInit {
   loadingTypes = false;
   backendTypes: Array<{ id: number; libelle: string }> = [];
   matieres: Matiere[] = [];
+  niveaux: Niveau[] = [];
 
   constructor(
     private fb: FormBuilder,
@@ -37,7 +40,8 @@ export class ExerciceForm implements OnInit {
     private toast: ToastService,
     private confirm: ConfirmService,
     private questionsService: QuestionsService,
-    private matieresService: MatieresService
+    private matieresService: MatieresService,
+    private niveauxService: NiveauxService
   ) {
     this.exerciceForm = this.createForm();
   }
@@ -60,6 +64,12 @@ export class ExerciceForm implements OnInit {
       next: (d) => (this.matieres = d || []),
       error: () => this.toast.error('Impossible de charger les matières')
     });
+
+    // Charger les niveaux pour le select
+    this.niveauxService.list().subscribe({
+      next: (d) => (this.niveaux = d || []),
+      error: () => this.toast.error('Impossible de charger les niveaux')
+    });
   }
 
   // Getter pour accéder facilement au FormArray des questions
@@ -74,6 +84,7 @@ export class ExerciceForm implements OnInit {
       matiereConcernee: ['', [Validators.required]],
       titre: ['', [Validators.required, Validators.minLength(3)]],
       description: [''],
+      niveauId: [null, [Validators.required]],
       niveauDifficulte: [1, [Validators.min(1), Validators.max(3)]],
       tempsAlloue: [10, [Validators.min(1)]],
 
@@ -230,6 +241,7 @@ export class ExerciceForm implements OnInit {
       description: v.description,
       active: true,
       matiereId: +v.matiereConcernee,
+      niveauId: v.niveauId ? +v.niveauId : undefined,
       niveauDifficulte: v.niveauDifficulte || 1,
       tempsAlloue: v.tempsAlloue || 10
     };
