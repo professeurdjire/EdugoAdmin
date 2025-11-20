@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import {FormBuilder, FormGroup, FormArray, Validators, ReactiveFormsModule} from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { ExercicesService as AdminExercicesService } from '../../../../services/api/admin/exercices.service';
 import { Exercice } from '../../../../api/model/exercice';
 import { ToastService } from '../../../../shared/ui/toast/toast.service';
@@ -17,7 +17,7 @@ import { Niveau } from '../../../../api/model/niveau';
   selector: 'app-exercice-form',
   standalone: true,
   imports: [
-    CommonModule, ReactiveFormsModule
+    CommonModule, ReactiveFormsModule, RouterModule
   ],
   templateUrl: './exercice-form.html',
   styleUrls: ['./exercice-form.css']
@@ -257,7 +257,7 @@ export class ExerciceForm implements OnInit {
     }).then(ok => {
       if (ok) {
         this.exerciceForm.reset();
-        this.router.navigate(['/admin/exercices']);
+        this.router.navigate(['/admin/exercicelist']);
       }
     });
   }

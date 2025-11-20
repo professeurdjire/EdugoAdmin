@@ -69,7 +69,7 @@ export class ChallengeDetails implements OnInit {
   }
 
   goBack(): void {
-    this.router.navigate(['/admin/challengeList']);
+    this.router.navigate(['/admin/challengelist']);
   }
 
   editChallenge(): void {

@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import {FormBuilder, FormGroup, FormArray, Validators, FormControl, ReactiveFormsModule} from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { Router, ActivatedRoute } from '@angular/router';
+import { Router, ActivatedRoute, RouterModule } from '@angular/router';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 import { DefisService } from '../../../../services/api/admin/defis.service';
@@ -16,7 +16,7 @@ import { Classe } from '../../../../api/model/classe';
 @Component({
   selector: 'app-defi-form',
   standalone:true,
-  imports: [CommonModule, ReactiveFormsModule, FaIconComponent],
+  imports: [CommonModule, ReactiveFormsModule, FaIconComponent, RouterModule],
   templateUrl: './defi-form.html',
   styleUrls: ['./defi-form.css'],
 })

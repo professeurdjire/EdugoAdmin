@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Location } from '@angular/common';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { ChallengesService } from '../../../../services/api/admin/challenges.service';
 import { Challenge } from '../../../../api/model/challenge';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators, FormArray } from '@angular/forms';
@@ -19,7 +19,7 @@ import { BadgeResponse } from '../../../../api/model/badgeResponse';
 @Component({
   selector: 'app-challenge-form',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, RouterModule],
   templateUrl: './challenge-form.html',
   styleUrls: ['./challenge-form.css']
 })
@@ -323,7 +323,7 @@ export class ChallengeForm {
   }
 
   onRetour() {
-    this.location.back();
+    this.router.navigate(['/admin/challengelist']);
   }
 
   onAnnuler() {
@@ -333,7 +333,9 @@ export class ChallengeForm {
       confirmText: 'Annuler',
       cancelText: 'Continuer'
     }).then(ok => {
-      if (ok) this.location.back();
+      if (ok) {
+        this.router.navigate(['/admin/challengelist']);
+      }
     });
   }
 

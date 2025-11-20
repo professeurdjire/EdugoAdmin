@@ -97,13 +97,15 @@ export class ChallengeList implements OnInit {
 
   // Transform API Challenge to display format
   transformChallenge(challenge: Challenge): ChallengeDisplay {
+    const typeChallenge = (challenge as any).typeChallenge || (challenge as any).theme || '';
+
     return {
       id: challenge.id || 0,
       titre: challenge.titre || 'Challenge sans titre',
       description: challenge.description || 'Aucune description',
       dateDebut: challenge.dateDebut ? new Date(challenge.dateDebut).toLocaleDateString('fr-FR') : '',
       dateFin: challenge.dateFin ? new Date(challenge.dateFin).toLocaleDateString('fr-FR') : '',
-      typeChallenge: challenge.typeChallenge || 'Inconnu'
+      typeChallenge: typeChallenge || '-'
     };
   }
 

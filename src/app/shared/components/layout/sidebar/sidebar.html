@@ -1,47 +1,47 @@
 <!-- Sidebar -->
 <aside class="sidebar" [class.collapsed]="isCollapsed" role="navigation" aria-label="Menu principal">
   <nav class="menu">
-    <a routerLink="/admin/dashboard" routerLinkActive="active" class="menu-item" [routerLinkActiveOptions]="{ exact: true }" [attr.title]="isCollapsed ? 'Dashboard' : null" [attr.aria-label]="'Dashboard'">
+    <a routerLink="/admin/dashboard" class="menu-item" [class.active]="isSectionActive('dashboard')" [attr.title]="isCollapsed ? 'Dashboard' : null" [attr.aria-label]="'Dashboard'">
       <i class="fa-solid fa-gauge-high"></i>
       <span class="label-text">Dashboard</span>
     </a>
-    <a routerLink="/admin/utilisateurs" routerLinkActive="active" class="menu-item" [attr.title]="isCollapsed ? 'Utilisateurs' : null" [attr.aria-label]="'Utilisateurs'">
+    <a routerLink="/admin/utilisateurs" class="menu-item" [class.active]="isSectionActive('utilisateurs')" [attr.title]="isCollapsed ? 'Utilisateurs' : null" [attr.aria-label]="'Utilisateurs'">
       <i class="fa-solid fa-users"></i>
       <span class="label-text">Utilisateurs</span>
     </a>
-    <a routerLink="/admin/contenus" routerLinkActive="active" class="menu-item" [attr.title]="isCollapsed ? 'Contenu' : null" [attr.aria-label]="'Contenu'">
+    <a routerLink="/admin/contenus" class="menu-item" [class.active]="isSectionActive('contenus')" [attr.title]="isCollapsed ? 'Contenu' : null" [attr.aria-label]="'Contenu'">
       <i class="fa-solid fa-layer-group"></i>
       <span class="label-text">Contenu</span>
     </a>
-    <a routerLink="/admin/livrelist" routerLinkActive="active" class="menu-item" [attr.title]="isCollapsed ? 'Livres' : null" [attr.aria-label]="'Livres'">
+    <a routerLink="/admin/livrelist" class="menu-item" [class.active]="isSectionActive('livres')" [attr.title]="isCollapsed ? 'Livres' : null" [attr.aria-label]="'Livres'">
       <i class="fa-solid fa-book"></i>
       <span class="label-text">Livres</span>
     </a>
-    <a routerLink="/admin/quizlist" routerLinkActive="active" class="menu-item" [attr.title]="isCollapsed ? 'Quiz' : null" [attr.aria-label]="'Quiz'">
+    <a routerLink="/admin/quizlist" class="menu-item" [class.active]="isSectionActive('quiz')" [attr.title]="isCollapsed ? 'Quiz' : null" [attr.aria-label]="'Quiz'">
       <i class="fa-solid fa-question-circle"></i>
       <span class="label-text">Quiz</span>
     </a>
-    <a routerLink="/admin/defilist" routerLinkActive="active" class="menu-item" [attr.title]="isCollapsed ? 'Défis' : null" [attr.aria-label]="'Défis'">
+    <a routerLink="/admin/defilist" class="menu-item" [class.active]="isSectionActive('defis')" [attr.title]="isCollapsed ? 'Défis' : null" [attr.aria-label]="'Défis'">
       <i class="fa-solid fa-flag"></i>
       <span class="label-text">Défis</span>
     </a>
-    <a routerLink="/admin/challengelist" routerLinkActive="active" class="menu-item" [attr.title]="isCollapsed ? 'Challenge' : null" [attr.aria-label]="'Challenge'">
+    <a routerLink="/admin/challengelist" class="menu-item" [class.active]="isSectionActive('challenges')" [attr.title]="isCollapsed ? 'Challenge' : null" [attr.aria-label]="'Challenge'">
       <i class="fa-solid fa-trophy"></i>
       <span class="label-text">Challenge</span>
     </a>
-    <a routerLink="/admin/exercicelist" routerLinkActive="active" class="menu-item" [attr.title]="isCollapsed ? 'Exercices' : null" [attr.aria-label]="'Exercices'">
+    <a routerLink="/admin/exercicelist" class="menu-item" [class.active]="isSectionActive('exercices')" [attr.title]="isCollapsed ? 'Exercices' : null" [attr.aria-label]="'Exercices'">
       <i class="fa-solid fa-dumbbell"></i>
       <span class="label-text">Exercices</span>
     </a>
-    <a routerLink="/admin/recompenselist" routerLinkActive="active" class="menu-item" [attr.title]="isCollapsed ? 'Récompenses' : null" [attr.aria-label]="'Récompenses'">
+    <a routerLink="/admin/recompenselist" class="menu-item" [class.active]="isSectionActive('recompenses')" [attr.title]="isCollapsed ? 'Récompenses' : null" [attr.aria-label]="'Récompenses'">
       <i class="fa-solid fa-gift"></i>
       <span class="label-text">Récompenses</span>
     </a>
-    <a routerLink="/admin/partenaire" routerLinkActive="active" class="menu-item" [attr.title]="isCollapsed ? 'Partenaires' : null" [attr.aria-label]="'Partenaires'">
+    <a routerLink="/admin/partenaire" class="menu-item" [class.active]="isSectionActive('partenaires')" [attr.title]="isCollapsed ? 'Partenaires' : null" [attr.aria-label]="'Partenaires'">
       <i class="fa-solid fa-handshake"></i>
       <span class="label-text">Partenaires</span>
     </a>
-    <a routerLink="/admin/paramatresList" routerLinkActive="active" class="menu-item" [attr.title]="isCollapsed ? 'Paramètres' : null" [attr.aria-label]="'Paramètres'">
+    <a routerLink="/admin/paramatresList" class="menu-item" [class.active]="isSectionActive('parametres')" [attr.title]="isCollapsed ? 'Paramètres' : null" [attr.aria-label]="'Paramètres'">
       <i class="fa-solid fa-sliders"></i>
       <span class="label-text">Paramètres</span>
     </a>

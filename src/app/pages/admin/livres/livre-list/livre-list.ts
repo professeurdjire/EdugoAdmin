@@ -97,13 +97,16 @@ export class LivreList implements OnInit {
 
   // Transform API Livre to display format
   transformLivre(livre: Livre): LivreDisplay {
+    const matiereNom = (livre as any).matiereNom || livre.matiere?.nom || '-';
+    const langueNom = (livre as any).langueNom || livre.langue?.nom || '-';
+
     return {
       id: livre.id || 0,
       titre: livre.titre || 'Livre sans titre',
       auteur: livre.auteur || 'Auteur inconnu',
       anneePublication: livre.anneePublication || 0,
-      matiere: livre.matiere?.nom || 'Non spécifiée',
-      langue: livre.langue?.nom || 'Non spécifiée'
+      matiere: matiereNom,
+      langue: langueNom
     };
   }
 

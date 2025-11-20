@@ -102,7 +102,8 @@ export class QuizList implements OnInit {
         created.getDate() === now.getDate()
       : true; // if missing, consider as new
 
-    const statutDisplay = isToday ? 'NOUVEAU' : (quiz.statut || 'Inconnu');
+    const rawStatut = (quiz as any).statut ?? (quiz as any).status ?? '';
+    const statutDisplay = isToday ? 'NOUVEAU' : (rawStatut || '-');
 
     return {
       id: quiz.id || 0,
@@ -110,7 +111,7 @@ export class QuizList implements OnInit {
       createdAt: createdDateStr,
       nombreQuestions: quiz.nombreQuestions || 0,
       // titreLivre vient directement du DTO QuizResponse (String)
-      titreLivre: quiz.titreLivre || 'Non associé',
+      titreLivre: quiz.titreLivre || '-',
       titre: quiz.titre || 'Sans titre'
     };
   }

@@ -69,7 +69,7 @@ export class QuizDetails implements OnInit {
   }
 
   goBack(): void {
-    this.router.navigate(['/admin/quizList']);
+    this.router.navigate(['/admin/quizlist']);
   }
 
   editQuiz(): void {

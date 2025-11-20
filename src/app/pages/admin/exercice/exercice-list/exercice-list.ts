@@ -97,13 +97,15 @@ export class ExerciceList implements OnInit {
 
   // Transform API Exercice to display format
   transformExercice(exercice: Exercice): ExerciceDisplay {
+    const matiereNom = (exercice as any).matiereNom || exercice.matiere?.nom || 'Non spécifiée';
+
     return {
       id: exercice.id || 0,
       titre: exercice.titre || 'Exercice sans titre',
       description: exercice.description || 'Aucune description',
       dateCreation: exercice.dateCreation ? new Date(exercice.dateCreation).toLocaleDateString('fr-FR') : '',
       niveauDifficulte: exercice.niveauDifficulte || 0,
-      matiere: exercice.matiere?.nom || 'Non spécifiée'
+      matiere: matiereNom
     };
   }
 

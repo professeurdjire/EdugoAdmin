@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { BadgesService } from '../../../../services/api/admin/badges.service';
 import { BadgeRequest } from '../../../../api/model/badgeRequest';
@@ -11,7 +11,7 @@ import { ConfirmService } from '../../../../shared/ui/confirm/confirm.service';
 @Component({
   selector: 'app-recompense-form',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, RouterModule],
   templateUrl: './recompense-form.html',
   styleUrls: ['./recompense-form.css']
 })

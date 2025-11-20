@@ -122,8 +122,14 @@ export class QuizForm {
     // Charger les livres depuis le backend pour le select
     this.livresService.list().subscribe({
       next: (data) => {
-        this.livres = data || [];
-        if (this.livres.length > 0) {
+        const tousLesLivres = data || [];
+
+        // En mode création : ne proposer que les livres sans quiz associé
+        // (un livre ne peut avoir qu'un seul quiz)
+        this.livres = tousLesLivres.filter(l => !l.quiz || !l.quiz.id);
+
+        // Si aucun livre disponible, selectedLivreId reste null et la validation échouera
+        if (this.livres.length > 0 && !this.isEditMode) {
           this.selectedLivreId = this.livres[0].id || null;
         }
       },

@@ -72,7 +72,7 @@ export class DefiDetails implements OnInit {
   }
 
   goBack(): void {
-    this.router.navigate(['/admin/defiList']);
+    this.router.navigate(['/admin/defilist']);
   }
 
   editDefi(): void {

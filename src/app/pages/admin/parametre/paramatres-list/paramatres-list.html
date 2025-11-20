@@ -175,17 +175,6 @@
               </select>
               <div class="form-hint">Langue d'affichage principale</div>
             </div>
-
-            <!-- Devise par défaut -->
-            <div class="form-group">
-              <label for="devise" class="form-label">Devise par défaut</label>
-              <select id="devise" formControlName="currency" class="form-control">
-                <option *ngFor="let curr of currencies" [value]="curr.value">
-                  {{ curr.label }}
-                </option>
-              </select>
-              <div class="form-hint">Devise utilisée pour les transactions</div>
-            </div>
           </div>
         </div>
 

@@ -54,7 +54,6 @@
             <th>Exercice</th>
             <th>Difficulté</th>
             <th>Matière</th>
-            <th>Date</th>
             <th>Actions</th>
           </tr>
         </thead>
@@ -75,7 +74,6 @@
               </span>
             </td>
             <td>{{ exercice.matiere }}</td>
-            <td>{{ exercice.dateCreation }}</td>
             <td class="actions-cell">
               <span class="action-btn view-btn" (click)="viewExercice(exercice)">
                 <fa-icon [icon]="faEye"></fa-icon>

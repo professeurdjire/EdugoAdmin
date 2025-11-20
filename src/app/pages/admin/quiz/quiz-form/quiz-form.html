@@ -35,7 +35,7 @@
           <div class="form-group">
             <label class="form-label">Livre associé <span class="required">*</span></label>
             <div class="input-field">
-              <select [(ngModel)]="selectedLivreId" class="form-select">
+              <select [(ngModel)]="selectedLivreId" class="form-select" [disabled]="isEditMode">
                 <option [ngValue]="null" disabled>Sélectionner un livre</option>
                 <option *ngFor="let l of livres" [ngValue]="l.id">{{ l.titre }}</option>
               </select>
