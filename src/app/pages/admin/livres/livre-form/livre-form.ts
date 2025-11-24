@@ -6,12 +6,14 @@ import { LivresService } from '../../../../services/api/admin/livres.service';
 import { MatieresService } from '../../../../services/api/admin/matieres.service';
 import { NiveauxService } from '../../../../services/api/admin/niveaux.service';
 import { LanguesService } from '../../../../services/api/admin/langues.service';
+import { ClassesService } from '../../../../services/api/admin/classes.service';
 import { Livre } from '../../../../api/model/livre';
 import { ToastService } from '../../../../shared/ui/toast/toast.service';
 import { ConfirmService } from '../../../../shared/ui/confirm/confirm.service';
 import { Matiere } from '../../../../api/model/matiere';
 import { Niveau } from '../../../../api/model/niveau';
 import { Langue } from '../../../../api/model/langue'; // NOUVEAU MODÈLE
+import { Classe } from '../../../../api/model/classe';
 import { firstValueFrom } from 'rxjs';
 
 @Component({
@@ -36,6 +38,7 @@ export class LivreForm {
   matieres: Matiere[] = [];
   niveaux: Niveau[] = [];
   langues: Langue[] = []; // MAINTENANT chargé depuis l'API
+  classes: Classe[] = [];
   annees: number[] = [];
   currentYear = new Date().getFullYear();
 
@@ -47,6 +50,7 @@ export class LivreForm {
     private matieresService: MatieresService,
     private niveauxService: NiveauxService,
     private languesService: LanguesService,
+    private classesService: ClassesService,
     private toast: ToastService, // NOUVEAU SERVICE INJECTÉ
     private confirm: ConfirmService
   ) {
@@ -67,6 +71,17 @@ export class LivreForm {
         this.livreForm.disable({ emitEvent: false });
       } else if (!this.isSubmitting) {
         this.livreForm.enable({ emitEvent: false });
+      }
+    });
+
+    // Charger les classes
+    this.classesService.list().subscribe({
+      next: (classes: Classe[]) => {
+        this.classes = classes;
+      },
+      error: (err) => {
+        console.error('Erreur chargement classes:', err);
+        this.classes = [];
       }
     });
   }
@@ -158,7 +173,8 @@ export class LivreForm {
       description: ['', [Validators.maxLength(500)]],
       matiere: ['', [Validators.required]],
       niveau: ['', [Validators.required]],
-      langue: [''], // Maintenant vide par défaut, sera rempli avec les données de l'API
+      classe: ['', [Validators.required]],
+      langue: ['', [Validators.required]], // Maintenant obligatoire
       fichierPrincipal: [null],
       imageCouverture: [null],
       lectureAuto: [false],
@@ -192,6 +208,7 @@ export class LivreForm {
       description: livre.description || '',
       matiere: livre.matiere?.id?.toString() || '',
       niveau: livre.niveau?.id?.toString() || '',
+      classe: livre.classe?.id?.toString() || '',
       langue: langueDefault,
       lectureAuto: livre.lectureAuto || false,
       interactif: livre.interactif || false,
@@ -338,6 +355,7 @@ export class LivreForm {
       langueId: langueId,
       matiereId: +formValue.matiere,
       niveauId: +formValue.niveau,
+      classeId: +formValue.classe,
       anneePublication: +formValue.anneePublication
     });
     
@@ -355,6 +373,7 @@ export class LivreForm {
       matiereId: +formValue.matiere,
       niveauId: +formValue.niveau,
       langueId: langueSelectionnee?.id ?? langueId,
+      classeId: +formValue.classe,
       // Facultatifs dans le DTO, non gérés par le formulaire pour l'instant
       // totalPages, imageCouverture, classeId seront ignorés s'ils ne sont pas fournis
     };

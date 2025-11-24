@@ -12,7 +12,7 @@
   <!-- Header -->
   <div class="form-header">
     <button class="back-btn" routerLink="/admin/livrelist">
-      <i class="icon-arrow">←</i>
+      <i class="icon-arrow"></i>
       Retour
     </button>
     
@@ -29,7 +29,7 @@
     <div class="form-section">
       <div class="section-header">
         <h3 class="section-title">
-          <i class="icon-info">ℹ</i>
+          <i class="icon-info"></i>
           Informations de base
         </h3>
       </div>
@@ -109,7 +109,7 @@
     <div class="form-section">
       <div class="section-header">
         <h3 class="section-title">
-          <i class="icon-category">📚</i>
+          <i class="icon-category"></i>
           Classification
         </h3>
       </div>
@@ -149,9 +149,26 @@
           </div>
         </div>
 
+        <!-- Classe -->
+        <div class="form-group">
+          <label for="classe" class="form-label">
+            Classe <span class="required">*</span>
+          </label>
+          <div class="input-wrapper">
+            <select id="classe" formControlName="classe" class="form-control">
+              <option value="">Sélectionner une classe</option>
+              <option *ngFor="let c of classes" [value]="c.id">{{ c.nom }}</option>
+            </select>
+            <i class="dropdown-arrow">▼</i>
+          </div>
+          <div class="error-message" *ngIf="showError('classe')">
+            {{ getError('classe') }}
+          </div>
+        </div>
+
        <!-- Section Langue -->
 <div class="form-group">
-  <label for="langue" class="form-label">Langue</label>
+  <label for="langue" class="form-label">Langue <span class="required">*</span></label>
   <div class="input-wrapper">
     <select id="langue" formControlName="langue" class="form-control">
       <option value="">Sélectionner une langue</option>
@@ -170,7 +187,7 @@
     <div class="form-section">
       <div class="section-header">
         <h3 class="section-title">
-          <i class="icon-file">📁</i>
+          <i class="icon-file"></i>
           Fichiers du livre
         </h3>
       </div>
@@ -213,7 +230,7 @@
     <div class="form-section">
       <div class="section-header">
         <h3 class="section-title">
-          <i class="icon-image">🖼️</i>
+          <i class="icon-image"></i>
           Image de couverture
         </h3>
       </div>
@@ -250,7 +267,7 @@
     <div class="form-section">
       <div class="section-header">
         <h3 class="section-title">
-          <i class="icon-settings">⚙️</i>
+          <i class="icon-settings"></i>
           Options avancées
         </h3>
       </div>
@@ -319,14 +336,14 @@
     <!-- Actions -->
     <div class="form-actions">
       <button type="button" class="btn btn-secondary" (click)="onAnnuler()">
-        <i class="icon-cancel">✕</i>
+        <i class="icon-cancel"></i>
         Annuler
       </button>
       <button
         type="submit"
         class="btn btn-primary"
         [disabled]="isReadOnly || !livreForm.valid || isSubmitting">
-        <i class="icon-save" [class.loading]="isSubmitting">💾</i>
+        <i class="icon-save" [class.loading]="isSubmitting"></i>
         {{ isReadOnly ? 'Lecture seule' : (isSubmitting ? 'Enregistrement...' : 'Enregistrer le livre') }}
       </button>
     </div>

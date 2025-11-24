@@ -1,5 +1,5 @@
 :root {
-  --primary-purple: #a885d8;
+  --primary-purple: #6A3FA8;
   --primary-blue: #195a9d;
   --light-grey: #d9d9d9;
   --text-grey: #808080;
@@ -12,7 +12,7 @@
   --green: #28bd7f;
   --green-tag: rgba(0, 128, 0, 0.7);
   --blue-bright: #0000ff;
-  --blue-header: rgba(13, 166, 242, 0.8);
+  --blue-header: rgba(106, 63, 168, 0.8);
   --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
   --shadow-md: 0 2px 6px rgba(0,0,0,0.1);
 }
@@ -200,8 +200,8 @@ button {
 .filter-group input:focus,
 .filter-group select:focus {
   outline: none;
-  border-color: #a885d8;
-  box-shadow: 0 0 0 2px rgba(168, 133, 216, 0.1);
+  border-color: #6A3FA8;
+  box-shadow: 0 0 0 2px rgba(106, 63, 168, 0.1);
 }
 
 .input-wrapper select,
@@ -249,7 +249,7 @@ button {
 .btn-primary,
 .add-btn,
 .filter-btn {
-  background-color: #a885d8;
+  background-color: #6A3FA8;
   color: #ffffff;
 }
 
@@ -262,14 +262,14 @@ button {
 
 .btn-secondary,
 .reset-btn {
-  background-color: #ffffff;
-  color: #000000;
-  border: 1px solid #d9d9d9;
+  background-color: #6A3FA8;
+  color: #ffffff;
+  border: none;
 }
 
 .btn-secondary:hover,
 .reset-btn:hover {
-  background-color: #f5f5f5;
+  background-color: #5b36c6;
   transform: translateY(-1px);
 }
 
@@ -385,7 +385,7 @@ tbody tr:hover {
   flex-shrink: 0;
 }
 
-.user-initials.blue { background: #4b7bec; }
+.user-initials.blue { background: #6A3FA8; }
 .user-initials.green { background: #20bf6b; }
 .user-initials.red { background: #eb3b5a; }
 .user-initials.darkblue { background: #2c3e50; }
@@ -406,13 +406,13 @@ tbody tr:hover {
 }
 
 .level-badge {
-  background: rgba(168, 133, 216, 0.08);
-  color: #a885d8;
+  background: rgba(106, 63, 168, 0.08);
+  color: #6A3FA8;
   padding: 0.25rem 0.5rem;
   border-radius: 3px;
   font-weight: 600;
   font-size: 0.7rem;
-  border: 1px solid rgba(168, 133, 216, 0.2);
+  border: 1px solid rgba(106, 63, 168, 0.2);
 }
 
 .status-badge {
@@ -537,7 +537,7 @@ body::-webkit-scrollbar-track {
 }
 
 body::-webkit-scrollbar-thumb {
-  background: #a885d8;
+  background: #6A3FA8;
   border-radius: 3px;
 }
 

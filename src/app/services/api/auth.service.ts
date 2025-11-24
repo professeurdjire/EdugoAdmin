@@ -82,6 +82,28 @@ export class AuthService {
       );
   }
 
+  requestPasswordReset(email: string): Observable<any> {
+    const baseUrl = environment.apiUrl.replace(/\/$/, '');
+    const url = `${baseUrl}/api/auth/forgot-password`;
+    return this.http.post<any>(url, { email });
+  }
+
+  verifyResetToken(token: string): Observable<any> {
+    const baseUrl = environment.apiUrl.replace(/\/$/, '');
+    const url = `${baseUrl}/api/auth/reset-password/verify`;
+    return this.http.post<any>(url, { token });
+  }
+
+  resetPassword(token: string, newPassword: string, confirmPassword: string): Observable<any> {
+    const baseUrl = environment.apiUrl.replace(/\/$/, '');
+    const url = `${baseUrl}/api/auth/reset-password`;
+    return this.http.post<any>(url, {
+      token,
+      nouveauMotDePasse: newPassword,
+      confirmationMotDePasse: confirmPassword
+    });
+  }
+
   logout(): void {
     localStorage.removeItem(this.TOKEN_KEY);
     localStorage.removeItem(this.USER_KEY);

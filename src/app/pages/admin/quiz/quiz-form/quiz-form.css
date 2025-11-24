@@ -284,10 +284,9 @@ body {
   align-items: center;
   gap: 0.5rem;
   padding: 0.5rem 1rem;
-  background: var(--primary-blue);
-  color: var(--white);
-  border: none;
-  border-radius: 6px;
+  background: #6A3FA8;
+  color: #ffffff;
+  border: 1px solid #6A3FA8;
   cursor: pointer;
   font-size: 0.95rem;
   font-weight: 500;
@@ -295,7 +294,7 @@ body {
 }
 
 .btn-add-reponse:hover:not(:disabled) {
-  background: #1E3A8A;
+  background: #5b3691;
   transform: translateY(-1px);
 }
 

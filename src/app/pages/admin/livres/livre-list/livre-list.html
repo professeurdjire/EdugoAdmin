@@ -27,10 +27,7 @@
         <label>Matière</label>
         <select [(ngModel)]="selectedSubject" (change)="applyFilters()">
           <option value="">Toutes les matières</option>
-          <option value="Mathématiques">Mathématiques</option>
-          <option value="Français">Français</option>
-          <option value="Anglais">Anglais</option>
-          <option value="Histoire">Histoire</option>
+          <option *ngFor="let subject of subjects" [value]="subject">{{ subject }}</option>
         </select>
       </div>
 
@@ -57,7 +54,6 @@
         <thead>
           <tr>
             <th>Livre</th>
-            <th>Année</th>
             <th>Matière</th>
             <th>Langue</th>
             <th>Statut</th>
@@ -73,7 +69,6 @@
                 <small class="email">Par {{ livre.auteur }}</small>
               </div>
             </td>
-            <td>{{ livre.anneePublication }}</td>
             <td>{{ livre.matiere }}</td>
             <td>{{ livre.langue }}</td>
             <td><span class="status-badge active-status">Actif</span></td>

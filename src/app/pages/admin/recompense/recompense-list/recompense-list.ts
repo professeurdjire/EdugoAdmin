@@ -49,7 +49,7 @@ export class RecompenseList implements OnInit {
 
   // Statistiques
   stats = [
-    { label: 'Quiz réussis', value: 0, icon: faTrophy, color: '#A885D8', bgColor: '#ede7ff' },
+    { label: 'Quiz réussis', value: 0, icon: faTrophy, color: '#6A3FA8', bgColor: '#ede7ff' },
     { label: 'Défis réussis', value: 0, icon: faStar, color: '#28bd7f', bgColor: '#e8f5e9' },
     { label: 'Challenges réussis', value: 0, icon: faMedal, color: '#195a9d', bgColor: '#e1f5fe' },
     { label: 'Exercices réussis', value: 0, icon: faAward, color: '#ff6b6b', bgColor: '#ffebee' },

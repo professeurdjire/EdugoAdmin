@@ -22,6 +22,11 @@
               {
                 "glob": "**/*",
                 "input": "public"
+              },
+              {
+                "glob": "OneSignalSDK*Worker.js",
+                "input": "src",
+                "output": "/"
               }
             ],
             "styles": [

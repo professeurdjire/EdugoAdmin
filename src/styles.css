@@ -48,7 +48,7 @@ button:hover {
 
 /* Unified table/pages styles (from utilisateur-list) */
 :root {
-  --primary-purple: #a885d8;
+  --primary-purple: #6A3FA8;
   --primary-blue: #195a9d;
   --light-grey: #d9d9d9;
   --text-grey: #808080;
@@ -61,7 +61,7 @@ button:hover {
   --green: #28bd7f;
   --green-tag: rgba(0, 128, 0, 0.7);
   --blue-bright: #0000ff;
-  --blue-header: rgba(13, 166, 242, 0.8);
+  --blue-header: rgba(106, 63, 168, 0.8);
   --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
   --shadow-md: 0 2px 6px rgba(0,0,0,0.1);
   --shadow: var(--shadow-md);
@@ -257,8 +257,8 @@ button {
 .filter-group input:focus,
 .filter-group select:focus {
   outline: none;
-  border-color: #a885d8;
-  box-shadow: 0 0 0 2px rgba(168, 133, 216, 0.1);
+  border-color: #6A3FA8;
+  box-shadow: 0 0 0 2px rgba(106, 63, 168, 0.1);
 }
 
 .input-wrapper select,
@@ -352,7 +352,7 @@ button {
 
 
 .btn-primary {
-  background: #A885D8;
+  background: #6A3FA8;
   color: var(--white);
   box-shadow: var(--shadow);
   padding: 0.875rem 2rem;
@@ -633,7 +633,7 @@ tbody tr:hover {
   flex-shrink: 0;
 }
 
-.user-initials.blue { background: #4b7bec; }
+.user-initials.blue { background: #6A3FA8; }
 .user-initials.green { background: #20bf6b; }
 .user-initials.red { background: #eb3b5a; }
 .user-initials.darkblue { background: #2c3e50; }
@@ -654,13 +654,13 @@ tbody tr:hover {
 }
 
 .level-badge {
-  background: rgba(168, 133, 216, 0.08);
-  color: #a885d8;
+  background: rgba(106, 63, 168, 0.08);
+  color: #6A3FA8;
   padding: 0.25rem 0.5rem;
   border-radius: 3px;
   font-weight: 600;
   font-size: 0.7rem;
-  border: 1px solid rgba(168, 133, 216, 0.2);
+  border: 1px solid rgba(106, 63, 168, 0.2);
 }
 
 .status-badge {
@@ -774,7 +774,7 @@ tbody tr:hover {
   justify-content: center;
 
   /* couleurs primaires */
-  background: #A885D8;
+  background: #6A3FA8;
   color: #fff;
 
   /* tailles */
@@ -823,7 +823,7 @@ tbody tr:hover {
   height: 2rem;
   padding: 0.35rem 0.6rem;
 
-  background-color: #a885d8;
+  background-color: #6A3FA8;
   color: #ffffff;
 
   border: none;
@@ -866,7 +866,7 @@ tbody tr:hover {
   padding: 0 12px;
   min-width: 110px;
 
-  background: #A885D8;
+  background: #6A3FA8;
   color: #ffffff;
 
   border: none;
@@ -932,13 +932,13 @@ tbody tr:hover {
 .actions-cell .edit-btn,
 .users-table-section .edit-btn,
 .table-section .edit-btn {
-  background: rgba(168, 133, 216, 0.15);
-  color: rgb(168, 133, 216);
+  background: rgba(106, 63, 168, 0.15);
+  color: rgb(106, 63, 168);
 }
 .actions-cell .edit-btn:hover,
 .users-table-section .edit-btn:hover,
 .table-section .edit-btn:hover {
-  background: rgba(168, 133, 216, 0.25);
+  background: rgba(106, 63, 168, 0.25);
 }
 
 .actions-cell .delete-btn,

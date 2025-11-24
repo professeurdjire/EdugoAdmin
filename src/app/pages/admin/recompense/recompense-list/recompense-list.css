@@ -36,7 +36,7 @@
   align-items: center;
   padding: 0.75rem 1.5rem;
   gap: 0.5rem;
-  background: #A885D8;
+  background: #6A3FA8;
   border-radius: 8px;
   color: #FFFFFF;
   font-weight: 600;
@@ -154,7 +154,7 @@
 .filter-group input:focus,
 .filter-group select:focus {
   outline: none;
-  border-color: #A885D8;
+  border-color: #6A3FA8;
 }
 
 .action-buttons {
@@ -180,9 +180,9 @@
 }
 
 .filter-btn {
-  background: #A885D8;
+  background: #6A3FA8;
   color: #FFFFFF;
-  border-color: #A885D8;
+  border-color: #6A3FA8;
 }
 
 .filter-btn:hover {
@@ -284,7 +284,7 @@ td {
 
 .avatar-icon {
   font-size: 1.5rem;
-  color: #A885D8;
+  color: #6A3FA8;
 }
 
 .recompense-info-text {
@@ -493,9 +493,9 @@ td {
 }
 
 .pagination-number.active {
-  background: #A885D8;
+  background: #6A3FA8;
   color: #FFFFFF;
-  border-color: #A885D8;
+  border-color: #6A3FA8;
 }
 
 /* Error and Loading States */
@@ -523,8 +523,8 @@ td {
 .loading-spinner {
   width: 40px;
   height: 40px;
-  border: 3px solid rgba(168, 133, 216, 0.2);
-  border-top: 3px solid #A885D8;
+  border: 3px solid rgba(106, 63, 168, 0.2);
+  border-top: 3px solid #6A3FA8;
   border-radius: 50%;
   animation: spin 1s linear infinite;
   margin-bottom: 1rem;

@@ -53,7 +53,7 @@
 }
 
 .sidebar-toggle:hover i {
-  color: #a885d8; /* violet principal */
+  color: #6A3FA8; /* violet principal */
 }
 
 .header-right {
@@ -114,14 +114,14 @@
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background: #A885D8;
+  background: #6A3FA8;
   display: flex;
   align-items: center;
   justify-content: center;
   font-family: 'Roboto';
   font-weight: 400;
   font-size: 16px;
-  color: #000000;
+  color: #ffffff;
 }
 
 .user-details {
@@ -170,7 +170,7 @@
   position: absolute;
   top: -5px;
   right: -5px;
-  background-color: #A885D8;
+  background-color: #6A3FA8;
   border-radius: 50%;
   width: 8px;
   height: 8px;

@@ -276,7 +276,7 @@
 .user-avatar {
   width: 40px;
   height: 40px;
-  background: rgba(0, 140, 255, 0.4);
+  background: rgba(106, 63, 168, 0.5);
   border-radius: 50%;
   flex-shrink: 0;
 }

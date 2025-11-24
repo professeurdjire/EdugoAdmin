@@ -30,6 +30,8 @@ export class NotificationsModalComponent implements OnInit {
   notifications: Notification[] = [];
   filteredNotifications: Notification[] = [];
   currentFilter: string = 'all';
+  loading: boolean = false;
+  error: string | null = null;
 
   constructor(private adminAccount: AdminAccountService) {}
 
@@ -38,6 +40,9 @@ export class NotificationsModalComponent implements OnInit {
   }
 
   private loadNotifications() {
+    this.loading = true;
+    this.error = null;
+
     this.adminAccount.getNotifications().subscribe({
       next: (items: AdminNotification[]) => {
         this.notifications = items.map(n => ({
@@ -52,9 +57,12 @@ export class NotificationsModalComponent implements OnInit {
         }));
         this.applyFilter(this.currentFilter || 'all');
         this.emitUnreadCount();
+        this.loading = false;
       },
       error: (err) => {
         console.error('Erreur chargement notifications admin:', err);
+        this.error = "Erreur lors du chargement des notifications.";
+        this.loading = false;
       }
     });
   }

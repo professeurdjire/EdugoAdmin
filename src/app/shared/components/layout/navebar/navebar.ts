@@ -5,6 +5,7 @@ import { UserProfileDropdownComponent } from '../../../../pages/admin/user-profi
 import { AuthService } from '../../../../services/api/auth.service';
 import { SidebarStateService } from '../sidebar/sidebar-state.service';
 import { AdminAccountService } from '../../../../services/api/admin/admin-account.service';
+import { OneSignalService } from '../../../../core/services/onesignal.service';
 
 @Component({
   selector: 'app-navebar',
@@ -25,7 +26,8 @@ export class Navebar {
   constructor(
     private auth: AuthService,
     private sidebarState: SidebarStateService,
-    private adminAccount: AdminAccountService
+    private adminAccount: AdminAccountService,
+    private oneSignal: OneSignalService
   ) {
     const u = this.auth.getCurrentUser();
     if (u) {
@@ -34,6 +36,19 @@ export class Navebar {
     // Option: s'abonner pour réagir aux changements
     this.auth.currentUser$.subscribe((usr) => {
       this.user = usr ? this.toProfileUser(usr) : null;
+    });
+
+    // Charger les préférences admin pour savoir si les notifications in-app sont activées
+    this.adminAccount.getPreferences().subscribe({
+      next: (prefs) => {
+        if (prefs.notificationsInApp !== false) {
+          // Par défaut, on active OneSignal sauf si explicitement désactivé
+          this.oneSignal.initialize();
+        }
+      },
+      error: () => {
+        // Si les préférences ne se chargent pas, on n'empêche pas le reste de la navbar de fonctionner
+      }
     });
 
     // Initialiser le nombre de notifications non lues

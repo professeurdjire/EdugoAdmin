@@ -47,6 +47,7 @@ export class LivreList implements OnInit {
   // Filtres
   searchTerm: string = '';
   selectedSubject: string = '';
+  subjects: string[] = [];
 
   constructor(
     private livresService: LivresService,
@@ -77,6 +78,8 @@ export class LivreList implements OnInit {
         this.livres = apiLivres.map(livre => this.transformLivre(livre));
         this.filteredLivres = [...this.livres];
         this.totalFiltered = this.filteredLivres.length;
+        // Matières distinctes pour le filtre
+        this.subjects = Array.from(new Set(this.livres.map(l => l.matiere).filter(m => !!m)));
         
         this.updatePagination();
         this.loading = false;

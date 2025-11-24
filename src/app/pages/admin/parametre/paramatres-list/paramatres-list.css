@@ -1,6 +1,6 @@
 /* === Variables modernes === */
 :root {
-  --primary-purple: #a885d8;
+  --primary-purple: #6A3FA8;
   --primary-blue: #195a9d;
   --light-grey: #d9d9d9;
   --text-grey: #808080;
@@ -169,7 +169,7 @@
 .form-control:focus {
   outline: none;
   border-color: var(--primary-purple);
-  box-shadow: 0 0 0 2px rgba(168, 133, 216, 0.1);
+  box-shadow: 0 0 0 2px rgba(106, 63, 168, 0.1);
 }
 
 .form-control::placeholder {
@@ -196,7 +196,7 @@ textarea.form-control {
 
 .input-with-prefix:focus-within {
   border-color: var(--primary-purple);
-  box-shadow: 0 0 0 2px rgba(168, 133, 216, 0.1);
+  box-shadow: 0 0 0 2px rgba(106, 63, 168, 0.1);
 }
 
 .input-prefix {
@@ -311,7 +311,7 @@ select.form-control {
 }
 
 .btn-primary:hover:not(:disabled) {
-  background: #8c6bb8;
+  background: #5b3691;
   transform: translateY(-1px);
 }
 

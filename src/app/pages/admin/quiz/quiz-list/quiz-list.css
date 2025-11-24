@@ -1,7 +1,7 @@
 /* Overrides: enforce global standard for filter/reset buttons on this page */
 .filter-btn,
 .reset-btn {
-  background-color: #A885D8 !important;
+  background-color: #6A3FA8 !important;
   color: #ffffff !important;
   border: none !important;
   border-radius: 8px;
@@ -12,7 +12,7 @@
   background-color: #8c6bb8 !important;
 }
 :root {
-  --primary-purple: #a885d8;
+  --primary-purple: #6A3FA8;
   --primary-blue: #195a9d;
   --light-grey: #d9d9d9;
   --text-grey: #808080;
@@ -25,7 +25,7 @@
   --green: #28bd7f;
   --green-tag: rgba(0, 128, 0, 0.7);
   --blue-bright: #0000ff;
-  --blue-header: rgba(13, 166, 242, 0.8);
+  --blue-header: rgba(106, 63, 168, 0.8);
   --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
   --shadow-md: 0 2px 6px rgba(0,0,0,0.1);
 }
@@ -364,12 +364,12 @@ tbody tr:hover {
   background-color: #a885d8; /* Violet par défaut pour les quiz */
 }
 
-.quiz-icon.blue { background: #4b7bec; }
+.quiz-icon.blue { background: #6A3FA8; }
 .quiz-icon.green { background: #20bf6b; }
 .quiz-icon.red { background: #eb3b5a; }
 .quiz-icon.darkblue { background: #2c3e50; }
 
-.user-initials.blue { background: #4b7bec; }
+.user-initials.blue { background: #6A3FA8; }
 .user-initials.green { background: #20bf6b; }
 .user-initials.red { background: #eb3b5a; }
 .user-initials.darkblue { background: #2c3e50; }

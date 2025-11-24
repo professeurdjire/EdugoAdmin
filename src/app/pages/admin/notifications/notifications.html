@@ -33,8 +33,19 @@
       </button>
     </div>
 
+    <!-- Indicateur de chargement -->
+    <div *ngIf="loading" class="notifications-loading">
+      <div class="spinner"></div>
+      <p>Chargement des notifications...</p>
+    </div>
+
+    <!-- Message d'erreur -->
+    <div *ngIf="!loading && error" class="notifications-error">
+      <p>{{ error }}</p>
+    </div>
+
     <!-- Liste des notifications -->
-    <div class="notifications-list">
+    <div class="notifications-list" *ngIf="!loading && !error">
       <div *ngFor="let notification of filteredNotifications" 
            class="notification-card"
            [class.unread]="!notification.read"

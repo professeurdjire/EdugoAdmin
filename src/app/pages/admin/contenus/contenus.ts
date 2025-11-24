@@ -10,6 +10,7 @@ import { Matiere } from '../../../api/model/matiere';
 import { StatistiquesService } from '../../../api/api/statistiques.service';
 import { StatistiquesNiveauResponse } from '../../../api/model/statistiquesNiveauResponse';
 import { StatistiquesClasseResponse } from '../../../api/model/statistiquesClasseResponse';
+import { StatistiquesMatiereResponse } from '../../../api/model/statistiquesMatiereResponse';
 import { ToastService } from '../../../shared/ui/toast/toast.service';
 import { ConfirmService } from '../../../shared/ui/confirm/confirm.service';
 
@@ -59,6 +60,7 @@ export class Contenus implements OnInit {
   // Statistiques globales par niveau et par classe
   statsParNiveau: StatistiquesNiveauResponse[] = [];
   statsParClasse: StatistiquesClasseResponse[] = [];
+  statsParMatiere: StatistiquesMatiereResponse[] = [];
 
   // Données du formulaire
   formData = {
@@ -100,6 +102,7 @@ export class Contenus implements OnInit {
       next: (stats) => {
         this.statsParNiveau = stats.statistiquesParNiveau || [];
         this.statsParClasse = stats.statistiquesParClasse || [];
+        this.statsParMatiere = (stats as any).statistiquesParMatiere || [];
         this.checkLoadingComplete();
       },
       error: (err) => {
@@ -188,8 +191,8 @@ export class Contenus implements OnInit {
   }
 
   private calculateStudentsCountForSubject(matiere: Matiere): number {
-    // En attente de statistiques dédiées par matière côté backend
-    return 0;
+    const stats = this.statsParMatiere?.find(s => s.matiereId === matiere.id);
+    return stats?.nombreEleves ?? 0;
   }
 
   // Méthode pour déterminer le cycle basé sur le nom du niveau
@@ -237,8 +240,9 @@ export class Contenus implements OnInit {
     } else {
       this.error = `Erreur lors du chargement des ${entityType}.`;
     }
-    
-    this.loadedCount++;
+
+    // Uniquement marquer la requête comme terminée via checkLoadingComplete
+    // pour éviter de doubler l'incrément de loadedCount.
     this.checkLoadingComplete();
   }
 

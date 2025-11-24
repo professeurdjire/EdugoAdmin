@@ -3,6 +3,8 @@ import { Routes, RouterModule } from '@angular/router';
 import { AuthLayout } from './layouts/auth-layout/auth-layout';
 import { AdminLayout } from './layouts/admin-layout/admin-layout';
 import { Login } from './pages/auth/login/login';
+import { ForgotPassword } from './pages/auth/forgot-password/forgot-password';
+import { ResetPassword } from './pages/auth/reset-password/reset-password';
 import { Dashboard } from './pages/admin/dashboard/dashboard';
 import { AuthGuard } from './core/guards/auth.guard';
 import { ChallengeForm } from './pages/admin/challenge/challenge-form/challenge-form';
@@ -48,8 +50,16 @@ export const routes: Routes = [
       {
         path: 'login',
         component: Login, // layout auth
+      },
+      {
+        path: 'forgot-password',
+        component: ForgotPassword,
       }
     ]
+  },
+  {
+    path: 'reset-password',
+    component: ResetPassword,
   },
   {
     path: 'admin',

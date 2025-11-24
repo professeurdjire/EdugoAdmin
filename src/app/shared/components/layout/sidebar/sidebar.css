@@ -91,9 +91,9 @@
 
 .menu-item.active {
   position: relative;
-  background-color: rgba(168, 133, 216, 0.3);
+  background-color: rgba(106, 63, 168, 0.3);
   border-radius: 10px;
-  color: #A885D8;
+  color: #6A3FA8;
   font-weight: 700;
 }
 

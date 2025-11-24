@@ -12,7 +12,7 @@
   --green: #28bd7f;
   --green-tag: rgba(0, 128, 0, 0.7);
   --blue-bright: #0000ff;
-  --blue-header: rgba(13, 166, 242, 0.8);
+  --blue-header: rgba(106, 63, 168, 0.8);
   --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
   --shadow-md: 0 2px 6px rgba(0,0,0,0.1);
 }
@@ -680,7 +680,7 @@ tbody tr:hover {
   flex-shrink: 0;
 }
 
-.user-initials.blue { background: #4b7bec; }
+.user-initials.blue { background: #6A3FA8; }
 .user-initials.green { background: #20bf6b; }
 .user-initials.red { background: #eb3b5a; }
 .user-initials.darkblue { background: #2c3e50; }

@@ -105,8 +105,8 @@
 
 .input-wrapper input:focus {
   outline: none;
-  border-color: #a885d8;
-  box-shadow: 0 0 0 3px rgba(168, 133, 216, 0.15);
+  border-color: #6A3FA8;
+  box-shadow: 0 0 0 3px rgba(106, 63, 168, 0.15);
 }
 
 .input-wrapper input::placeholder {
@@ -150,7 +150,7 @@
 .checkbox-icon {
   width: clamp(14px, 3vw, 16px);
   height: clamp(14px, 3vw, 16px);
-  border: 2px solid #a885d8;
+  border: 2px solid #6A3FA8;
   border-radius: 3px;
   display: flex;
   align-items: center;
@@ -168,7 +168,7 @@
 }
 
 .hidden-checkbox:checked + .checkbox-icon {
-  background-color: #a885d8;
+  background-color: #6A3FA8;
 }
 
 .hidden-checkbox:checked + .checkbox-icon::after {
@@ -184,13 +184,13 @@
 }
 
 .forgot-password:hover {
-  color: #a885d8;
+  color: #6A3FA8;
   text-decoration: underline;
 }
 
 .submit-btn {
   height: clamp(42px, 8vw, 46px);
-  background-color: #a885d8;
+  background-color: #6A3FA8;
   color: #ffffff;
   border: none;
   border-radius: 8px;
@@ -199,18 +199,18 @@
   cursor: pointer;
   transition: all 0.3s ease;
   margin-top: clamp(12px, 3vw, 15px);
-  box-shadow: 0 3px 8px rgba(168, 133, 216, 0.3);
+  box-shadow: 0 3px 8px rgba(106, 63, 168, 0.3);
 }
 
 .submit-btn:hover {
-  background-color: #9370c5;
+  background-color: #5b36c6;
   transform: translateY(-1px);
-  box-shadow: 0 5px 12px rgba(168, 133, 216, 0.4);
+  box-shadow: 0 5px 12px rgba(106, 63, 168, 0.4);
 }
 
 .submit-btn:active {
   transform: translateY(0);
-  box-shadow: 0 2px 4px rgba(168, 133, 216, 0.3);
+  box-shadow: 0 2px 4px rgba(106, 63, 168, 0.3);
 }
 
 .login-image-section {

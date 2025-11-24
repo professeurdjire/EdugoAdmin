@@ -12,7 +12,7 @@
   --green: #28bd7f;
   --green-tag: rgba(0, 128, 0, 0.7);
   --blue-bright: #0000ff;
-  --blue-header: rgba(13, 166, 242, 0.8);
+  --blue-header: rgba(106, 63, 168, 0.8);
   --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
   --shadow-md: 0 2px 6px rgba(0,0,0,0.1);
 }
@@ -523,12 +523,12 @@
   font-size: 0.75rem;
   flex-shrink: 0;
   line-height: 1;
-  background-color: #4b7bec; /* Bleu par défaut */
+  background-color: #6A3FA8; /* Violet par défaut */
 }
 
 .user-avatar.blue,
 .quiz-icon.blue,
-.user-initials.blue { background: #4b7bec; }
+.user-initials.blue { background: #6A3FA8; }
 .user-avatar.green,
 .quiz-icon.green,
 .user-initials.green { background: #20bf6b; }
