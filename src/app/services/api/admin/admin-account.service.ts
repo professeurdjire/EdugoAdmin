@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../../environments/environment';
 import { AuthService, User } from '../auth.service';
+import { Suggestion } from '../../../api/model/suggestion';
 
 export interface AdminPreferencesDto {
   langueInterface?: string;
@@ -73,5 +74,10 @@ export class AdminAccountService {
 
   markNotificationAsRead(id: number): Observable<void> {
     return this.http.post<void>(`${this.baseUrl}/api/admin/notifications/${id}/marquer-lue`, {});
+  }
+
+  // Suggestions des élèves (pour affichage dans l'admin)
+  getSuggestions(): Observable<Suggestion[]> {
+    return this.http.get<Suggestion[]>(`${this.baseUrl}/api/suggestions`);
   }
 }

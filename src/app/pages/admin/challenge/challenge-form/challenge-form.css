@@ -17,12 +17,10 @@
 }
 
 /* === Container principal unifié === */
+.form-page-container,
 .form-container,
 .container {
   flex: 1;
-  margin-left: 210px;
-  margin-top: 60px;
-  min-height: calc(100vh - 60px);
   display: flex;
   flex-direction: column;
   gap: 1rem;
@@ -80,7 +78,8 @@
 }
 
 .form-title,
-.main-title {
+.main-title,
+.page-title {
   font-size: 1.7rem;
   font-weight: 700;
   color: var(--black);
@@ -90,7 +89,8 @@
 
 /* === Description === */
 .form-description,
-.subtitle {
+.subtitle,
+.form-subtitle {
   font-size: 1rem;
   color: var(--text-grey);
   margin: 0;
@@ -132,7 +132,8 @@
   margin: 0 0 1rem 0;
   padding-bottom: 0.5rem;
   border-bottom: 2px solid var(--primary-purple);
-  display: inline-block;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .section-title.with-button {

@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { TimeAgoPipe } from './time-ago.pipe';
 import { AdminAccountService, AdminNotification } from '../../../services/api/admin/admin-account.service';
+import { Suggestion } from '../../../api/model/suggestion';
 
 interface Notification {
   id: number;
@@ -45,19 +46,45 @@ export class NotificationsModalComponent implements OnInit {
 
     this.adminAccount.getNotifications().subscribe({
       next: (items: AdminNotification[]) => {
-        this.notifications = items.map(n => ({
+        const baseNotifications: Notification[] = items.map(n => ({
           id: n.id,
           type: (n.type as any) || 'system',
           category: n.type || 'system',
           senderName: '',
           message: n.message,
-          timestamp: new Date(n.dateCreation),
-          read: n.lu,
+          timestamp: new Date((n as any).dateCreation ?? (n as any).dateExplication),
+          read: (n as any).lu ?? (n as any).estVu ?? false,
           priority: 'low'
         }));
-        this.applyFilter(this.currentFilter || 'all');
-        this.emitUnreadCount();
-        this.loading = false;
+
+        // Charger également les suggestions des élèves et les fusionner
+        this.adminAccount.getSuggestions().subscribe({
+          next: (suggestions: Suggestion[]) => {
+            const suggestionNotifications: Notification[] = suggestions.map(s => ({
+              id: s.id!,
+              type: 'suggestion',
+              category: 'suggestion',
+              senderName: ((s.eleve?.prenom ?? '') + ' ' + (s.eleve?.nom ?? '')).trim() || 'Suggestion élève',
+              message: s.contenu ?? '',
+              timestamp: s.dateEnvoie ? new Date(s.dateEnvoie) : new Date(),
+              read: false,
+              priority: 'low'
+            }));
+
+            this.notifications = [...baseNotifications, ...suggestionNotifications];
+            this.applyFilter(this.currentFilter || 'all');
+            this.emitUnreadCount();
+            this.loading = false;
+          },
+          error: (err) => {
+            console.error('Erreur chargement suggestions admin:', err);
+            // Même si les suggestions échouent, afficher les notifications de base
+            this.notifications = [...baseNotifications];
+            this.applyFilter(this.currentFilter || 'all');
+            this.emitUnreadCount();
+            this.loading = false;
+          }
+        });
       },
       error: (err) => {
         console.error('Erreur chargement notifications admin:', err);

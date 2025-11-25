@@ -225,18 +225,16 @@
                 {{ getComputedStatus(partenaire) }}
               </span>
             </td>
-            <td>
-              <div class="action-buttons">
-                <span class="action-btn view-btn" (click)="viewPartenaire(partenaire.id)" title="Voir les détails">
-                  <fa-icon [icon]="faEye"></fa-icon>
-                </span>
-                <span class="action-btn edit-btn" (click)="editPartenaire(partenaire.id)" title="Modifier">
-                  <fa-icon [icon]="faPen"></fa-icon>
-                </span>
-                <span class="action-btn delete-btn" (click)="deletePartenaire(partenaire)" title="Supprimer">
-                  <fa-icon [icon]="faTrash"></fa-icon>
-                </span>
-              </div>
+            <td class="actions-cell">
+              <span class="action-btn view-btn" (click)="viewPartenaire(partenaire.id)" title="Voir les détails">
+                <fa-icon [icon]="faEye"></fa-icon>
+              </span>
+              <span class="action-btn edit-btn" (click)="editPartenaire(partenaire.id)" title="Modifier">
+                <fa-icon [icon]="faPen"></fa-icon>
+              </span>
+              <span class="action-btn delete-btn" (click)="deletePartenaire(partenaire)" title="Supprimer">
+                <fa-icon [icon]="faTrash"></fa-icon>
+              </span>
             </td>
           </tr>
         </tbody>

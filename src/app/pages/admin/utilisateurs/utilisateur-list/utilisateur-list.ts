@@ -244,4 +244,5 @@ export class UtilisateurList implements OnInit{
   protected readonly faFilter = faFilter;
   protected readonly faRedoAlt = faRedoAlt;
   protected readonly faArrowLeft = faArrowLeft;
+  protected readonly faTrash = faTrash;
 }
