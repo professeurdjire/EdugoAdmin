@@ -30,4 +30,9 @@ export class DefisService {
   delete(id: number): Observable<void> {
     return this.http.delete<void>(`${this.base}/${id}`);
   }
+
+  // Créer une question pour un défi
+  createQuestion(questionData: any): Observable<any> {
+    return this.http.post(`${this.base}/${questionData.defiId}/questions`, questionData);
+  }
 }

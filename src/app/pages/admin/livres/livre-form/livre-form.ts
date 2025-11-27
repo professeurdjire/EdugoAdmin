@@ -149,19 +149,27 @@ export class LivreForm {
     });
   }
 
-  loadLivreData(id: number): void {
+  async loadLivreData(id: number): Promise<void> {
     this.loading = true;
-    this.livresService.get(id).subscribe({
-      next: (livre: Livre) => {
-        this.populateForm(livre);
-        this.loading = false;
-      },
-      error: (err) => {
-        console.error('Erreur chargement livre:', err);
-        this.loading = false;
-        this.toast.error('Erreur lors du chargement du livre');
-      }
-    });
+    
+    try {
+      // Attendre que toutes les données de référence soient chargées
+      await firstValueFrom(this.matieresService.list());
+      await firstValueFrom(this.niveauxService.list());
+      await firstValueFrom(this.languesService.list());
+      await firstValueFrom(this.classesService.list());
+      
+      // Maintenant, charger le livre
+      const livre = await firstValueFrom(this.livresService.get(id));
+      
+      // Mettre à jour le formulaire
+      this.populateForm(livre);
+    } catch (err) {
+      console.error('Erreur lors du chargement des données:', err);
+      this.toast.error('Erreur lors du chargement des données du livre');
+    } finally {
+      this.loading = false;
+    }
   }
 
   createForm(): FormGroup {
@@ -186,41 +194,53 @@ export class LivreForm {
   }
 
   populateForm(livre: Livre): void {
-    // Déterminer la langue par défaut
-    let langueDefault = '';
-    if (livre.langue && typeof livre.langue === 'object') {
-      // Si langue est un objet, prendre son ID
-      langueDefault = livre.langue.id?.toString() || '';
-    } else if (livre.langue) {
-      // Si langue est une string, trouver l'ID correspondant
-      const langueTrouvee = this.langues.find(l => 
-        l.nom?.toLowerCase() === livre.langue?.toString().toLowerCase() || 
-        l.codeIso?.toLowerCase() === livre.langue?.toString().toLowerCase()
-      );
-      langueDefault = langueTrouvee?.id?.toString() || '';
-    }
+    try {
+      // Mapper les données du livre vers le formulaire
+      this.livreForm.patchValue({
+        titre: livre.titre || '',
+        auteur: livre.auteur || '',
+        isbn: livre.isbn || '',
+        editeur: livre.editeur || '',
+        description: livre.description || '',
+        matiere: livre.matiere?.id || livre.matiere || '',
+        niveau: livre.niveau?.id || livre.niveau || '',
+        classe: livre.classe?.id || livre.classe || '',
+        langue: this.getLangueId(livre.langue),
+        lectureAuto: livre.lectureAuto || false,
+        interactif: livre.interactif || false,
+        telechargementHorsLigne: livre.telechargementHorsLigne || false,
+        motsCles: this.extractMotsCles(livre.tags),
+        anneePublication: livre.anneePublication?.toString() || this.currentYear.toString()
+      });
 
-    this.livreForm.patchValue({
-      titre: livre.titre || '',
-      auteur: livre.auteur || '',
-      isbn: livre.isbn || '',
-      editeur: livre.editeur || '',
-      description: livre.description || '',
-      matiere: livre.matiere?.id?.toString() || '',
-      niveau: livre.niveau?.id?.toString() || '',
-      classe: livre.classe?.id?.toString() || '',
-      langue: langueDefault,
-      lectureAuto: livre.lectureAuto || false,
-      interactif: livre.interactif || false,
-      telechargementHorsLigne: false,
-      motsCles: this.extractMotsCles((livre as any)?.tags),
-      anneePublication: livre.anneePublication?.toString() || '2024'
-    });
+      // Désactiver les champs si en mode lecture seule
+      if (this.isReadOnly) {
+        this.livreForm.disable({ emitEvent: false });
+      }
+    } catch (error) {
+      console.error('Erreur lors du remplissage du formulaire:', error);
+      throw error;
+    }
   }
 
   private extractMotsCles(tags: any[] | undefined): string {
-    if (!tags || !Array.isArray(tags)) return '';
-    return tags.map(tag => tag.nom || tag.name || '').join(', ');
+    if (!tags) return '';
+    if (Array.isArray(tags)) {
+      return tags.map(tag => typeof tag === 'string' ? tag : tag.nom || '').filter(Boolean).join(', ');
+    }
+    return '';
+  }
+
+  private getLangueId(langue: any): string {
+    if (!langue) return this.langues[0]?.id?.toString() || '';
+    if (typeof langue === 'string') {
+      const found = this.langues.find(l => 
+        l.nom?.toLowerCase() === langue.toLowerCase() || 
+        l.codeIso?.toLowerCase() === langue.toLowerCase()
+      );
+      return found?.id?.toString() || '';
+    }
+    return langue.id?.toString() || '';
   }
 
   onRetour(): void {
@@ -401,25 +421,30 @@ createLivre(livreData: any, document: File, image?: File): Promise<Livre> {
 }
 
 
- updateLivre(id: number, livreData: any, document?: File, image?: File): Promise<Livre> {
-  return new Promise((resolve, reject) => {
-    console.log('Mise à jour livre avec données:', livreData);
+  updateLivre(id: number, livreData: any, document?: File, image?: File): Promise<Livre> {
+    return new Promise((resolve, reject) => {
+      console.log('Mise à jour livre avec données:', livreData);
 
-    this.livresService.updateWithFiles(id, livreData, document, image).subscribe({
-      next: (livre: Livre) => {
-        console.log('Livre mis à jour:', livre);
-        this.isSubmitting = false;
-        resolve(livre);
-      },
-      error: (err) => {
-        console.error('Erreur mise à jour livre:', err);
-        this.isSubmitting = false;
-        this.displayBackendErrors(err);
-        reject(err);
-      }
+      // Si on a des fichiers, utiliser updateWithFiles, sinon utiliser update
+      const updateObservable = (document || image) 
+        ? this.livresService.updateWithFiles(id, livreData, document, image)
+        : this.livresService.update(id, livreData);
+
+      updateObservable.subscribe({
+        next: (livre: Livre) => {
+          console.log('Livre mis à jour:', livre);
+          this.isSubmitting = false;
+          resolve(livre);
+        },
+        error: (err) => {
+          console.error('Erreur mise à jour livre:', err);
+          this.isSubmitting = false;
+          this.displayBackendErrors(err);
+          reject(err);
+        }
+      });
     });
-  });
-}
+  }
 
 
   onFileSelected(event: any, type: 'file' | 'image'): void {

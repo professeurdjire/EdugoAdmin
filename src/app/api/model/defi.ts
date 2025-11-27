@@ -10,6 +10,21 @@
 import { Classe } from './classe';
 
 
+export interface QuestionDefi {
+  id?: number;
+  texte: string;
+  type?: string;
+  points?: number;
+  bonneReponse?: string;
+  reponses?: ReponseDefi[];
+}
+
+export interface ReponseDefi {
+  id?: number;
+  texte: string;
+  estCorrecte: boolean;
+}
+
 export interface Defi { 
     id?: number;
     titre?: string;
@@ -20,5 +35,6 @@ export interface Defi {
     nbreParticipations?: number;
     typeDefi?: string;
     classe?: Classe;
+    questions?: QuestionDefi[];
 }
 

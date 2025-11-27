@@ -31,5 +31,7 @@ export interface Livre {
     matiere?: Matiere;
     langue?: Langue;
     quiz?: Quiz;
+    telechargementHorsLigne?: boolean;
+    tags?: string[]; 
 }
 
