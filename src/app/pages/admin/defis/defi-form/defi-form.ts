@@ -98,8 +98,12 @@ export class DefiForm implements OnInit {
 
   private loadExistingDefi(id: number) {
     this.isLoading = true;
-    this.defisService.get(id).subscribe({
-      next: (defi) => {
+    // Charger le défi et ses questions en parallèle
+    forkJoin({
+      defi: this.defisService.get(id),
+      questions: this.questionsService.listByDefi(id)
+    }).subscribe({
+      next: ({ defi, questions }) => {
         // Pré-remplir les champs de base
         this.defiForm.patchValue({
           classeConcernee: defi.classe?.id?.toString() || '',
@@ -109,6 +113,20 @@ export class DefiForm implements OnInit {
           dateAjout: this.toLocalDateTimeInput(defi.dateAjout)
         });
 
+        // Charger les questions si elles existent
+        if (questions && questions.length > 0) {
+          // Vider le tableau de questions par défaut
+          while (this.questions.length) {
+            this.questions.removeAt(0);
+          }
+
+          // Ajouter chaque question au formulaire
+          questions.forEach((q, index) => {
+            const questionGroup = this.loadQuestionFromApi(q, index + 1);
+            this.questions.push(questionGroup);
+          });
+        }
+
         this.isLoading = false;
       },
       error: () => {
@@ -116,6 +134,85 @@ export class DefiForm implements OnInit {
         this.toast.error('Impossible de charger le défi pour édition');
       }
     });
+  }
+
+  // Charger une question depuis l'API vers le formulaire
+  private loadQuestionFromApi(question: any, numero: number): FormGroup {
+    const type = this.mapApiTypeToFront(question.type);
+    
+    // Gérer les réponses selon le type
+    let reponsesArray = this.fb.array([]);
+    let pairesArray = this.fb.array([]);
+    let bonneReponse = '';
+
+    if (type === 'appariement') {
+      // Pour l'appariement, parser les réponses comme des paires
+      if (question.reponses && question.reponses.length > 0) {
+        question.reponses.forEach((r: any) => {
+          const parts = r.libelle.split(' - ');
+          if (parts.length === 2) {
+            pairesArray.push(this.fb.group({
+              elementGauche: [parts[0]],
+              elementDroit: [parts[1]]
+            }) as any);
+          }
+        });
+      }
+    } else if (type === 'vrai_faux') {
+      // Pour Vrai/Faux, créer les deux réponses
+      const vraiRep = question.reponses?.find((r: any) => r.libelle === 'VRAI');
+      const fauxRep = question.reponses?.find((r: any) => r.libelle === 'FAUX');
+      reponsesArray.push(this.fb.group({ lettre: ['V'], texte: ['VRAI'], correcte: [vraiRep?.estCorrecte || false] }) as any);
+      reponsesArray.push(this.fb.group({ lettre: ['F'], texte: ['FAUX'], correcte: [fauxRep?.estCorrecte || false] }) as any);
+      if (vraiRep?.estCorrecte) bonneReponse = 'V';
+      else if (fauxRep?.estCorrecte) bonneReponse = 'F';
+    } else if (question.reponses && question.reponses.length > 0) {
+      // Pour les autres types, mapper les réponses
+      question.reponses.forEach((r: any, idx: number) => {
+        const lettre = String.fromCharCode(65 + idx);
+        reponsesArray.push(this.fb.group({
+          lettre: [lettre],
+          texte: [r.libelle || ''],
+          correcte: [r.estCorrecte || false]
+        }) as any);
+        if (r.estCorrecte) {
+          if (type === 'multi_reponse') {
+            bonneReponse = bonneReponse ? `${bonneReponse},${lettre}` : lettre;
+          } else {
+            bonneReponse = lettre;
+          }
+        }
+      });
+    } else {
+      // Pas de réponses, créer les réponses par défaut
+      this.defaultReponses().forEach(g => reponsesArray.push(g as any));
+    }
+
+    return this.fb.group({
+      numero: [numero],
+      typeQuestion: [type, [Validators.required]],
+      question: [question.enonce || '', [Validators.required, Validators.minLength(5)]],
+      points: [question.points || 1],
+      reponses: reponsesArray,
+      pairesAppariement: pairesArray,
+      bonneReponse: [bonneReponse]
+    });
+  }
+
+  // Mapper le type API vers le type frontend
+  private mapApiTypeToFront(apiType: string): string {
+    switch (apiType?.toUpperCase()) {
+      case 'QCU':
+        return 'choix_multiple';
+      case 'QCM':
+        return 'multi_reponse';
+      case 'VRAI_FAUX':
+        return 'vrai_faux';
+      case 'APPARIEMENT':
+        return 'appariement';
+      default:
+        return 'choix_multiple';
+    }
   }
 
   // Getter pour accéder facilement au FormArray des questions
@@ -295,7 +392,7 @@ export class DefiForm implements OnInit {
       while (reponses.length) {
         reponses.removeAt(0);
       }
-      this.defaultReponses().forEach(g => reponses.push(g));
+      this.defaultReponses().forEach(g => reponses.push(g as any));
     }
   }
 

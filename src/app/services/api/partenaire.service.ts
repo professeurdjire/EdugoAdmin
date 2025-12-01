@@ -139,9 +139,20 @@ export class PartenaireService {
 
   // Get a single partenaire by ID
   getById(id: number): Observable<Partenaire> {
-    return this.http.get<ApiResponse<Partenaire>>(`${this.baseUrl}/${id}`)
+    return this.http.get<any>(`${this.baseUrl}/${id}`)
       .pipe(
-        map(response => response.data),
+        map(response => {
+          // Si la réponse est directement un Partenaire
+          if (response && (response.nom || response.id)) {
+            return response as Partenaire;
+          }
+          // Si la réponse est encapsulée dans {data: ...}
+          if (response && response.data) {
+            return response.data as Partenaire;
+          }
+          // Sinon, retourner la réponse telle quelle
+          return response as Partenaire;
+        }),
         catchError(this.handleError)
       );
   }

@@ -77,6 +77,8 @@ export class AuthService {
           if (userObj) {
             this.setUser(userObj);
             this.currentUserSubject.next(userObj);
+            // Déclencher un événement personnalisé pour indiquer qu'une connexion a réussi
+            window.dispatchEvent(new CustomEvent('userLoggedIn'));
           }
         })
       );

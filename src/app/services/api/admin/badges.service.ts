@@ -31,15 +31,31 @@ export class BadgesService {
     return this.http.get<BadgeResponse>(`${this.base}/${id}`, { headers: this.getHeaders() });
   }
 
-  create(payload: BadgeRequest): Observable<BadgeResponse> {
+  create(payload: BadgeRequest | any): Observable<BadgeResponse> {
+    // Accepter BadgeRequestExtended qui inclut PROGRESSION
     return this.http.post<BadgeResponse>(this.base, payload, { headers: this.getHeaders() });
   }
 
-  update(id: number, payload: BadgeRequest): Observable<BadgeResponse> {
+  update(id: number, payload: BadgeRequest | any): Observable<BadgeResponse> {
+    // Accepter BadgeRequestExtended qui inclut PROGRESSION
     return this.http.put<BadgeResponse>(`${this.base}/${id}`, payload, { headers: this.getHeaders() });
   }
 
   delete(id: number): Observable<void> {
     return this.http.delete<void>(`${this.base}/${id}`, { headers: this.getHeaders() });
+  }
+
+  // Méthodes pour gérer les seuils de progression des badges
+  // Les seuils sont configurés par défaut dans le système.
+  // Ces méthodes permettent de visualiser les seuils configurés et d'initialiser les badges correspondants.
+  
+  initialiserBadgesProgression(): Observable<any> {
+    return this.http.post<any>(`${environment.apiUrl.replace(/\/$/, '')}/api/badges/progression/initialiser`, {}, { headers: this.getHeaders() });
+  }
+
+  getSeuilsProgression(): Observable<{ [key: number]: string }> {
+    // L'endpoint retourne une Map<Integer, String> sérialisée en objet JSON
+    // Format: { "100": "Débutant", "500": "Apprenti", "1000": "Confirmé", ... }
+    return this.http.get<{ [key: number]: string }>(`${environment.apiUrl.replace(/\/$/, '')}/api/badges/progression/seuils`, { headers: this.getHeaders() });
   }
 }

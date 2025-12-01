@@ -426,7 +426,21 @@
   border-radius: 3px;
 }
 
-/* Couleurs de la légende */
+/* Indicateur de couleur dynamique pour la légende */
+.legend-color-indicator {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 25px;
+  height: 15px;
+  border: 1px solid;
+  box-sizing: border-box;
+  border-radius: 3px;
+  border-color: inherit;
+}
+
+/* Couleurs de la légende prédéfinies (pour rétrocompatibilité) */
 .legend .maths::before { background-color: #0000FF; border-color: #0000FF; }
 .legend .francais::before { background-color: #008000; border-color: #008000; }
 .legend .histoires::before { background-color: #FFFF00; border-color: #D4B106; }
@@ -435,6 +449,12 @@
 .legend .ecm::before { background-color: #9B59B6; border-color: #9B59B6; }
 .legend .physique::before { background-color: #FFA500; border-color: #E69500; }
 .legend .chimie::before { background-color: #2C3E50; border-color: #2C3E50; }
+
+.legend li.no-data {
+  padding-left: 15px;
+  font-style: italic;
+  color: #808080;
+}
 
 /* Ajustements responsive */
 @media (max-width: 1400px) {

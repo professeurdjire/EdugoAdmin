@@ -368,14 +368,14 @@
 }
 
 .pagination-btn:hover, .page-number:hover {
-  border-color: var(--primary-purple);
-  color: var(--primary-purple);
+  border-color: #6A3FA8;
+  color: #6A3FA8;
 }
 
 .page-number.active {
-  background-color: var(--primary-purple);
-  color: var(--white);
-  border-color: var(--primary-purple);
+  background-color: #6A3FA8;
+  color: #ffffff;
+  border-color: #6A3FA8;
   font-weight: 600;
 }
 

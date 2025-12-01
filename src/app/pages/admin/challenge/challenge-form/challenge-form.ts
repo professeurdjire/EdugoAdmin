@@ -1,7 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Location } from '@angular/common';
-import { Router, RouterModule } from '@angular/router';
+import { Router, RouterModule, ActivatedRoute } from '@angular/router';
 import { ChallengesService } from '../../../../services/api/admin/challenges.service';
 import { Challenge } from '../../../../api/model/challenge';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators, FormArray } from '@angular/forms';
@@ -23,7 +23,7 @@ import { BadgeResponse } from '../../../../api/model/badgeResponse';
   templateUrl: './challenge-form.html',
   styleUrls: ['./challenge-form.css']
 })
-export class ChallengeForm {
+export class ChallengeForm implements OnInit {
   isLoading = false;
   form: FormGroup;
   niveaux: Niveau[] = [];
@@ -31,6 +31,8 @@ export class ChallengeForm {
   loadingTypes = false;
   backendTypes: Array<{ id: number; libelle: string }> = [];
   badges: BadgeResponse[] = [];
+  isEditMode = false;
+  challengeId: number | null = null;
 
   typeOptions = [
     { value: Challenge.TypeChallengeEnum.Interclasse, label: 'Interclasse' },
@@ -57,6 +59,7 @@ export class ChallengeForm {
     private location: Location,
     private challengesService: ChallengesService,
     private router: Router,
+    private route: ActivatedRoute,
     private fb: FormBuilder,
     private niveauxService: NiveauxService,
     private classesService: ClassesService,
@@ -81,10 +84,34 @@ export class ChallengeForm {
       badgeIds: [[]],
       questions: this.fb.array([this.createQuestionGroup()])
     });
+  }
 
+  ngOnInit(): void {
     this.loadRefs();
     this.loadQuestionTypes();
     this.loadBadges();
+
+    // Vérifier le mode édition
+    this.route.params.subscribe(params => {
+      const idParam = params['id'];
+      if (idParam) {
+        this.isEditMode = true;
+        this.challengeId = +idParam;
+        // Attendre que les données de référence soient chargées avant de charger le challenge
+        forkJoin({
+          niveaux: this.niveauxService.list(),
+          classes: this.classesService.list(),
+          badges: this.badgesService.list()
+        }).subscribe({
+          next: (data) => {
+            this.niveaux = data.niveaux || [];
+            this.classes = data.classes || [];
+            this.badges = data.badges || [];
+            this.loadExistingChallenge(this.challengeId!);
+          }
+        });
+      }
+    });
   }
 
   // Formater une valeur provenant d'un input datetime-local en LocalDateTime (sans fuseau horaire)
@@ -105,6 +132,134 @@ export class ChallengeForm {
   private loadRefs() {
     this.niveauxService.list().subscribe({ next: (d) => (this.niveaux = d || []) });
     this.classesService.list().subscribe({ next: (d) => (this.classes = d || []) });
+  }
+
+  private loadExistingChallenge(id: number) {
+    this.isLoading = true;
+    // Charger le challenge et ses questions en parallèle
+    forkJoin({
+      challenge: this.challengesService.get(id),
+      questions: this.questionsService.listByChallenge(id)
+    }).subscribe({
+      next: ({ challenge, questions }) => {
+        const challengeAny = challenge as any;
+        // Formater les dates pour l'input datetime-local
+        const formatDateForInput = (dateStr: string | undefined): string => {
+          if (!dateStr) return '';
+          const date = new Date(dateStr);
+          const year = date.getFullYear();
+          const month = String(date.getMonth() + 1).padStart(2, '0');
+          const day = String(date.getDate()).padStart(2, '0');
+          const hours = String(date.getHours()).padStart(2, '0');
+          const minutes = String(date.getMinutes()).padStart(2, '0');
+          return `${year}-${month}-${day}T${hours}:${minutes}`;
+        };
+
+        // Pré-remplir les champs de base
+        this.form.patchValue({
+          typeChallenge: challenge.typeChallenge || this.typeOptions[0].value,
+          titre: challenge.titre || '',
+          description: challenge.description || '',
+          dateDebut: formatDateForInput(challenge.dateDebut),
+          dateFin: formatDateForInput(challenge.dateFin),
+          rewardMode: challengeAny.rewardMode || this.rewardModes[0].value,
+          winnersCount: challengeAny.winnersCount || 1,
+          points: challenge.points || 0,
+          niveauId: challenge.niveau?.id || null,
+          classeId: challenge.classe?.id || null,
+          badgeIds: challengeAny.badgeIds || []
+        });
+
+        // Charger les questions si elles existent
+        if (questions && questions.length > 0) {
+          // Vider le tableau de questions par défaut
+          while (this.questions.length) {
+            this.questions.removeAt(0);
+          }
+
+          // Ajouter chaque question au formulaire
+          questions.forEach((q) => {
+            const questionGroup = this.loadQuestionFromApi(q);
+            this.questions.push(questionGroup);
+          });
+        }
+
+        this.isLoading = false;
+      },
+      error: () => {
+        this.isLoading = false;
+        this.toast.error('Impossible de charger le challenge pour édition');
+      }
+    });
+  }
+
+  // Charger une question depuis l'API vers le formulaire
+  private loadQuestionFromApi(question: any): FormGroup {
+    const type = this.mapApiTypeToFront(question.type);
+    
+    // Gérer les réponses selon le type
+    let reponsesArray = this.fb.array([]);
+    let pairesArray = this.fb.array([]);
+
+    if (type === 'appariement') {
+      // Pour l'appariement, parser les réponses comme des paires
+      if (question.reponses && question.reponses.length > 0) {
+        question.reponses.forEach((r: any) => {
+          const parts = r.libelle.split(' - ');
+          if (parts.length === 2) {
+            pairesArray.push(this.fb.group({
+              elementGauche: [parts[0]],
+              elementDroit: [parts[1]]
+            }) as any);
+          }
+        });
+      }
+    } else if (type === 'vrai_faux') {
+      // Pour Vrai/Faux, créer les deux réponses
+      const vraiRep = question.reponses?.find((r: any) => r.libelle === 'VRAI');
+      const fauxRep = question.reponses?.find((r: any) => r.libelle === 'FAUX');
+      reponsesArray.push(this.fb.group({ lettre: ['V'], texte: ['VRAI'], correcte: [vraiRep?.estCorrecte || false] }) as any);
+      reponsesArray.push(this.fb.group({ lettre: ['F'], texte: ['FAUX'], correcte: [fauxRep?.estCorrecte || false] }) as any);
+    } else if (question.reponses && question.reponses.length > 0) {
+      // Pour les autres types, mapper les réponses
+      question.reponses.forEach((r: any, idx: number) => {
+        const lettre = String.fromCharCode(65 + idx);
+        reponsesArray.push(this.fb.group({
+          lettre: [lettre],
+          texte: [r.libelle || ''],
+          correcte: [r.estCorrecte || false]
+        }) as any);
+      });
+    } else {
+      // Pas de réponses, créer les réponses par défaut
+      reponsesArray.push(this.fb.group({ lettre: ['A'], texte: [''], correcte: [false] }) as any);
+      reponsesArray.push(this.fb.group({ lettre: ['B'], texte: [''], correcte: [false] }) as any);
+    }
+
+    return this.fb.group({
+      typeQuestion: [type, Validators.required],
+      question: [question.enonce || '', [Validators.required, Validators.minLength(5)]],
+      points: [question.points || 1, [Validators.min(1)]],
+      bonneReponse: [''],
+      reponses: reponsesArray,
+      pairesAppariement: pairesArray
+    });
+  }
+
+  // Mapper le type API vers le type frontend
+  private mapApiTypeToFront(apiType: string): string {
+    switch (apiType?.toUpperCase()) {
+      case 'QCU':
+        return 'choix_multiple';
+      case 'QCM':
+        return 'multi_reponse';
+      case 'VRAI_FAUX':
+        return 'vrai_faux';
+      case 'APPARIEMENT':
+        return 'appariement';
+      default:
+        return 'choix_multiple';
+    }
   }
 
   private loadQuestionTypes() {
@@ -176,8 +331,8 @@ export class ChallengeForm {
 
     // S'assurer qu'il y a au moins 2 réponses pour les QCM/QCU
     if (!reponsesArray.length) {
-      reponsesArray.push(this.fb.group({ lettre: 'A', texte: '', correcte: false }));
-      reponsesArray.push(this.fb.group({ lettre: 'B', texte: '', correcte: false }));
+      reponsesArray.push(this.fb.group({ lettre: 'A', texte: '', correcte: false }) as any);
+      reponsesArray.push(this.fb.group({ lettre: 'B', texte: '', correcte: false }) as any);
     }
 
     return this.fb.group({
@@ -339,11 +494,81 @@ export class ChallengeForm {
     });
   }
 
+  // Valider toutes les questions selon leur type
+  private validateQuestions(): boolean {
+    if (this.questions.length === 0) {
+      this.toast.error('Veuillez ajouter au moins une question.');
+      return false;
+    }
+
+    for (let i = 0; i < this.questions.length; i++) {
+      const qGroup = this.questions.at(i) as FormGroup;
+      const q = qGroup.value;
+      const type = this.mapFrontTypeToApi(String(q.typeQuestion || '').toLowerCase());
+
+      // Valider l'énoncé
+      if (!q.question || String(q.question).trim() === '') {
+        this.toast.error(`La question ${i + 1} doit avoir un énoncé.`);
+        return false;
+      }
+
+      // Validation spécifique selon le type
+      if (type === 'APPARIEMENT') {
+        const paires = (q.pairesAppariement || []) as Array<{elementGauche:string;elementDroit:string}>;
+        const pairesValides = paires.filter(p => 
+          p && p.elementGauche && String(p.elementGauche).trim() !== '' && 
+          p.elementDroit && String(p.elementDroit).trim() !== ''
+        );
+        
+        if (pairesValides.length < 2) {
+          this.toast.error(`La question ${i + 1} (Appariement) doit avoir au moins 2 paires complètes (élément gauche et élément droit remplis).`);
+          return false;
+        }
+      } else if (type === 'VRAI_FAUX') {
+        const reponses = q.reponses || [];
+        const hasVrai = reponses.some((r: any) => String(r.texte).toUpperCase() === 'VRAI' && r.correcte);
+        const hasFaux = reponses.some((r: any) => String(r.texte).toUpperCase() === 'FAUX' && r.correcte);
+        if (!hasVrai && !hasFaux) {
+          this.toast.error(`La question ${i + 1} (Vrai/Faux) doit avoir une bonne réponse sélectionnée.`);
+          return false;
+        }
+      } else {
+        // Pour QCU, QCM, etc.
+        const reponses = q.reponses || [];
+        const reponsesValides = reponses.filter((r: any) => r && r.texte && String(r.texte).trim() !== '');
+        if (reponsesValides.length < 2) {
+          this.toast.error(`La question ${i + 1} doit avoir au moins 2 réponses.`);
+          return false;
+        }
+        if (type === 'QCU') {
+          const bonnesReponses = reponsesValides.filter((r: any) => r.correcte);
+          if (bonnesReponses.length !== 1) {
+            this.toast.error(`La question ${i + 1} (QCU) doit avoir exactement une bonne réponse.`);
+            return false;
+          }
+        } else if (type === 'QCM') {
+          const bonnesReponses = reponsesValides.filter((r: any) => r.correcte);
+          if (bonnesReponses.length < 1) {
+            this.toast.error(`La question ${i + 1} (QCM) doit avoir au moins une bonne réponse.`);
+            return false;
+          }
+        }
+      }
+    }
+
+    return true;
+  }
+
   onSubmit() {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
       this.toast.error('Veuillez compléter correctement les informations du challenge et au moins une question.');
       return;
+    }
+
+    // Validation spécifique des questions
+    if (!this.validateQuestions()) {
+      return; // Le message d'erreur est déjà affiché dans validateQuestions()
     }
 
     const v = this.form.value;
@@ -362,6 +587,25 @@ export class ChallengeForm {
     } as any;
 
     this.isLoading = true;
+
+    // Mode édition: mise à jour du challenge
+    if (this.isEditMode && this.challengeId) {
+      this.challengesService.update(this.challengeId, payload).subscribe({
+        next: () => {
+          this.isLoading = false;
+          this.toast.success('Challenge mis à jour avec succès');
+          this.router.navigate(['/admin/challengelist']);
+        },
+        error: (err) => {
+          this.isLoading = false;
+          console.error('Erreur lors de la mise à jour du challenge:', err);
+          this.toast.error('Erreur lors de la mise à jour du challenge. Veuillez réessayer.');
+        }
+      });
+      return;
+    }
+
+    // Mode création: créer le challenge
     this.challengesService.create(payload).subscribe({
       next: (res) => {
         const challengeId = (res as any)?.id;
@@ -377,7 +621,20 @@ export class ChallengeForm {
           const type = this.mapFrontTypeToApi(String(q.typeQuestion || '').toLowerCase());
           if (type === 'APPARIEMENT') {
             const paires = (q.pairesAppariement || []) as Array<{elementGauche:string;elementDroit:string}>;
-            const reponses = paires.map(p => ({ libelle: `${p.elementGauche} - ${p.elementDroit}`, estCorrecte: true }));
+            // Filtrer les paires vides et s'assurer qu'il y a au moins 2 paires valides
+            const pairesValides = paires.filter(p => 
+              p.elementGauche && String(p.elementGauche).trim() !== '' && 
+              p.elementDroit && String(p.elementDroit).trim() !== ''
+            );
+            
+            if (pairesValides.length < 2) {
+              throw new Error('Pour une question de type Appariement, il faut au moins 2 paires complètes (élément gauche et élément droit remplis).');
+            }
+            
+            const reponses = pairesValides.map(p => ({ 
+              libelle: `${String(p.elementGauche).trim()} - ${String(p.elementDroit).trim()}`, 
+              estCorrecte: true 
+            }));
             return { challengeId, enonce: q.question, points: q.points || 1, type, reponses };
           }
           if (type === 'VRAI_FAUX') {
@@ -391,6 +648,17 @@ export class ChallengeForm {
           return { challengeId, enonce: q.question, points: q.points || 1, type, reponses };
         });
 
+        // Valider toutes les questions avant de les envoyer
+        for (const req of questionRequests) {
+          if (req.type === 'APPARIEMENT') {
+            if (!req.reponses || req.reponses.length < 2) {
+              this.isLoading = false;
+              this.toast.error('Pour une question de type Appariement, il faut au moins 2 paires complètes (élément gauche et élément droit remplis).');
+              return;
+            }
+          }
+        }
+
         forkJoin(questionRequests.map(req => this.questionsService.createQuestion(req))).subscribe({
           next: () => {
             this.isLoading = false;
@@ -399,7 +667,18 @@ export class ChallengeForm {
           error: (err) => {
             this.isLoading = false;
             console.error('Erreur création questions du challenge:', err);
-            this.toast.error('Challenge créé, mais une erreur est survenue lors de la création des questions.');
+            
+            // Gérer les erreurs spécifiques
+            const errorMessage = err.error?.message || err.message || err.error || '';
+            const errorStr = String(errorMessage);
+            
+            if (errorStr.includes('APPARIEMENT') && (errorStr.includes('at least 4 options') || errorStr.includes('au moins 4'))) {
+              this.toast.error('Pour une question de type Appariement, il faut au moins 2 paires complètes (2 éléments à gauche et 2 éléments à droite). Veuillez ajouter plus de paires dans votre question.');
+            } else if (errorStr && errorStr.trim() !== '') {
+              this.toast.error(`Erreur lors de la création des questions: ${errorStr}`);
+            } else {
+              this.toast.error('Challenge créé, mais une erreur est survenue lors de la création des questions. Veuillez vérifier que toutes les questions sont correctement remplies.');
+            }
           }
         });
       },

@@ -5,9 +5,23 @@ import { TimeAgoPipe } from './time-ago.pipe';
 import { AdminAccountService, AdminNotification } from '../../../services/api/admin/admin-account.service';
 import { Suggestion } from '../../../api/model/suggestion';
 
+// Types de notifications supportés
+type NotificationType = 
+  | 'NOUVEAU_CHALLENGE'
+  | 'NOUVEAU_DEFI'
+  | 'NOUVEAU_LIVRE'
+  | 'NOUVEAU_QUIZ'
+  | 'OBJECTIF_ATTEINT'
+  | 'BADGE_OBTENU'
+  | 'RAPPEL_DEADLINE'
+  | 'NOUVEAU_MESSAGE_ADMIN'
+  | 'REPONSE_SUGGESTION'
+  | 'AMELIORATION_CLASSEMENT'
+  | 'suggestion'; // Pour la rétrocompatibilité
+
 interface Notification {
   id: number;
-  type: 'suggestion' | 'message' | 'system' | 'alert' | 'user';
+  type: NotificationType;
   category: string;
   senderName: string;
   message: string;
@@ -15,6 +29,8 @@ interface Notification {
   read: boolean;
   priority: 'low' | 'medium' | 'high';
   attachment?: boolean;
+  // Données supplémentaires optionnelles
+  data?: any;
 }
 
 @Component({
@@ -40,56 +56,117 @@ export class NotificationsModalComponent implements OnInit {
     this.loadNotifications();
   }
 
+  private loadSuggestions(): void {
+    this.adminAccount.getSuggestions().subscribe({
+      next: (suggestions: Suggestion[]) => {
+        console.log('Suggestions reçues de l\'API:', suggestions);
+        
+        const suggestionNotifications: Notification[] = suggestions
+          .filter(s => s) // Filtrer les suggestions nulles
+          .map(s => ({
+            id: s.id!,
+            type: 'suggestion',
+            category: 'suggestion',
+            senderName: ((s.eleve?.prenom ?? '') + ' ' + (s.eleve?.nom ?? '')).trim() || 'Suggestion élève',
+            message: s.contenu?.substring(0, 100) || 'Nouvelle suggestion',
+            timestamp: s.dateEnvoie ? new Date(s.dateEnvoie) : new Date(),
+            read: false,
+            priority: 'low'
+          }));
+
+        this.notifications = [...this.notifications, ...suggestionNotifications];
+        this.applyFilter(this.currentFilter || 'all');
+        this.emitUnreadCount();
+        this.loading = false;
+      },
+      error: (err) => {
+        console.error('Erreur lors du chargement des suggestions:', err);
+        this.loading = false;
+      }
+    });
+  }
+
   private loadNotifications() {
     this.loading = true;
     this.error = null;
+    this.notifications = [];
 
+    // D'abord charger les notifications standard
     this.adminAccount.getNotifications().subscribe({
       next: (items: AdminNotification[]) => {
-        const baseNotifications: Notification[] = items.map(n => ({
-          id: n.id,
-          type: (n.type as any) || 'system',
-          category: n.type || 'system',
-          senderName: '',
-          message: n.message,
-          timestamp: new Date((n as any).dateCreation ?? (n as any).dateExplication),
-          read: (n as any).lu ?? (n as any).estVu ?? false,
-          priority: 'low'
-        }));
-
-        // Charger également les suggestions des élèves et les fusionner
-        this.adminAccount.getSuggestions().subscribe({
-          next: (suggestions: Suggestion[]) => {
-            const suggestionNotifications: Notification[] = suggestions.map(s => ({
-              id: s.id!,
-              type: 'suggestion',
-              category: 'suggestion',
-              senderName: ((s.eleve?.prenom ?? '') + ' ' + (s.eleve?.nom ?? '')).trim() || 'Suggestion élève',
-              message: s.contenu ?? '',
-              timestamp: s.dateEnvoie ? new Date(s.dateEnvoie) : new Date(),
-              read: false,
-              priority: 'low'
-            }));
-
-            this.notifications = [...baseNotifications, ...suggestionNotifications];
-            this.applyFilter(this.currentFilter || 'all');
-            this.emitUnreadCount();
-            this.loading = false;
-          },
-          error: (err) => {
-            console.error('Erreur chargement suggestions admin:', err);
-            // Même si les suggestions échouent, afficher les notifications de base
-            this.notifications = [...baseNotifications];
-            this.applyFilter(this.currentFilter || 'all');
-            this.emitUnreadCount();
-            this.loading = false;
+        console.log('Notifications reçues de l\'API:', items);
+        
+        const baseNotifications: Notification[] = items.map(n => {
+          if (!n) {
+            console.warn('Notification invalide reçue:', n);
+            return null;
           }
-        });
+          
+          try {
+            // Déterminer le type de notification et formater le message en conséquence
+            const notificationType = n.type as NotificationType;
+            let message = n.message || 'Nouvelle notification';
+            let senderName = n.titre || 'Système';
+            let priority: 'low' | 'medium' | 'high' = 'low';
+            
+            // Personnalisation en fonction du type de notification
+            switch(notificationType) {
+              case 'NOUVEAU_CHALLENGE':
+                message = n.message || 'Un nouveau challenge est disponible !';
+                priority = 'high';
+                break;
+              case 'NOUVEAU_DEFI':
+                message = n.message || 'Un nouveau défi vous attend !';
+                priority = 'high';
+                break;
+              case 'OBJECTIF_ATTEINT':
+                message = n.message || 'Félicitations ! Vous avez atteint un objectif.';
+                priority = 'high';
+                break;
+              case 'BADGE_OBTENU':
+                message = n.message || 'Nouveau badge débloqué !';
+                priority = 'high';
+                break;
+              case 'RAPPEL_DEADLINE':
+                message = n.message || 'Rappel : Échéance proche pour un de vos défis';
+                priority = 'medium';
+                break;
+              case 'NOUVEAU_MESSAGE_ADMIN':
+                senderName = 'Administration';
+                priority = 'high';
+                break;
+            }
+            
+            return {
+              id: n.id,
+              type: notificationType,
+              category: this.getNotificationCategory(notificationType),
+              senderName: senderName,
+              message: message,
+              timestamp: n.dateCreation ? new Date(n.dateCreation) : new Date(),
+              read: n.lu || false,
+              priority: priority,
+              data: n // Conserver les données brutes
+            };
+          } catch (error) {
+            console.error('Erreur lors du mappage d\'une notification:', error, n);
+            return null;
+          }
+        }).filter((n): n is Notification & { data: AdminNotification } => n !== null);
+
+        this.notifications = [...baseNotifications];
+        this.applyFilter(this.currentFilter || 'all');
+        this.emitUnreadCount();
+        
+        // Ensuite charger les suggestions
+        this.loadSuggestions();
       },
       error: (err) => {
         console.error('Erreur chargement notifications admin:', err);
-        this.error = "Erreur lors du chargement des notifications.";
-        this.loading = false;
+        this.error = `Erreur lors du chargement des notifications: ${err.message || 'Erreur inconnue'}`;
+        
+        // Essayer de charger quand même les suggestions
+        this.loadSuggestions();
       }
     });
   }
@@ -167,21 +244,65 @@ export class NotificationsModalComponent implements OnInit {
     // this.router.navigate(['/notifications']);
   }
 
-  getCategoryIcon(category: string): string {
+  getCategoryIcon(type: string): string {
     const icons: { [key: string]: string } = {
+      // Notifications standards
       'suggestion': 'fas fa-lightbulb',
       'message': 'fas fa-envelope',
       'feedback': 'fas fa-comment',
       'update': 'fas fa-sync',
       'security': 'fas fa-shield-alt',
       'system': 'fas fa-cog',
-      'user': 'fas fa-user'
+      'user': 'fas fa-user',
+      
+      // Nouvelles notifications
+      'NOUVEAU_CHALLENGE': 'fas fa-trophy',
+      'NOUVEAU_DEFI': 'fas fa-flag-checkered',
+      'NOUVEAU_LIVRE': 'fas fa-book',
+      'NOUVEAU_QUIZ': 'fas fa-question-circle',
+      'OBJECTIF_ATTEINT': 'fas fa-bullseye',
+      'BADGE_OBTENU': 'fas fa-award',
+      'RAPPEL_DEADLINE': 'fas fa-clock',
+      'NOUVEAU_MESSAGE_ADMIN': 'fas fa-envelope-open-text',
+      'REPONSE_SUGGESTION': 'fas fa-reply',
+      'AMELIORATION_CLASSEMENT': 'fas fa-chart-line'
     };
-    return icons[category] || 'fas fa-bell';
+    return icons[type] || 'fas fa-bell';
+  }
+
+  private getNotificationCategory(type: NotificationType): string {
+    const categories: { [key: string]: string } = {
+      'NOUVEAU_CHALLENGE': 'challenge',
+      'NOUVEAU_DEFI': 'defi',
+      'NOUVEAU_LIVRE': 'livre',
+      'NOUVEAU_QUIZ': 'quiz',
+      'OBJECTIF_ATTEINT': 'success',
+      'BADGE_OBTENU': 'badge',
+      'RAPPEL_DEADLINE': 'warning',
+      'NOUVEAU_MESSAGE_ADMIN': 'admin',
+      'REPONSE_SUGGESTION': 'suggestion',
+      'AMELIORATION_CLASSEMENT': 'ranking',
+      'suggestion': 'suggestion'
+    };
+    return categories[type] || 'system';
   }
 
   getCategoryClass(category: string): string {
-    return category;
+    // Retourne une classe CSS basée sur la catégorie
+    const classes: { [key: string]: string } = {
+      'challenge': 'category-challenge',
+      'defi': 'category-defi',
+      'livre': 'category-livre',
+      'quiz': 'category-quiz',
+      'success': 'category-success',
+      'badge': 'category-badge',
+      'warning': 'category-warning',
+      'admin': 'category-admin',
+      'suggestion': 'category-suggestion',
+      'ranking': 'category-ranking',
+      'system': 'category-system'
+    };
+    return classes[category] || '';
   }
 
   getUnreadCount(): number {

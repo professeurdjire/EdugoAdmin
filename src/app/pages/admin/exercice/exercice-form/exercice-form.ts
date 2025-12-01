@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import {FormBuilder, FormGroup, FormArray, Validators, ReactiveFormsModule} from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { Router, RouterModule } from '@angular/router';
+import { Router, RouterModule, ActivatedRoute } from '@angular/router';
 import { ExercicesService as AdminExercicesService } from '../../../../services/api/admin/exercices.service';
 import { Exercice } from '../../../../api/model/exercice';
 import { ToastService } from '../../../../shared/ui/toast/toast.service';
@@ -32,10 +32,13 @@ export class ExerciceForm implements OnInit {
   backendTypes: Array<{ id: number; libelle: string }> = [];
   matieres: Matiere[] = [];
   niveaux: Niveau[] = [];
+  isEditMode = false;
+  exerciceId: number | null = null;
 
   constructor(
     private fb: FormBuilder,
     private router: Router,
+    private route: ActivatedRoute,
     private exercicesService: AdminExercicesService,
     private toast: ToastService,
     private confirm: ConfirmService,
@@ -70,6 +73,122 @@ export class ExerciceForm implements OnInit {
       next: (d) => (this.niveaux = d || []),
       error: () => this.toast.error('Impossible de charger les niveaux')
     });
+
+    // Vérifier le mode édition
+    this.route.params.subscribe(params => {
+      const idParam = params['id'];
+      if (idParam) {
+        this.isEditMode = true;
+        this.exerciceId = +idParam;
+        // Attendre que les données de référence soient chargées avant de charger l'exercice
+        forkJoin({
+          matieres: this.matieresService.list(),
+          niveaux: this.niveauxService.list()
+        }).subscribe({
+          next: (data) => {
+            this.matieres = data.matieres || [];
+            this.niveaux = data.niveaux || [];
+            this.loadExistingExercice(this.exerciceId!);
+          }
+        });
+      }
+    });
+  }
+
+  private loadExistingExercice(id: number) {
+    this.isLoading = true;
+    // Charger l'exercice et ses questions en parallèle
+    forkJoin({
+      exercice: this.exercicesService.get(id),
+      questions: this.questionsService.listByExercice(id)
+    }).subscribe({
+      next: ({ exercice, questions }) => {
+        // Pré-remplir les champs de base
+        this.exerciceForm.patchValue({
+          matiereConcernee: exercice.matiere?.id?.toString() || '',
+          titre: exercice.titre || '',
+          description: exercice.description || '',
+          niveauId: exercice.niveauScolaire?.id || null,
+          niveauDifficulte: exercice.niveauDifficulte || 1,
+          tempsAlloue: exercice.tempsAlloue || 10
+        });
+
+        // Charger les questions si elles existent
+        if (questions && questions.length > 0) {
+          // Vider le tableau de questions par défaut
+          while (this.questions.length) {
+            this.questions.removeAt(0);
+          }
+
+          // Ajouter chaque question au formulaire
+          questions.forEach((q) => {
+            const questionGroup = this.loadQuestionFromApi(q);
+            this.questions.push(questionGroup);
+          });
+        }
+
+        this.isLoading = false;
+      },
+      error: () => {
+        this.isLoading = false;
+        this.toast.error('Impossible de charger l\'exercice pour édition');
+      }
+    });
+  }
+
+  // Charger une question depuis l'API vers le formulaire
+  private loadQuestionFromApi(question: any): FormGroup {
+    const type = this.mapApiTypeToFront(question.type);
+    let bonneReponse = '';
+    const reponsesMap: { [key: string]: string } = {};
+
+    // Mapper les réponses selon le type
+    if (type === 'vrai_faux') {
+      const vraiRep = question.reponses?.find((r: any) => r.libelle === 'VRAI');
+      const fauxRep = question.reponses?.find((r: any) => r.libelle === 'FAUX');
+      if (vraiRep?.estCorrecte) {
+        bonneReponse = 'VRAI';
+      } else if (fauxRep?.estCorrecte) {
+        bonneReponse = 'FAUX';
+      }
+    } else if (question.reponses && question.reponses.length > 0) {
+      // Pour les autres types, mapper les réponses aux lettres A, B, C, D
+      const letters = ['A', 'B', 'C', 'D'];
+      question.reponses.forEach((r: any, idx: number) => {
+        if (idx < letters.length) {
+          reponsesMap[letters[idx]] = r.libelle || '';
+          if (r.estCorrecte) {
+            bonneReponse = letters[idx];
+          }
+        }
+      });
+    }
+
+    return this.fb.group({
+      typeQuestion: [type, [Validators.required]],
+      question: [question.enonce || '', [Validators.required, Validators.minLength(5)]],
+      reponseA: [reponsesMap['A'] || ''],
+      reponseB: [reponsesMap['B'] || ''],
+      reponseC: [reponsesMap['C'] || ''],
+      reponseD: [reponsesMap['D'] || ''],
+      bonneReponse: [bonneReponse, [Validators.required]]
+    });
+  }
+
+  // Mapper le type API vers le type frontend
+  private mapApiTypeToFront(apiType: string): string {
+    switch (apiType?.toUpperCase()) {
+      case 'QCU':
+        return 'choix_multiple';
+      case 'QCM':
+        return 'multi_reponse';
+      case 'VRAI_FAUX':
+        return 'vrai_faux';
+      case 'APPARIEMENT':
+        return 'appariement';
+      default:
+        return 'choix_multiple';
+    }
   }
 
   // Getter pour accéder facilement au FormArray des questions
@@ -182,6 +301,27 @@ export class ExerciceForm implements OnInit {
     const payload = this.prepareExerciceData();
 
     this.isLoading = true;
+
+    // Mode édition: mise à jour de l'exercice
+    if (this.isEditMode && this.exerciceId) {
+      // Pour la mise à jour, on ne met à jour que les données de base
+      // Les questions et fichiers peuvent nécessiter une gestion séparée
+      this.exercicesService.update(this.exerciceId, payload).subscribe({
+        next: () => {
+          this.isLoading = false;
+          this.toast.success('Exercice mis à jour avec succès');
+          this.router.navigate(['/admin/exercicelist']);
+        },
+        error: (err) => {
+          this.isLoading = false;
+          console.error('Erreur lors de la mise à jour de l\'exercice:', err);
+          this.toast.error('Erreur lors de la mise à jour de l\'exercice. Veuillez réessayer.');
+        }
+      });
+      return;
+    }
+
+    // Mode création: créer l'exercice avec fichiers
     this.exercicesService.createWithFiles(payload, file, image).subscribe({
       next: (res) => {
         const exerciceId = (res as any)?.id;

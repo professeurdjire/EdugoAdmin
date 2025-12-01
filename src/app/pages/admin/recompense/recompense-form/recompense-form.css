@@ -248,6 +248,29 @@
   margin-bottom: 1rem;
 }
 
+.form-hint {
+  font-size: 0.75rem;
+  color: var(--text-grey);
+  margin-top: 0.25rem;
+  line-height: 1.4;
+  padding: 0.5rem;
+  background-color: rgba(106, 63, 168, 0.05);
+  border-left: 3px solid var(--primary-purple);
+  border-radius: 4px;
+}
+
+.form-control.error {
+  border-color: var(--red);
+  box-shadow: 0 0 0 2px rgba(255, 0, 0, 0.1);
+}
+
+.error-message {
+  font-size: 0.75rem;
+  color: var(--red);
+  margin-top: 0.25rem;
+  display: block;
+}
+
 .form-group.full-width {
   grid-column: 1 / -1;
 }

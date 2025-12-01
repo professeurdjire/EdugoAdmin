@@ -756,15 +756,15 @@
 .pagination-btn:hover,
 .pagination__arrow:hover,
 .pagination__number:hover {
-  border-color: var(--primary-purple);
-  color: var(--primary-purple);
+  border-color: #6A3FA8;
+  color: #6A3FA8;
 }
 
 .page-number.active,
 .pagination__number.active {
-  background-color: var(--primary-purple);
+  background-color: #6A3FA8;
   color: white;
-  border-color: var(--primary-purple);
+  border-color: #6A3FA8;
   font-weight: 600;
 }
 

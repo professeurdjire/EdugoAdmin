@@ -3,9 +3,14 @@
   <!-- Header -->
   <div class="page-header">
     <h1 class="page-title">Récompenses</h1>
-    <a routerLink="/admin/ajouterrecompense" class="btn-add">
-      <i class="fa-solid fa-plus"></i>&nbsp;Ajouter une récompense
-    </a>
+    <div class="header-actions">
+      <button type="button" class="btn-secondary" (click)="openGestionSeuilsProgression()" title="Gérer les seuils de progression">
+        <fa-icon [icon]="faSliders"></fa-icon>&nbsp;Seuils de progression
+      </button>
+      <a routerLink="/admin/ajouterrecompense" class="btn-add">
+        <i class="fa-solid fa-plus"></i>&nbsp;Ajouter une récompense
+      </a>
+    </div>
   </div>
 
   <!-- Message d'erreur -->
@@ -91,7 +96,7 @@
               </div>
             </td>
             <td>
-              <span class="type-badge">{{ recompense.type || 'Général' }}</span>
+              <span class="type-badge" [attr.data-type]="recompense.type">{{ recompense.type || 'Général' }}</span>
             </td>
             <td class="description-cell">
               <p class="description">{{ recompense.description || 'Aucune description' }}</p>
@@ -145,7 +150,7 @@
           </div>
           <div class="recompense-title">
             <h3>{{ recompense.nom }}</h3>
-            <span class="type-badge">{{ recompense.type || 'Général' }}</span>
+            <span class="type-badge" [attr.data-type]="recompense.type">{{ recompense.type || 'Général' }}</span>
           </div>
         </div>
         <div class="card-content">
@@ -168,4 +173,60 @@
       </div>
     </div>
   </section>
+
+  <!-- Modal de gestion des seuils de progression -->
+  <div class="modal-overlay" *ngIf="showSeuilsModal" (click)="closeSeuilsModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>Gestion des seuils de progression</h2>
+        <button type="button" class="modal-close" (click)="closeSeuilsModal()">✕</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="modal-info-banner">
+          <p><strong>ℹ️ Information :</strong> Les seuils de progression sont configurés par défaut dans le système. 
+          Cette interface vous permet de <strong>visualiser</strong> les seuils disponibles et d'<strong>initialiser</strong> les badges correspondants dans la base de données.</p>
+          <p style="margin-top: 0.5rem; margin-bottom: 0;">Pour modifier les seuils, veuillez contacter l'équipe technique.</p>
+        </div>
+
+        <div class="modal-actions-top">
+          <button type="button" class="btn-primary" (click)="initialiserBadgesProgression()" [disabled]="loadingSeuils">
+            <fa-icon [icon]="faTrophy"></fa-icon>
+            Initialiser les badges de progression
+          </button>
+        </div>
+
+        <div *ngIf="loadingSeuils" class="loading-spinner-container">
+          <div class="loading-spinner"></div>
+          <p>Chargement des seuils...</p>
+        </div>
+
+        <div *ngIf="!loadingSeuils" class="seuils-list">
+          <div *ngIf="seuilsProgression.length === 0" class="empty-state">
+            <p>Aucun seuil de progression configuré.</p>
+            <p class="hint">Veuillez contacter l'équipe technique pour configurer les seuils de progression.</p>
+          </div>
+
+          <div *ngFor="let seuil of seuilsProgression" class="seuil-item">
+            <div class="seuil-display">
+              <div class="seuil-info">
+                <span class="seuil-icone">{{ seuil.icone || '🏆' }}</span>
+                <div class="seuil-details">
+                  <h4>{{ seuil.nom }} ({{ seuil.seuil | number }} points)</h4>
+                  <p class="seuil-points">Seuil: {{ seuil.seuil | number }} points accumulés</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="seuils-info-footer" *ngIf="seuilsProgression.length > 0">
+            <p class="info-text">
+              <strong>Note :</strong> Pour modifier ces seuils, veuillez contacter l'équipe technique. 
+              Utilisez le bouton "Initialiser les badges de progression" ci-dessus pour créer les badges correspondants dans la base de données.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>

@@ -434,7 +434,8 @@
 
 .page-arrow:hover,
 .page-number:hover {
-  background: rgba(0, 0, 0, 0.05);
+  border-color: #6A3FA8;
+  color: #6A3FA8;
 }
 
 .page-arrow.prev,
@@ -444,9 +445,9 @@
 }
 
 .page-number.active {
-  background: #a885d8;
+  background: #6A3FA8;
   color: #ffffff;
-  border-color: #a885d8;
+  border-color: #6A3FA8;
 }
 
 .page-number {

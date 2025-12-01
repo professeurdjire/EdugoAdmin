@@ -113,31 +113,124 @@ export class PartenaireForm implements OnInit, OnDestroy {
 
   loadPartenaire(id: number): void {
     this.isLoading = true;
+    console.log('Chargement du partenaire avec ID:', id);
+    
     this.partenaireService.getById(id).subscribe({
       next: (p: Partenaire) => {
+        console.log('Partenaire chargé depuis API:', p);
+        console.log('Type de la réponse:', typeof p);
+        console.log('Clés de l\'objet:', Object.keys(p || {}));
+        
+        if (!p) {
+          console.error('Partenaire est null ou undefined');
+          this.toast.error('Aucune donnée reçue pour ce partenaire.');
+          this.isLoading = false;
+          return;
+        }
+        
+        // Formater la date pour l'input date (format YYYY-MM-DD)
+        const formatDateForInput = (dateStr: string | undefined): string => {
+          if (!dateStr) return '';
+          try {
+            // Gérer différents formats de date
+            let date: Date;
+            if (typeof dateStr === 'string') {
+              // Si c'est déjà au format YYYY-MM-DD, le retourner tel quel
+              if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
+                return dateStr;
+              }
+              date = new Date(dateStr);
+            } else {
+              date = new Date(dateStr);
+            }
+            
+            if (isNaN(date.getTime())) {
+              console.warn('Date invalide:', dateStr);
+              return '';
+            }
+            
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+          } catch (e) {
+            console.warn('Erreur formatage date:', e, 'dateStr:', dateStr);
+            return '';
+          }
+        };
+
+        // Déterminer si le type ou le pays est "autre"
+        const typeValue = (p.type || '').trim();
+        const paysValue = (p.pays || 'mali').trim().toLowerCase();
+        
+        // Si le type n'est pas dans la liste des options, c'est probablement un "autre"
+        const typeOptions = ['institution', 'entreprise', 'ong', 'gouvernement', 'autre'];
+        const isTypeAutre = typeValue && !typeOptions.includes(typeValue.toLowerCase());
+        
+        // Si le pays n'est pas "mali" ou "autre", alors c'est "autre"
+        const isPaysAutre = paysValue && paysValue !== 'mali' && paysValue !== 'autre';
+
+        // Gérer le statut - peut venir de 'statut' ou 'actif'
+        let statutValue = p.statut || '';
+        if (!statutValue && p.actif !== undefined) {
+          statutValue = p.actif ? 'actif' : 'inactif';
+        }
+
         const formValue: PartenaireForms = {
           id: p.id,
-          nom: p.nom,
-          domaine: p.domaine,
-          type: p.type,
-          autreType: p.autreType,
-          email: p.email,
-          telephone: p.telephone,
-          siteWeb: p.siteWeb,
-          adresse: p.adresse,
-          ville: p.ville,
-          pays: p.pays || 'mali',
-          autrePays: p.autrePays,
-          statut: p.statut,
-          dateDebut: p.dateDebut,
-          description: p.description,
-          newsletter: p.newsletter
+          nom: p.nom || '',
+          domaine: p.domaine || '',
+          type: isTypeAutre ? 'autre' : (typeValue || ''),
+          autreType: isTypeAutre ? typeValue : (p.autreType || ''),
+          email: p.email || '',
+          telephone: p.telephone || '',
+          siteWeb: p.siteWeb || '',
+          adresse: p.adresse || '',
+          ville: p.ville || '',
+          pays: isPaysAutre ? 'autre' : (paysValue || 'mali'),
+          autrePays: isPaysAutre ? (p.pays || '') : (p.autrePays || ''),
+          statut: statutValue,
+          dateDebut: formatDateForInput(p.dateDebut || p.dateAjout || p.dateCreation),
+          description: p.description || '',
+          newsletter: p.newsletter !== undefined ? p.newsletter : true
         };
-        this.partenaireForm.patchValue(formValue);
+        
+        console.log('Valeurs du formulaire préparées:', formValue);
+        
+        // Charger les valeurs dans le formulaire
+        this.partenaireForm.patchValue(formValue, { emitEvent: false });
+        
+        // Forcer la mise à jour des validateurs pour les champs conditionnels
+        if (formValue.type === 'autre' && formValue.autreType) {
+          this.partenaireForm.get('autreType')?.setValidators([Validators.required]);
+          this.partenaireForm.get('autreType')?.updateValueAndValidity();
+        }
+        
+        if (formValue.pays === 'autre' && formValue.autrePays) {
+          this.partenaireForm.get('autrePays')?.setValidators([Validators.required]);
+          this.partenaireForm.get('autrePays')?.updateValueAndValidity();
+        }
+        
+        // Déclencher les événements de changement pour afficher les champs conditionnels
+        if (formValue.type === 'autre') {
+          this.partenaireForm.get('type')?.setValue('autre', { emitEvent: true });
+        }
+        
+        if (formValue.pays === 'autre') {
+          this.partenaireForm.get('pays')?.setValue('autre', { emitEvent: true });
+        }
+        
+        console.log('Valeurs après patchValue:', this.partenaireForm.value);
         this.isLoading = false;
       },
       error: (err) => {
         console.error('Erreur chargement partenaire:', err);
+        console.error('Détails de l\'erreur:', {
+          status: err.status,
+          statusText: err.statusText,
+          message: err.message,
+          error: err.error
+        });
         this.toast.error('Impossible de charger les informations de ce partenaire.');
         this.isLoading = false;
       }

@@ -124,14 +124,11 @@
     
     <!-- Légende à DROITE -->
     <ul class="legend">
-      <li class="maths">Mathématiques</li>
-      <li class="francais">Français</li>
-      <li class="histoires">Histoires</li>
-      <li class="geographie">Géographie</li>
-      <li class="anglais">Anglais</li>
-      <li class="ecm">ECM</li>
-      <li class="physique">Physique</li>
-      <li class="chimie">Chimie</li>
+      <li *ngFor="let matiere of matieresWithColors" [style.--matiere-color]="matiere.couleur">
+        <span class="legend-color-indicator" [style.backgroundColor]="matiere.couleur"></span>
+        <span>{{ matiere.nom }} ({{ matiere.count }})</span>
+      </li>
+      <li *ngIf="matieresWithColors.length === 0" class="no-data">Aucune matière disponible</li>
     </ul>
   </div>
 </div>

@@ -33,7 +33,12 @@
               <option value="ARGENT">Argent</option>
               <option value="BRONZE">Bronze</option>
               <option value="SPECIAL">Spécial</option>
+              <option value="PROGRESSION">Progression</option>
             </select>
+            <small class="form-hint" *ngIf="form.get('type')?.value === 'PROGRESSION'">
+              ℹ️ Les badges de progression sont attribués automatiquement aux élèves lorsqu'ils atteignent certains seuils de points. 
+              Définissez le seuil de points requis pour ce badge ci-dessous.
+            </small>
           </div>
 
           <div class="form-group full-width">
@@ -58,6 +63,23 @@
                        placeholder="Ou saisissez un emoji personnalisé"
                        formControlName="icone">
               </div>
+            </div>
+          </div>
+
+          <!-- Champs spécifiques pour les badges de progression -->
+          <div class="form-group" *ngIf="form.get('type')?.value === 'PROGRESSION'">
+            <label for="seuil">Seuil de points *</label>
+            <input type="number" id="seuil" class="form-control" 
+                   placeholder="Ex: 100, 500, 1000..." 
+                   formControlName="seuil"
+                   min="1"
+                   [class.error]="form.get('seuil')?.invalid && form.get('seuil')?.touched">
+            <small class="form-hint">
+              Nombre de points que l'élève doit accumuler pour obtenir automatiquement ce badge de progression.
+            </small>
+            <div class="error-message" *ngIf="form.get('seuil')?.invalid && form.get('seuil')?.touched">
+              <span *ngIf="form.get('seuil')?.errors?.['required']">Le seuil de points est requis pour les badges de progression.</span>
+              <span *ngIf="form.get('seuil')?.errors?.['min']">Le seuil doit être supérieur à 0.</span>
             </div>
           </div>
         </div>

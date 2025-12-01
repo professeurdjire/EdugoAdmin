@@ -5,6 +5,7 @@ import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { BadgesService } from '../../../../services/api/admin/badges.service';
 import { BadgeRequest } from '../../../../api/model/badgeRequest';
+import { BadgeRequestExtended } from '../../../../api/model/badgeRequestExtended';
 import { ToastService } from '../../../../shared/ui/toast/toast.service';
 import { ConfirmService } from '../../../../shared/ui/confirm/confirm.service';
 
@@ -21,7 +22,7 @@ export class RecompenseForm implements OnInit, OnDestroy {
   isLoading = false;
   private routeSub?: Subscription;
   private currentId?: number;
-  availableIcons: string[] = ['🏆', '🎖️', '⭐', '🥇', '🥈', '🥉', '🎯', '📚', '⚡'];
+  availableIcons: string[] = ['🏆', '🎖️', '⭐', '🥇', '🥈', '🥉', '🎯', '📚', '⚡', '💎', '👑', '🌟', '🎓', '✨'];
 
   constructor(
     private fb: FormBuilder,
@@ -35,7 +36,20 @@ export class RecompenseForm implements OnInit, OnDestroy {
       nom: ['', [Validators.required, Validators.minLength(3)]],
       description: [''],
       type: ['', [Validators.required]],
-      icone: ['🏆', [Validators.required]]
+      icone: ['🏆', [Validators.required]],
+      seuil: [null] // Seuil de points pour les badges de progression
+    });
+
+    // Mettre à jour les validateurs dynamiquement selon le type
+    this.form.get('type')?.valueChanges.subscribe(type => {
+      const seuilControl = this.form.get('seuil');
+      if (type === 'PROGRESSION') {
+        seuilControl?.setValidators([Validators.required, Validators.min(1)]);
+      } else {
+        seuilControl?.clearValidators();
+        seuilControl?.setValue(null);
+      }
+      seuilControl?.updateValueAndValidity();
     });
   }
 
@@ -61,11 +75,13 @@ export class RecompenseForm implements OnInit, OnDestroy {
     this.isLoading = true;
     this.badgesService.get(id).subscribe({
       next: (badge) => {
+        // Charger le seuil si c'est un badge de progression (peut nécessiter un appel API supplémentaire)
         this.form.patchValue({
           nom: badge.nom,
           description: badge.description,
           type: badge.type,
-          icone: badge.icone
+          icone: badge.icone,
+          seuil: (badge as any).seuil || null
         });
         this.isLoading = false;
       },
@@ -100,13 +116,19 @@ export class RecompenseForm implements OnInit, OnDestroy {
     }
 
     const v = this.form.value;
-    const payload: BadgeRequest = {
+    // Utiliser BadgeRequestExtended pour inclure PROGRESSION
+    const payload: BadgeRequestExtended & { seuil?: number } = {
       id: this.currentId,
       nom: v.nom,
       description: v.description,
-      type: v.type,
+      type: v.type as BadgeRequestExtended['type'], // Supporte PROGRESSION
       icone: v.icone
     };
+
+    // Ajouter le seuil si c'est un badge de progression
+    if (v.type === 'PROGRESSION' && v.seuil) {
+      (payload as any).seuil = Number(v.seuil);
+    }
 
     this.isLoading = true;
     const request$ = this.isEditMode && this.currentId
@@ -116,7 +138,10 @@ export class RecompenseForm implements OnInit, OnDestroy {
     request$.subscribe({
       next: () => {
         this.isLoading = false;
-        this.toast.success('Badge enregistré avec succès, il est prêt à être utilisé dans vos challenges.');
+        const badgeType = v.type === 'PROGRESSION' 
+          ? 'Badge de progression enregistré avec succès. Il sera attribué automatiquement aux élèves atteignant le seuil de points correspondant.'
+          : 'Badge enregistré avec succès, il est prêt à être utilisé dans vos challenges.';
+        this.toast.success(badgeType);
         this.router.navigate(['/admin/recompenselist']);
       },
       error: (err) => {

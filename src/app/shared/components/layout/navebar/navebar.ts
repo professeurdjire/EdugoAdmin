@@ -6,6 +6,8 @@ import { AuthService } from '../../../../services/api/auth.service';
 import { SidebarStateService } from '../sidebar/sidebar-state.service';
 import { AdminAccountService } from '../../../../services/api/admin/admin-account.service';
 import { OneSignalService } from '../../../../core/services/onesignal.service';
+import { ConfirmService } from '../../../ui/confirm/confirm.service';
+import { ToastService } from '../../../ui/toast/toast.service';
 
 @Component({
   selector: 'app-navebar',
@@ -27,18 +29,53 @@ export class Navebar {
     private auth: AuthService,
     private sidebarState: SidebarStateService,
     private adminAccount: AdminAccountService,
-    private oneSignal: OneSignalService
+    private oneSignal: OneSignalService,
+    private confirm: ConfirmService,
+    private toast: ToastService
   ) {
     const u = this.auth.getCurrentUser();
     if (u) {
       this.user = this.toProfileUser(u);
     }
-    // Option: s'abonner pour réagir aux changements
+    
+    // S'abonner aux changements d'utilisateur
     this.auth.currentUser$.subscribe((usr) => {
       this.user = usr ? this.toProfileUser(usr) : null;
+      // Recharger les notifications quand l'utilisateur change
+      if (usr) {
+        this.loadUnreadNotifications();
+      }
     });
 
-    // Charger les préférences admin pour savoir si les notifications in-app sont activées
+    // Charger les préférences admin
+    this.loadAdminPreferences();
+
+    // Charger les notifications initiales si l'utilisateur est déjà connecté
+    if (u) {
+      this.loadUnreadNotifications();
+    }
+
+    // Écouter l'événement de connexion réussie
+    window.addEventListener('userLoggedIn', () => {
+      this.loadUnreadNotifications();
+    });
+  }
+
+  // Méthode pour charger les notifications non lues
+  private loadUnreadNotifications(): void {
+    this.adminAccount.getUnreadNotifications().subscribe({
+      next: (items) => {
+        this.unreadCount = Array.isArray(items) ? items.length : 0;
+      },
+      error: () => {
+        // Non bloquant si les notifications ne se chargent pas
+        console.warn('Impossible de charger les notifications non lues');
+      }
+    });
+  }
+
+  // Méthode pour charger les préférences admin
+  private loadAdminPreferences(): void {
     this.adminAccount.getPreferences().subscribe({
       next: (prefs) => {
         if (prefs.notificationsInApp !== false) {
@@ -48,16 +85,7 @@ export class Navebar {
       },
       error: () => {
         // Si les préférences ne se chargent pas, on n'empêche pas le reste de la navbar de fonctionner
-      }
-    });
-
-    // Initialiser le nombre de notifications non lues
-    this.adminAccount.getUnreadNotifications().subscribe({
-      next: (items) => {
-        this.unreadCount = Array.isArray(items) ? items.length : 0;
-      },
-      error: () => {
-        // Non bloquant si les notifications non lues ne se chargent pas
+        console.warn('Impossible de charger les préférences utilisateur');
       }
     });
   }
@@ -116,7 +144,20 @@ export class Navebar {
     // Gérer les actions du dropdown profil (profil, préférences, déconnexion, ...)
     console.debug('Profile action:', action);
     if (action === 'logout') {
-      this.auth.logout();
+      // Afficher une confirmation avant de déconnecter (comme dans le sidebar)
+      this.confirm
+        .confirm({
+          title: 'Déconnexion',
+          message: 'Voulez-vous vraiment vous déconnecter ?',
+          confirmText: 'Se déconnecter',
+          cancelText: 'Annuler'
+        })
+        .then((ok) => {
+          if (ok) {
+            this.auth.logout();
+            this.toast.info('Vous avez été déconnecté.');
+          }
+        });
     }
   }
 }

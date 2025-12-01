@@ -151,25 +151,42 @@ export class QuizForm {
 
   private loadExistingQuiz(id: number) {
     this.isLoading = true;
-    this.quizzesService.getQuizById(id).subscribe({
-      next: (res: any) => {
+    // Charger le quiz et ses questions en parallèle
+    forkJoin({
+      quiz: this.quizzesService.getQuizById(id),
+      questions: this.questionsService.listByQuiz(id)
+    }).subscribe({
+      next: ({ quiz, questions }) => {
         // Adapter les champs disponibles de QuizResponse
-        this.quiz.titre = res.titre || '';
-        this.quiz.description = res.description || '';
+        const quizAny = quiz as any;
+        this.quiz.titre = quiz.titre || '';
+        this.quiz.description = quiz.description || '';
 
-        if (res.duree != null) {
-          this.quiz.duree = res.duree;
+        if (quizAny.duree != null) {
+          this.quiz.duree = quizAny.duree;
         }
-        if (res.difficulte) {
-          this.quiz.difficulte = res.difficulte;
+        if (quizAny.difficulte) {
+          this.quiz.difficulte = quizAny.difficulte;
         }
 
         // Tenter de pré-sélectionner le livre à partir de titreLivre
-        if (res.titreLivre && this.livres && this.livres.length) {
-          const match = this.livres.find(l => l.titre === res.titreLivre);
+        if (quizAny.titreLivre && this.livres && this.livres.length) {
+          const match = this.livres.find(l => l.titre === quizAny.titreLivre);
           if (match && match.id) {
             this.selectedLivreId = match.id;
           }
+        }
+
+        // Charger les questions si elles existent
+        if (questions && questions.length > 0) {
+          // Vider les questions par défaut
+          this.quiz.questions = [];
+
+          // Ajouter chaque question
+          questions.forEach((q, index) => {
+            const questionData = this.loadQuestionFromApi(q, index + 1);
+            this.quiz.questions.push(questionData);
+          });
         }
 
         this.isLoading = false;
@@ -179,6 +196,87 @@ export class QuizForm {
         this.toast.error('Impossible de charger le quiz pour édition');
       }
     });
+  }
+
+  // Charger une question depuis l'API vers le format du formulaire
+  private loadQuestionFromApi(question: any, numero: number): Question {
+    const type = this.mapApiTypeToFront(question.type);
+    const reponses: Reponse[] = [];
+    let bonneReponse = '';
+    let pairesAppariement: AppariementPaire[] = [];
+
+    if (type === 'appariement') {
+      // Pour l'appariement, parser les réponses comme des paires
+      if (question.reponses && question.reponses.length > 0) {
+        question.reponses.forEach((r: any) => {
+          const parts = r.libelle.split(' - ');
+          if (parts.length === 2) {
+            pairesAppariement.push({
+              elementGauche: parts[0],
+              elementDroit: parts[1]
+            });
+          }
+        });
+      }
+    } else if (type === 'vrai_faux') {
+      // Pour Vrai/Faux
+      const vraiRep = question.reponses?.find((r: any) => r.libelle === 'VRAI');
+      const fauxRep = question.reponses?.find((r: any) => r.libelle === 'FAUX');
+      reponses.push(
+        { lettre: 'V', texte: 'VRAI', correcte: vraiRep?.estCorrecte || false },
+        { lettre: 'F', texte: 'FAUX', correcte: fauxRep?.estCorrecte || false }
+      );
+      if (vraiRep?.estCorrecte) bonneReponse = 'V';
+      else if (fauxRep?.estCorrecte) bonneReponse = 'F';
+    } else if (question.reponses && question.reponses.length > 0) {
+      // Pour les autres types
+      question.reponses.forEach((r: any, idx: number) => {
+        const lettre = String.fromCharCode(65 + idx);
+        reponses.push({
+          lettre: lettre,
+          texte: r.libelle || '',
+          correcte: r.estCorrecte || false
+        });
+        if (r.estCorrecte) {
+          if (type === 'multi_reponse') {
+            bonneReponse = bonneReponse ? `${bonneReponse},${lettre}` : lettre;
+          } else {
+            bonneReponse = lettre;
+          }
+        }
+      });
+    } else {
+      // Pas de réponses, créer les réponses par défaut
+      ['A', 'B', 'C', 'D'].forEach((l, idx) => {
+        reponses.push({ lettre: l, texte: '', correcte: false });
+      });
+    }
+
+    return {
+      numero: numero,
+      type: type,
+      question: question.enonce || '',
+      points: question.points || 1,
+      reponses: reponses,
+      pairesAppariement: pairesAppariement,
+      bonneReponse: bonneReponse
+    };
+  }
+
+  // Mapper le type API vers le type frontend
+  private mapApiTypeToFront(apiType: string): string {
+    switch (apiType?.toUpperCase()) {
+      case 'QCU':
+        return 'choix_multiple';
+      case 'QCM':
+        return 'multi_reponse';
+      case 'VRAI_FAUX':
+        return 'vrai_faux';
+      case 'APPARIEMENT':
+        return 'appariement';
+      default:
+        return 'choix_multiple';
+    }
   }
 
   onRetour() {
