@@ -529,7 +529,8 @@ td {
 
 .pagination-arrow:hover:not(:disabled),
 .pagination-number:hover:not(.active) {
-  background: rgba(0, 0, 0, 0.05);
+  border-color: #6A3FA8;
+  color: #6A3FA8;
 }
 
 .pagination-arrow:disabled {

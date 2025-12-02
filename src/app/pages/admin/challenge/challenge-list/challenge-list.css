@@ -456,6 +456,42 @@
   color: #000000;
 }
 
+/* Styles pour pagination__arrow et pagination__number (utilisés dans le HTML) */
+.pagination__arrow,
+.pagination__number {
+  box-sizing: border-box;
+  width: 40px;
+  height: 40px;
+  border: 1px solid #808080;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s;
+  background: transparent;
+  color: #000000;
+}
+
+.pagination__arrow:hover:not(:disabled),
+.pagination__number:hover:not(.active) {
+  border-color: #6A3FA8;
+  color: #6A3FA8;
+}
+
+.pagination__arrow:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.pagination__number.active {
+  background: #6A3FA8;
+  color: #FFFFFF;
+  border-color: #6A3FA8;
+  font-weight: 600;
+}
+
 /* Icons */
 .expand-icon,
 .arrow-back,
